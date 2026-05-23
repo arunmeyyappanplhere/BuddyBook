@@ -1,9 +1,11 @@
-import React from 'react'
-
+import React from "react";
+import ContactCard from "./Components/ContactCard";
 const App = () => {
   return (
-    <div>App</div>
-  )
-}
+    <div>
+      <ContactCard />
+    </div>
+  );
+};
 
-export default App
+export default App;

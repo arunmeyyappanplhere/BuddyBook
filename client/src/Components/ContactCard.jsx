@@ -1,10 +1,10 @@
 import React from "react";
 import defaultImage from "/default_avatar.png";
-import { Phone, Mail, Edit, Trash2 } from "lucide-react";
+import { Phone, Mail, Edit, Trash2, Heart } from "lucide-react";
 const ContactCard = () => {
   return (
-    <div className="shadow-2xs p-5 min-h-36 flex flex-col gap-16 max-w-60 rounded-xl group">
-      <div className="flex">
+    <div className="shadow-md p-5 min-h-36 flex flex-col gap-16 max-w-60 rounded-xl group">
+      <div className="flex gap-1">
         <img src={defaultImage} alt="" className="aspect-square size-20" />
         <div className="flex flex-col gap-2 my-auto pl-2">
           <h1 className="font-semibold text-2xl">Kavya</h1>
@@ -12,6 +12,7 @@ const ContactCard = () => {
             Work
           </h2>
         </div>
+        <Heart size={22} fill="#ffffff" color="#e60076" className="ml-auto"/>
       </div>
       <div className="flex flex-col gap-4">
         <div className="flex gap-3">

@@ -1,0 +1,15 @@
+import React from "react";
+import defaultImage from "/default_avatar.png";
+const SearchContactCard = () => {
+  return (
+    <div className="bg-[#f9f9f934] w-90 shadow-xs rounded-sm flex gap-10 items-center py-1 px-4 cursor-pointer">
+      <img src={defaultImage} alt="" className="size-15 rounded-full"/>
+      <div>
+        <h1 className="font-medium text-md">Arun Meyyappan P L</h1>
+        <h2 className="text-gray-500 text-sm">90426 49000</h2>
+      </div>
+    </div>
+  );
+};
+
+export default SearchContactCard;

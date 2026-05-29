@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import BuddyBookLogo from "/BuddyBookLogo.png";
 import { BookUser, Heart, LayoutDashboard, LogOut, Users } from "lucide-react";
-const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("Dashboard");
+const Dashboard = ({tabOnView}) => {
+  const [activeTab, setActiveTab] = useState(tabOnView);
 
   const changeTab = (tab) => {
     setActiveTab(tab);
@@ -13,7 +13,7 @@ const Dashboard = () => {
   };
 
   return (  
-      <div className="h-screen w-1/6 rounded-r-xl shadow-2xl">
+      <div className="h-screen min-w-1/6 rounded-r-xl shadow-2xl">
         <div className="flex gap-5 p-5">
           <img src={BuddyBookLogo} alt="" className="rounded-2xl size-18" />
           <div className="">

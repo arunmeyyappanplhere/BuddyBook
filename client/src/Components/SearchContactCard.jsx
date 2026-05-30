@@ -2,7 +2,7 @@ import React from "react";
 import defaultImage from "/default_avatar.png";
 const SearchContactCard = () => {
   return (
-    <div className="bg-[#f9f9f934] w-90 shadow-xs rounded-sm flex gap-10 items-center py-1 px-4 cursor-pointer">
+    <div className="bg-[#f9f9f934] w-full shadow-xs rounded-sm flex gap-10 items-center py-1 px-4 cursor-pointer">
       <img src={defaultImage} alt="" className="size-15 rounded-full"/>
       <div>
         <h1 className="font-medium text-md">Arun Meyyappan P L</h1>

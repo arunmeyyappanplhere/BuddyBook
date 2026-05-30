@@ -15,7 +15,7 @@ const StatsCard = ({ icon, heading, count, percentage }) => {
                 : percentage < 0
                   ? "text-red-600 bg-red-200"
                   : "text-blue-600 bg-blue-200") +
-              " rounded-md text-sm font-semibold p-2 h-min transition duration-100 ease-in-out group-hover:scale-[1.06]"
+              " rounded-full text-sm font-semibold p-2 px-4 h-min transition duration-100 ease-in-out group-hover:scale-[1.06]"
             }
           >
             {percentage.toFixed(1)}%

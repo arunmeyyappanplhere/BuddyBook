@@ -13,8 +13,10 @@
     "@tailwindcss/vite": "^4.3.0",
     "lucide-react": "^1.16.0",
     "react": "^19.2.6",
+    "react-countup": "^6.5.3",
     "react-dom": "^19.2.6",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "use-count-up": "^3.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

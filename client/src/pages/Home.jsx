@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import defaultImage from "/default_avatar.png";
 import SearchContactCard from "../Components/SearchContactCard";
 import StatsCard from "../Components/StatsCard";
-import { UserRound, Heart, CirclePlus } from "lucide-react";
+import { UserRound, Heart, CirclePlus, Plus } from "lucide-react";
 import RecentContactCard from "../Components/RecentContactCard";
 
 const Home = () => {
@@ -132,6 +132,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+      <button className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 absolute right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "><Plus className="text-white" size={32}/></button>
     </div>
   );
 };

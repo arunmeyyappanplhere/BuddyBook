@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Buddy Book backend server",
+  "keywords": [
+    "BuddyBook",
+    "Buddy",
+    "Book",
+    "Contact",
+    "Manager"
+  ],
+  "homepage": "https://github.com/arunmeyyappanplhere/BuddyBook#readme",
+  "bugs": {
+    "url": "https://github.com/arunmeyyappanplhere/BuddyBook/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arunmeyyappanplhere/BuddyBook.git"
+  },
+  "license": "ISC",
+  "author": "Arun Meyyappan P L",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

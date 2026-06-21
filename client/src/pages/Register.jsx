@@ -110,7 +110,7 @@ const Register = () => {
         .then((response) => {
           console.log(response.data);
           toast.success("Successfully signed up!");
-          navigate;
+          navigate("/home");
         });
     } catch (error) {
       console.error(error);

@@ -7,18 +7,32 @@ import Dashboard from "./Components/Dashboard";
 import Home from "./pages/Home";
 import SearchContactCard from "./Components/SearchContactCard";
 import StatsCard from "./Components/StatsCard";
+import { ToastContainer } from "react-toastify";
+import { BrowserRouter, Routes, Route } from "react-router";
 const App = () => {
   return (
-    <div>
-      {/* <ContactCard /> */}
-      {/* <Login /> */}
-      {/* <Register /> */}
-      {/* <Dashboard/> */}
-      <Home/>
-      {/* <ContactProfile/> */}
-      {/* <SearchContactCard/> */}
-      
-    </div>
+    <BrowserRouter>
+      <div>
+        <Routes>
+          <Route path="/contact-profile/:id" element={<ContactProfile />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </div>
+    </BrowserRouter>
   );
 };
 

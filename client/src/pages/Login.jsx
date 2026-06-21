@@ -9,6 +9,8 @@ import {
   EyeOff,
   ArrowRight,
 } from "lucide-react";
+import { Link } from "react-router";
+
 const Login = () => {
   return (
     <div className="flex min-h-200 min-w-80 max-w-280 mt-25 mx-auto rounded-2xl shadow-2xl">
@@ -59,18 +61,23 @@ const Login = () => {
           <div className="text-gray-600 text-md flex items-center border min-w-100 border-gray-300 w-min bg-white px-2 p-1 rounded-md mb-4">
             <LockKeyhole className="text-gray-600" />
             <input
-              type="password"
+              type="text"
               className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full"
               placeholder={"••••••"}
             />
             <Eye className="text-gray-600 ml-1 cursor-pointer hover:text-black transition ease-in-out duration-100" />
           </div>
           <button className="min-w-100 flex gap-2 items-center justify-center text-white text-sm cursor-pointer bg-blue-500  rounded-md min-h-9 p-2 hover:bg-blue-400 transition ease-in-out duration-100">
-            Sign in <ArrowRight size={18}/>
+            Sign in <ArrowRight size={18} />
           </button>
         </form>
-          <hr className="min-w-100 w-min text-gray-300"/>
-          <h3 className="text-md ml-15">Don't have an account? <a href="" className="text-blue-500 ">Sign up for free</a></h3>
+        <hr className="min-w-100 w-min text-gray-300" />
+        <h3 className="text-md ml-15">
+          Don't have an account?{" "}
+          <a href="" className="text-blue-500 ">
+            <Link to={"/register"}>Sign up for free</Link>
+          </a>
+        </h3>
       </div>
     </div>
   );

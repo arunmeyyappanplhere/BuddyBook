@@ -97,19 +97,24 @@ const Register = () => {
 
     try {
       const response = await axios
-        .post("http://127.0.0.1:8000/api/register", {
-          uuid: crypto.randomUUID(),
-          profileImage: fileName,
-          name: username,
-          email,
-          password,
-          phoneNumber: parseInt(phone, 10),
-          DOB: dob,
-          address,
-        })
+        .post(
+          "http://127.0.0.1:8000/api/register",
+          {
+            uuid: crypto.randomUUID(),
+            profileImage: fileName,
+            name: username,
+            email,
+            password,
+            phoneNumber: parseInt(phone, 10),
+            DOB: dob,
+            address,
+          },
+          { withCredentials: true },
+        )
         .then((response) => {
           console.log(response.data);
           toast.success("Successfully signed up!");
+          
           navigate("/home");
         });
     } catch (error) {

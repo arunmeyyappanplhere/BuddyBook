@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "axios": "^1.18.0",
     "cookie-parser": "^1.4.7",
+    "js-cookie": "^3.0.8",
     "lucide-react": "^1.16.0",
     "react": "^19.2.6",
     "react-countup": "^6.5.3",

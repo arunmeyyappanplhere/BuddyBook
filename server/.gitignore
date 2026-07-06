@@ -3,3 +3,5 @@
 
 # Enternal Packages
 node_modules
+
+/public/profileImages

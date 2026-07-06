@@ -4,4 +4,5 @@
 # Enternal Packages
 node_modules
 
-/public/profileImages
+#images
+public\profileImages\

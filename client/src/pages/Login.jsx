@@ -38,7 +38,13 @@ const Login = () => {
 
     try {
       const response = await axios
-        .post("http://127.0.0.1:8000/api/login", { email, password })
+        .post(
+          "http://localhost:8000/api/login",
+          { email, password },
+          {
+            withCredentials: true,
+          },
+        )
         .then((response) => {
           console.log(response.data);
           toast.success("Logged in successfully!");
@@ -86,7 +92,7 @@ const Login = () => {
           </h2>
         </div>
         <form onSubmit={loginHandler} className="">
-          <label for="" className="text-gray-600 text-sm">
+          <label htmlFor="" className="text-gray-600 text-sm">
             Email Address
           </label>
           <div className="text-gray-600 text-md border min-w-100 border-gray-300 w-min flex items-center bg-white px-2 p-1 rounded-md mb-4">
@@ -100,7 +106,7 @@ const Login = () => {
               required
             />
           </div>
-          <label for="" className="text-gray-600 text-sm">
+          <label htmlFor="" className="text-gray-600 text-sm">
             Password
           </label>
           <div className="text-gray-600 text-md flex items-center border min-w-100 border-gray-300 w-min bg-white px-2 p-1 rounded-md mb-4">

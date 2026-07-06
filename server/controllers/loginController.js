@@ -27,10 +27,15 @@ export const loginController = async (req, res) => {
       } else {
         console.log(`Loged in successfully.`);
         const token = generateToken(loginUser);
-        res.cookie("token", token, { maxAge: 60 * 60 * 1000 });
+        res.cookie("token", token, {
+          maxAge: 60 * 60 * 1000,
+          httpOnly: false,
+          secure : false,
+          path : "/"
+        });
         res
           .status(200)
-          .json({ message: `${loginUser.email}, Added successfully.` });
+          .json({ message: `${loginUser.email}, logged in successfully.` });
       }
     }
   } catch (error) {

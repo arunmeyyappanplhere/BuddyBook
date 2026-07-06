@@ -6,13 +6,62 @@ import SearchContactCard from "../Components/SearchContactCard";
 import StatsCard from "../Components/StatsCard";
 import { UserRound, Heart, CirclePlus, Plus } from "lucide-react";
 import RecentContactCard from "../Components/RecentContactCard";
+import axios from "axios";
+import { useEffect } from "react";
 
 const Home = () => {
   const [searchContact, setSearchContact] = useState("");
+  const [userProfile, setUserProfile] = useState();
+  const [recentContacts, setRecentContacts] = useState([]);
 
   const handleSearchContact = (e) => {
     setSearchContact(event.target.value);
   };
+
+  const findRecentContacts = (contacts) => {
+    if (!contacts) return;
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const recent = contacts.filter((contact) => {
+      return new Date(contact.createdAt) >= sevenDaysAgo;
+    });
+
+    setRecentContacts(recent);
+  };
+
+  const getDashboardDetails = async () => {
+    try {
+      const cookies = document.cookie;
+      const getCookie = (name) => {
+        return document.cookie
+          .split("; ")
+          .find((row) => row.startsWith(`${name}=`))
+          ?.split("=")[1];
+      };
+
+      const token = getCookie("token");
+
+      console.log("Token : ", token);
+      axios.defaults.withCredentials = true;
+      await axios
+        .get("http://localhost:8000/api/home", {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        })
+        .then((response) => {
+          setUserProfile(response.data);
+          findRecentContacts(response.data.contacts);
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getDashboardDetails();
+  }, []);
 
   return (
     <div className="flex">
@@ -51,19 +100,32 @@ const Home = () => {
           </div>
           <div className="flex gap-3 items-center absolute right-0">
             <div className="text-right">
-              <h1 className="font-semibold text-md">Arun Meyyappan P L</h1>
-              <h2 className="text-gray-600 text-md">90426 49000</h2>
+              <h1 className="font-semibold text-md">{userProfile?.name}</h1>
+              <h2 className="text-gray-600 text-md">
+                {userProfile?.phoneNumber}
+              </h2>
             </div>
-            <img src={defaultImage} className="size-15" alt="" />
+            <img
+              src={
+                userProfile?.profileImage
+                  ? `http://127.0.0.1:8000/public/profileImages/${userProfile?.profileImage}`
+                  : defaultImage
+              }
+              className="size-15"
+              alt=""
+            />
           </div>
         </div>
         <div className="flex flex-col gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-10 mt-14">
           <h1 className="text-4xl font-semibold">
-            Welcome back, Arun Meyyappan!
+            Welcome back, {userProfile?.name}
           </h1>
           <h2 className="max-w-3/5">
-            Your network is growing. You have 12 contact synced since your last
-            login. Start your day with smile.
+            Your network is growing. You have{" "}
+            {userProfile?.contacts.length >= 2
+              ? String(userProfile?.contacts.length) + " contacts"
+              : String(userProfile?.contacts.length) + " contact"}{" "}
+            synced since your sign up. Start your day with smile.
           </h2>
           <div className="flex gap-5 font-semibold">
             <button className="w-40 p-2.5 text-blue-500 bg-white rounded-xl cursor-pointer">
@@ -83,8 +145,15 @@ const Home = () => {
               />
             }
             heading={"Total Contacts"}
-            count={123}
-            percentage={12.3}
+            count={userProfile?.contacts.length}
+            percentage={
+              userProfile?.contacts.length == 0
+                ? 0
+                : Math.round(
+                    recentContacts.length / userProfile?.contacts.length,
+                    2,
+                  )
+            }
           />
           <StatsCard
             icon={
@@ -94,7 +163,7 @@ const Home = () => {
               />
             }
             heading={"Favourites"}
-            count={29}
+            count={userProfile?.favorites.length}
             percentage={"High Priority"}
           />
           <StatsCard
@@ -105,7 +174,7 @@ const Home = () => {
               />
             }
             heading={"Recently Added"}
-            count={29}
+            count={recentContacts.length}
             percentage={"This Week"}
           />
         </div>
@@ -117,22 +186,27 @@ const Home = () => {
             </a>
           </div>
           <div className="shadow-md w-full rounded-2xl h-full p-0.5">
-            <div className="w-full p-3">
-              <RecentContactCard />
-            </div>
-            <div className="w-full p-3">
-              <RecentContactCard />
-            </div>
-            <div className="w-full p-3">
-              <RecentContactCard />
-            </div>
-            <div className="w-full p-3">
-              <RecentContactCard />
-            </div>
+            {recentContacts.length > 0 ? (
+              recentContacts.map((contact, index) => (
+                <div key={contact._id || index} className="w-full p-3">
+                  <RecentContactCard
+                    contactName={contact.name}
+                    role={contact.role || "No role specified"}
+                    contactNumber={contact.phoneNumber}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="flex justify-center items-center h-full text-gray-500">
+                No contacts added in the last 7 days.
+              </div>
+            )}
           </div>
         </div>
       </div>
-      <button className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 absolute right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "><Plus className="text-white" size={32}/></button>
+      <button className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] ">
+        <Plus className="text-white" size={32} />
+      </button>
     </div>
   );
 };

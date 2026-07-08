@@ -105,13 +105,16 @@ const Home = () => {
                 {userProfile?.phoneNumber}
               </h2>
             </div>
+            {console.log(
+              `http://127.0.0.1:8000/public/profileImages/${userProfile?.profileImage}`,
+            )}
             <img
               src={
-                userProfile?.profileImage
+                userProfile
                   ? `http://127.0.0.1:8000/public/profileImages/${userProfile?.profileImage}`
                   : defaultImage
               }
-              className="size-15"
+              className="size-15 rounded-full"
               alt=""
             />
           </div>

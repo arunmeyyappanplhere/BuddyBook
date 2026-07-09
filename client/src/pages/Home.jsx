@@ -9,7 +9,7 @@ import RecentContactCard from "../Components/RecentContactCard";
 import axios from "axios";
 import { useEffect } from "react";
 
-const Home = () => {
+const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
   const [searchContact, setSearchContact] = useState("");
   const [userProfile, setUserProfile] = useState();
   const [recentContacts, setRecentContacts] = useState([]);
@@ -65,7 +65,11 @@ const Home = () => {
 
   return (
     <div className="flex">
-      <Dashboard tabOnView="Dashboard" />
+      <Dashboard
+        tabOnView="Dashboard"
+        openAddContactModal={openAddContactModal}
+        setOpenAddContactModal={setOpenAddContactModal}
+      />
       <div className="p-7 w-full flex flex-col gap-5">
         <div className="flex justify-between items-start relative">
           <div
@@ -208,7 +212,14 @@ const Home = () => {
         </div>
       </div>
       <button className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] ">
-        <Plus className="text-white" size={32} />
+        <Plus
+          className="text-white"
+          size={32}
+          onClick={() => {
+            console.log(1);
+            setOpenAddContactModal(true);
+          }}
+        />
       </button>
     </div>
   );

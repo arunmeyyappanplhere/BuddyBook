@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ContactCard from "./Components/ContactCard";
 import ContactProfile from "./pages/ContactProfile";
 import Login from "./pages/Login";
@@ -9,13 +9,24 @@ import SearchContactCard from "./Components/SearchContactCard";
 import StatsCard from "./Components/StatsCard";
 import { ToastContainer } from "react-toastify";
 import { BrowserRouter, Routes, Route } from "react-router";
+import ContactModal from "./Components/ContactModal";
 const App = () => {
+  const [openAddContactModal, setOpenAddContactModal] = useState(false);
+
   return (
     <BrowserRouter>
       <div>
         <Routes>
           <Route path="/contact-profile/:id" element={<ContactProfile />} />
-          <Route path="/home" element={<Home />} />
+          <Route
+            path="/home"
+            element={
+              <Home
+                openAddContactModal={openAddContactModal}
+                setOpenAddContactModal={setOpenAddContactModal}
+              />
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>
@@ -30,6 +41,11 @@ const App = () => {
           draggable
           pauseOnHover
           theme="light"
+        />
+
+        <ContactModal
+          openAddContactModal={openAddContactModal}
+          setOpenAddContactModal={setOpenAddContactModal}
         />
       </div>
     </BrowserRouter>

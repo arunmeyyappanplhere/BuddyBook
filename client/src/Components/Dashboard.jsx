@@ -8,7 +8,11 @@ import {
   Users,
   Plus,
 } from "lucide-react";
-const Dashboard = ({ tabOnView }) => {
+const Dashboard = ({
+  tabOnView,
+  openAddContactModal,
+  setOpenAddContactModal,
+}) => {
   const [activeTab, setActiveTab] = useState(tabOnView);
 
   const changeTab = (tab) => {
@@ -121,8 +125,11 @@ const Dashboard = ({ tabOnView }) => {
             className={
               "flex bg-blue-500 text-white mb-4 gap-3 text-xl items-center justify-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:scale-[1.01] transition duration-100 "
             }
+            onClick={() => {
+              setOpenAddContactModal(true);
+            }}
           >
-            <Plus className={""} onClick={logOut} /> Quick Add
+            <Plus className={""} /> Quick Add
           </li>
         </ul>
       </div>

@@ -27,11 +27,6 @@ const profileModal = new mongoose.Schema(
       required: false,
       default: [],
     },
-    favorites: {
-      type: Array,
-      required: false,
-      default: [],
-    },
   },
   { timestamps: true },
 );

@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
 
-const contactModal = mongoose.Schema(
+const contactModal = new mongoose.Schema(
   {
     contact_uid: {
       type: String,
       required: true,
       default: crypto.randomUUID(),
+    },
+    contact_profileImage: {
+      type: String,
+      required: true,
     },
     savedUser: {
       type: String,
@@ -38,6 +42,11 @@ const contactModal = mongoose.Schema(
     contact_address: {
       type: String,
       required: true,
+    },
+    contact_favorite: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   { timestamps: true },

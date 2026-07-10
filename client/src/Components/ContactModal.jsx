@@ -14,6 +14,8 @@ import {
   Handshake,
 } from "lucide-react";
 import default_profile from "/default_avatar.png";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
   const [profileImage, setProfileImage] = useState("");
@@ -29,8 +31,94 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
 
   const [registerError, setRegisterError] = useState("");
 
-  const handleAddContact = () => {
+  const uploadImage = async () => {
+    if (!profileImage) {
+      return "";
+    }
+
+    const imageFormData = new FormData();
+    imageFormData.append("profileImage", profileImage);
+
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/upload",
+      imageFormData,
+    );
+
+    return response.data.filename;
+  };
+  const handleAddContact = async (e) => {
+    event.preventDefault();
     console.log("Contact Added!");
+
+    if (!profileImage) {
+      setRegisterError("Please upload profile image.");
+      return;
+    }
+
+    if (username.length < 2) {
+      setRegisterError("Username must be atleast 2 characters.");
+      return;
+    }
+
+    if (phone.length != 10) {
+      setRegisterError("Phone Number must be 10 digits.");
+      return;
+    }
+
+    if (new Date(dob) > new Date()) {
+      setRegisterError("Date of Birth cannot be in future.");
+      return;
+    }
+
+    setFileName(await uploadImage());
+    setRegisterError("");
+
+    console.log("filename : ", fileName);
+    console.log("username : ", username);
+    console.log("email : ", email);
+    console.log("phone : ", phone);
+    console.log("dob : ", dob);
+    console.log("address : ", address);
+
+    try {
+      const cookies = document.cookie;
+      const getCookie = (str) => {
+        return cookies
+          .split("; ")
+          .find((row) => row.startsWith(`${str}=`))
+          ?.split("=")[1];
+      };
+      const token = getCookie("token");
+      const response = await axios
+        .post(
+          "http://127.0.0.1:8000/api/add-contact",
+          {
+            contact_uid: crypto.randomUUID(),
+            profileImage: fileName,
+            contact_name: username,
+            contact_email: email,
+            contact_phone: parseInt(phone, 10),
+            contact_dob: dob,
+            contact_address: address,
+            contact_role: role,
+            contact_relation: relation,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          },
+        )
+        .then((response) => {
+          console.log(response.data);
+          toast.success("Contact added successfully!");
+          setOpenAddContactModal(false);
+        });
+    } catch (error) {
+      console.error(error);
+      error.status == 400
+        ? toast.error("Contact already added.")
+        : toast.error("Error is signing up.");
+    }
   };
   return (
     openAddContactModal && (
@@ -222,6 +310,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                 <button
                   type="submit"
                   className="min-w-30 flex gap-2 items-center justify-center text-white text-md cursor-pointer bg-blue-500  rounded-md min-h-9 p-2.5 hover:bg-blue-800 hover:scale-[1.01]  transition ease-in-out duration-100"
+                  onClick={handleAddContact}
                 >
                   Save Contact
                 </button>

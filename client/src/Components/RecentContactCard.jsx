@@ -9,7 +9,11 @@ const RecentContactCard = ({
   return (
     <div className="bg-[#f9f9f934] w-full shadow-xs rounded-sm flex gap-10 items-center py-1 px-4 cursor-pointer">
       <img
-        src={contactImage ? "" : defaultImage}
+        src={
+          contactImage
+            ? `http://127.0.0.1:8000/public/profileImages/${contactImage}`
+            : defaultImage
+        }
         alt=""
         className="size-15 rounded-full"
       />

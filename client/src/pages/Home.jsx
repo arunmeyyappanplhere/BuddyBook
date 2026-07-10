@@ -13,13 +13,16 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
   const [searchContact, setSearchContact] = useState("");
   const [userProfile, setUserProfile] = useState();
   const [recentContacts, setRecentContacts] = useState([]);
-
+  const [favoriteContacts, setFavoriteContacts] = useState([]);
   const handleSearchContact = (e) => {
     setSearchContact(event.target.value);
   };
 
   const findRecentContacts = (contacts) => {
-    if (!contacts) return;
+    if (!contacts) {
+      setRecentContacts([]);
+      return;
+    }
 
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -31,13 +34,26 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
     setRecentContacts(recent);
   };
 
+  const favorites = (contacts) => {
+    if (!contacts) {
+      setFavoriteContacts([]);
+      return;
+    }
+
+    const favorite = contacts.filter((contact) => {
+      return contact.contact_favorite === true;
+    });
+
+    setFavoriteContacts(favorite);
+  };
+
   const getDashboardDetails = async () => {
     try {
       const cookies = document.cookie;
-      const getCookie = (name) => {
-        return document.cookie
+      const getCookie = (str) => {
+        return cookies
           .split("; ")
-          .find((row) => row.startsWith(`${name}=`))
+          .find((row) => row.startsWith(`${str}=`))
           ?.split("=")[1];
       };
 
@@ -52,6 +68,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
         })
         .then((response) => {
           setUserProfile(response.data);
+          console.log(response.data.contacts);
           findRecentContacts(response.data.contacts);
         });
     } catch (err) {
@@ -154,12 +171,10 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
             heading={"Total Contacts"}
             count={userProfile?.contacts.length}
             percentage={
-              userProfile?.contacts.length == 0
+              // Calc pecentage
+              recentContacts.length == 0
                 ? 0
-                : Math.round(
-                    recentContacts.length / userProfile?.contacts.length,
-                    2,
-                  )
+                : (recentContacts.length / userProfile?.contacts.length) * 100
             }
           />
           <StatsCard
@@ -170,7 +185,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
               />
             }
             heading={"Favourites"}
-            count={userProfile?.favorites.length}
+            count={favoriteContacts.length}
             percentage={"High Priority"}
           />
           <StatsCard
@@ -197,9 +212,10 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
               recentContacts.map((contact, index) => (
                 <div key={contact._id || index} className="w-full p-3">
                   <RecentContactCard
-                    contactName={contact.name}
-                    role={contact.role || "No role specified"}
-                    contactNumber={contact.phoneNumber}
+                    contactImage={contact.contact_profileImage}
+                    contactName={contact.contact_name}
+                    role={contact.contact_role || "No role specified"}
+                    contactNumber={contact.contact_phone}
                   />
                 </div>
               ))

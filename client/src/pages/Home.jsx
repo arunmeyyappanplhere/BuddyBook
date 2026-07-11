@@ -14,8 +14,25 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
   const [userProfile, setUserProfile] = useState();
   const [recentContacts, setRecentContacts] = useState([]);
   const [favoriteContacts, setFavoriteContacts] = useState([]);
-  const handleSearchContact = (e) => {
-    setSearchContact(event.target.value);
+  const [filteredSearchContacts, setFilteredSearchContacts] = useState([]);
+
+  const handleSearchContact = (contacts, searchText) => {
+    if (!searchText.trim()) {
+      setFilteredSearchContacts([]);
+      return;
+    }
+
+    const filtered = contacts.filter((contact) => {
+      return (
+        contact.contact_name
+          ?.toLowerCase()
+          .includes(searchText.toLowerCase()) ||
+        contact.contact_phone?.includes(searchText) ||
+        contact.contact_email?.toLowerCase().includes(searchText.toLowerCase())
+      );
+    });
+
+    setFilteredSearchContacts(filtered);
   };
 
   const findRecentContacts = (contacts) => {
@@ -102,19 +119,34 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
                 placeholder="Search contacts..."
                 className="w-full focus:outline-0"
                 value={searchContact}
-                onChange={() => handleSearchContact()}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchContact(value);
+
+                  handleSearchContact(userProfile?.contacts || [], value);
+                }}
               />
             </div>
             {searchContact && (
               <>
                 <hr className="border-gray-300 mt-3 mx-3" />
                 <div className="px-3.5 mt-1 h-15/17 overflow-auto scrollbar-thumb-blue-200">
-                  <SearchContactCard />
-                  <SearchContactCard />
-                  <SearchContactCard />
-                  <SearchContactCard />
-                  <SearchContactCard />
-                  <SearchContactCard />
+                  <div className="px-3.5 mt-1 h-15/17 overflow-auto scrollbar-thumb-blue-200">
+                    {filteredSearchContacts.length > 0 ? (
+                      filteredSearchContacts.map((contact) => (
+                        <SearchContactCard
+                          key={contact._id}
+                          contactImage={contact.contact_profileImage}
+                          contactName={contact.contact_name}
+                          contactNumber={contact.contact_phone}
+                        />
+                      ))
+                    ) : (
+                      <p className="text-gray-500 py-4 text-center">
+                        No contacts found
+                      </p>
+                    )}
+                  </div>
                 </div>
               </>
             )}

@@ -20,15 +20,13 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
     if (!searchText.trim()) {
       setFilteredSearchContacts([]);
       return;
-    }
-
+    } 
     const filtered = contacts.filter((contact) => {
       return (
         contact.contact_name
-          ?.toLowerCase()
-          .includes(searchText.toLowerCase()) ||
-        contact.contact_phone?.includes(searchText) ||
-        contact.contact_email?.toLowerCase().includes(searchText.toLowerCase())
+        ?.toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+        String(contact.contact_phone)?.includes(searchText)
       );
     });
 

@@ -8,6 +8,10 @@ import {
   Users,
   Plus,
 } from "lucide-react";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+
 const Dashboard = ({
   tabOnView,
   openAddContactModal,
@@ -19,8 +23,28 @@ const Dashboard = ({
     setActiveTab(tab);
   };
 
-  const logOut = () => {
-    console.log("Logout");
+  const navigate = useNavigate();
+
+  const logOut = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/api/logout",
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+      const data = res.data;
+      console.log(data);
+      if ((data.message = "Account logged out.")) {
+        navigate("/login");
+        toast.success("Logged out successfully!");
+      }
+    } catch (err) {
+      console.log(0);
+      console.log(err);
+      toast.error("Couldn't logout.");
+    }
   };
 
   return (
@@ -113,9 +137,10 @@ const Dashboard = ({
             className={
               "flex mb-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-red-500 transition duration-100 "
             }
+            onClick={logOut}
           >
             <div className={"w-1 h-7 "}></div>
-            <LogOut className={""} onClick={logOut} /> Logout
+            <LogOut className={""} /> Logout
           </li>
         </ul>
       </div>

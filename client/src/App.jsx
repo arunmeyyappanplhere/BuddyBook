@@ -10,6 +10,7 @@ import StatsCard from "./Components/StatsCard";
 import { ToastContainer } from "react-toastify";
 import { BrowserRouter, Routes, Route } from "react-router";
 import ContactModal from "./Components/ContactModal";
+import Contacts from "./pages/Contacts";
 const App = () => {
   const [openAddContactModal, setOpenAddContactModal] = useState(false);
 
@@ -27,8 +28,18 @@ const App = () => {
               />
             }
           />
+          <Route
+            path="/contacts"
+            element={
+              <Contacts
+                openAddContactModal={openAddContactModal}
+                setOpenAddContactModal={setOpenAddContactModal}
+              />
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/contact-profile/:id" element={<ContactProfile />} />
         </Routes>
         <ToastContainer
           position="bottom-right"

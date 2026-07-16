@@ -20,6 +20,7 @@ const Dashboard = ({
   const [activeTab, setActiveTab] = useState(tabOnView);
 
   const changeTab = (tab) => {
+    console.log(tab);
     setActiveTab(tab);
   };
 
@@ -66,7 +67,10 @@ const Dashboard = ({
                 : "text-gray-600") +
               " flex mb-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
             }
-            onClick={() => changeTab("Dashboard")}
+            onClick={() => {
+              changeTab("Dashboard");
+              navigate("/home");
+            }}
           >
             <div
               className={
@@ -89,7 +93,10 @@ const Dashboard = ({
                 : "text-gray-600") +
               " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
             }
-            onClick={() => changeTab("Contacts")}
+            onClick={() => {
+              changeTab("Contacts");
+              navigate("/contacts");
+            }}
           >
             <div
               className={
@@ -112,7 +119,9 @@ const Dashboard = ({
                 : "text-gray-600") +
               " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
             }
-            onClick={() => changeTab("Favorites")}
+            onClick={() => {
+              changeTab("Favorites");
+            }}
           >
             <div
               className={

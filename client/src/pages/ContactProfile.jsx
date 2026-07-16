@@ -2,7 +2,11 @@ import React from "react";
 import { ArrowLeft, Contact, Edit } from "lucide-react";
 import defaultImage from "/default_avatar.png";
 import Dashboard from "../Components/Dashboard";
+import { useParams, useNavigate } from "react-router";
 const ContactProfile = () => {
+  const { id } = useParams();
+  console.log(id);
+  const navi = useNavigate();
   return (
     <div className="flex">
       <Dashboard tabOnView={"Contacts"} />
@@ -12,6 +16,7 @@ const ContactProfile = () => {
             <ArrowLeft
               size={32}
               className="text-black font-bold cursor-pointer"
+              onClick={() => navi("/contacts")}
             />
             <h1 className="text-4xl font-bold">Contact Profile</h1>
           </div>

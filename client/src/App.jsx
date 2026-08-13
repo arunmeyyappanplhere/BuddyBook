@@ -18,7 +18,6 @@ const App = () => {
     <BrowserRouter>
       <div>
         <Routes>
-          <Route path="/contact-profile/:id" element={<ContactProfile />} />
           <Route
             path="/home"
             element={

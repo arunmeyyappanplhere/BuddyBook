@@ -166,7 +166,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
           </h2>
         </div>
         <div className="flex flex-wrap gap-5 rounded-4xl text-black px-10">
-          {userProfile?.contacts.map((contact, i) => {
+          {userProfile?.contacts.slice(1,).map((contact, i) => {
             return (
               <ContactCard
                 key={contact?.contact_uid}

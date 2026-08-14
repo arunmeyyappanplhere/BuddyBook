@@ -1,154 +1,71 @@
 import Dashboard from "../Components/Dashboard";
-import { Search } from "lucide-react";
+import { Plus, BookUser, SlidersHorizontal } from "lucide-react";
 import defaultImage from "/default_avatar.png";
-import SearchContactCard from "../Components/SearchContactCard";
-import StatsCard from "../Components/StatsCard";
-import { UserRound, Heart, CirclePlus, Plus } from "lucide-react";
-import RecentContactCard from "../Components/RecentContactCard";
 import ContactCard from "../Components/ContactCard";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import ContactSearchBar from "../Components/ContactSearchBar";
+import { useAuth } from "../context/useAuth";
+import useContactSearch from "../hooks/useContactSearch";
 
 const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
-  const [searchContact, setSearchContact] = useState("");
-  const [userProfile, setUserProfile] = useState();
-  const [recentContacts, setRecentContacts] = useState([]);
-  const [filteredSearchContacts, setFilteredSearchContacts] = useState([]);
+  const {
+    user: userProfile,
+    loading: authLoading,
+    error: authError,
+  } = useAuth();
 
-  const handleSearchContact = (contacts, searchText) => {
-    if (!searchText.trim()) {
-      setFilteredSearchContacts([]);
-      return;
-    }
-    const filtered = contacts.filter((contact) => {
-      return (
-        contact.contact_name
-          ?.toLowerCase()
-          .includes(searchText.toLowerCase()) ||
-        String(contact.contact_phone)?.includes(searchText)
-      );
-    });
+  const contacts = userProfile?.contacts || [];
 
-    setFilteredSearchContacts(filtered);
-  };
-
-  const findRecentContacts = (contacts) => {
-    if (!contacts) {
-      setRecentContacts([]);
-      return;
-    }
-
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const recent = contacts.filter((contact) => {
-      return new Date(contact.createdAt) >= sevenDaysAgo;
-    });
-
-    setRecentContacts(recent);
-  };
-
-  const getDashboardDetails = async () => {
-    try {
-      const cookies = document.cookie;
-      const getCookie = (str) => {
-        return cookies
-          .split("; ")
-          .find((row) => row.startsWith(`${str}=`))
-          ?.split("=")[1];
-      };
-
-      const token = getCookie("token");
-
-      console.log("Token : ", token);
-      axios.defaults.withCredentials = true;
-      await axios
-        .get("http://localhost:8000/api/home", {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        })
-        .then((response) => {
-          setUserProfile(response.data);
-          console.log(response.data.contacts);
-          findRecentContacts(response.data.contacts);
-        });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getDashboardDetails();
-  }, []);
+  const {
+    searchText,
+    setSearchText,
+    relationFilter,
+    setRelationFilter,
+    favoriteFilter,
+    setFavoriteFilter,
+    availableRelations,
+    filteredContacts,
+    hasActiveFilters,
+    activeFilterCount,
+    resetFilters,
+  } = useContactSearch(contacts);
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <Dashboard
-        tabOnView="Dashboard"
+        tabOnView="Contacts"
         openAddContactModal={openAddContactModal}
         setOpenAddContactModal={setOpenAddContactModal}
       />
-      <div className="p-7 w-full flex flex-col gap-5">
-        <div className="flex justify-between items-start relative">
-          <div
-            className={
-              "w-100 gap-4 p-3 bg-blue-50 rounded-3xl text-md items-start z-50 absolute" +
-              (searchContact.trim().length >= 1 ? " h-75 shadow-2xs" : "")
-            }
-          >
-            <div className="flex gap-4">
-              <Search className="text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search contacts..."
-                className="w-full focus:outline-0"
-                value={searchContact}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSearchContact(value);
-
-                  handleSearchContact(userProfile?.contacts || [], value);
-                }}
-              />
-            </div>
-            {searchContact && (
-              <>
-                <hr className="border-gray-300 mt-3 mx-3" />
-                <div className="px-3.5 mt-1 h-15/17 overflow-auto scrollbar-thumb-blue-200">
-                  <div className="px-3.5 mt-1 h-15/17 overflow-auto scrollbar-thumb-blue-200">
-                    {filteredSearchContacts.length > 0 ? (
-                      filteredSearchContacts.map((contact) => (
-                        <SearchContactCard
-                          key={contact._id}
-                          contactImage={contact.contact_profileImage}
-                          contactName={contact.contact_name}
-                          contactNumber={contact.contact_phone}
-                        />
-                      ))
-                    ) : (
-                      <p className="text-gray-500 py-4 text-center">
-                        No contacts found
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
+      <div className="p-7 w-full flex flex-col gap-5 min-w-0">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+          <div className="w-full lg:w-auto">
+            <ContactSearchBar
+              searchText={searchText}
+              onSearchTextChange={setSearchText}
+              relationFilter={relationFilter}
+              onRelationFilterChange={setRelationFilter}
+              favoriteFilter={favoriteFilter}
+              onFavoriteFilterChange={setFavoriteFilter}
+              availableRelations={availableRelations}
+              filteredContacts={filteredContacts}
+              hasActiveFilters={hasActiveFilters}
+              activeFilterCount={activeFilterCount}
+              onReset={resetFilters}
+              placeholder="Search contacts..."
+              showResultsDropdown={false}
+            />
           </div>
-          <div className="flex gap-3 items-center absolute right-0">
+          <div className="flex gap-3 items-center lg:self-start shrink-0">
             <div className="text-right">
               <h1 className="font-semibold text-md">{userProfile?.name}</h1>
               <h2 className="text-gray-600 text-md">
                 {userProfile?.phoneNumber}
               </h2>
             </div>
-            {console.log(
-              `http://127.0.0.1:8000/public/profileImages/${userProfile?.profileImage}`,
-            )}
             <img
               src={
                 userProfile
-                  ? `http://127.0.0.1:8000/public/profileImages/${userProfile?.profileImage}`
+                  ? `http://localhost:8000/public/profileImages/${userProfile?.profileImage}`
                   : defaultImage
               }
               className="size-15 rounded-full"
@@ -156,41 +73,105 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-2 rounded-4xl text-black p-10 mt-14">
-          <h1 className="text-4xl font-semibold">Contacts</h1>
-          <h2 className="max-w-3/5">
-            Manage your network of{" "}
-            {userProfile?.contacts.length >= 2
-              ? String(userProfile?.contacts.length) + " contacts"
-              : String(userProfile?.contacts.length) + " contact"}{" "}
-          </h2>
-        </div>
-        <div className="flex flex-wrap gap-5 rounded-4xl text-black px-10">
-          {userProfile?.contacts.slice(1,).map((contact, i) => {
-            return (
-              <ContactCard
-                key={contact?.contact_uid}
-                contact_id={contact?.contact_uid}
-                profileImage={contact?.contact_profileImage}
-                contactName={contact?.contact_name}
-                contactRelation={contact?.contact_relation}
-                contactPhone={String(contact?.contact_phone)}
-                contactEmail={contact?.contact_email}
-                isFavorite={contact?.contact_favorite}
-              />
-            );
-          })}
-        </div>
+
+        {authError && (
+          <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
+            <p className="text-red-600 text-lg">
+              Failed to load your contacts.
+            </p>
+            <button
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {!authLoading && !authError ? (
+          <>
+            <div className="flex flex-col gap-2 rounded-4xl text-black p-10 mt-14">
+              <h1 className="text-4xl font-semibold">Contacts</h1>
+              <h2 className="max-w-3/5">
+                {contacts.length >= 2
+                  ? `Manage your network of ${contacts.length} contacts`
+                  : contacts.length === 1
+                    ? "Manage your network of 1 contact"
+                    : "Manage your network. Add your first contact to get started."}
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-5 rounded-4xl text-black px-10">
+              {filteredContacts.length > 0 ? (
+                filteredContacts.map((contact) => {
+                  return (
+                    <ContactCard
+                      key={contact?.contact_uid || contact?._id}
+                      contact_id={contact?.contact_uid || contact?._id}
+                      profileImage={contact?.contact_profileImage}
+                      contactName={contact?.contact_name}
+                      contactRelation={contact?.contact_relation}
+                      contactPhone={String(contact?.contact_phone)}
+                      contactEmail={contact?.contact_email}
+                      isFavorite={contact?.contact_favorite}
+                    />
+                  );
+                })
+              ) : hasActiveFilters ? (
+                <div className="w-full flex flex-col items-center justify-center py-16 text-gray-500">
+                  <SlidersHorizontal size={48} className="text-blue-200 mb-4" />
+                  <p className="text-xl">No contacts match your search.</p>
+                  <p className="text-md mt-2">
+                    Try adjusting your search text or filters.
+                  </p>
+                  <button
+                    className="mt-6 px-6 py-2.5 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition"
+                    onClick={resetFilters}
+                  >
+                    Clear all filters
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full flex flex-col items-center justify-center py-16 text-gray-500">
+                  <BookUser size={48} className="text-blue-200 mb-4" />
+                  <p className="text-xl">No contacts yet</p>
+                  <p className="text-md mt-2">
+                    Use the Add button or Quick Add to create your first
+                    contact.
+                  </p>
+                  <button
+                    className="mt-6 px-6 py-2.5 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition"
+                    onClick={() => setOpenAddContactModal(true)}
+                  >
+                    Add Contact
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-col gap-2 rounded-4xl text-black p-10 mt-14">
+              <div className="h-9 w-40 bg-gray-100 rounded-xl animate-pulse" />
+              <div className="h-5 w-72 bg-gray-100 rounded-xl animate-pulse" />
+            </div>
+            <div className="flex flex-wrap gap-5 rounded-4xl text-black px-10">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="shadow-md p-5 min-h-36 flex flex-col gap-16 max-w-60 rounded-xl w-full bg-gray-100 animate-pulse"
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
-      <button className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] ">
-        <Plus
-          className="text-white"
-          size={32}
-          onClick={() => {
-            console.log(1);
-            setOpenAddContactModal(true);
-          }}
-        />
+      <button
+        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
+        onClick={() => {
+          setOpenAddContactModal(true);
+        }}
+      >
+        <Plus className="text-white" size={32} />
       </button>
     </div>
   );

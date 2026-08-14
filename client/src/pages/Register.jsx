@@ -1,4 +1,3 @@
-import React from "react";
 import BuddyBookLogo from "/BuddyBookLogo.png";
 import {
   CircleCheck,
@@ -15,20 +14,19 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import default_profile from "/default_avatar.png";
-import { useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 
 import axios from "axios";
 
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../context/useAuth";
 
 const Register = () => {
-  const [passowrdVisible, setPasswordVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const [profileImage, setProfileImage] = useState("");
 
-  const [fileName, setFileName] = useState("");
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +36,10 @@ const Register = () => {
 
   const [registerError, setRegisterError] = useState("");
 
+  const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/home";
 
   const uploadImage = async () => {
     if (!profileImage) {
@@ -49,14 +50,14 @@ const Register = () => {
     imageFormData.append("profileImage", profileImage);
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/upload",
+      "http://localhost:8000/api/upload",
       imageFormData,
     );
 
     return response.data.filename;
   };
   const handleRegisterSubmit = async (e) => {
-    event.preventDefault();
+    e.preventDefault();
 
     // Form validation
     if (!profileImage) {
@@ -84,44 +85,31 @@ const Register = () => {
       return;
     }
 
-    setFileName(await uploadImage());
+    const uploadedFileName = await uploadImage();
     setRegisterError("");
 
-    console.log("filename : ", fileName);
-    console.log("username : ", username);
-    console.log("email : ", email);
-    console.log("password : ", password);
-    console.log("phone : ", typeof phone);
-    console.log("dob : ", dob);
-    console.log("address : ", address);
+    const userData = {
+      uuid: crypto.randomUUID(),
+      profileImage: uploadedFileName,
+      name: username,
+      email,
+      password,
+      phoneNumber: parseInt(phone, 10),
+      DOB: dob,
+      address,
+    };
 
-    try {
-      const response = await axios
-        .post(
-          "http://127.0.0.1:8000/api/register",
-          {
-            uuid: crypto.randomUUID(),
-            profileImage: fileName,
-            name: username,
-            email,
-            password,
-            phoneNumber: parseInt(phone, 10),
-            DOB: dob,
-            address,
-          },
-          { withCredentials: true },
-        )
-        .then((response) => {
-          console.log(response.data);
-          toast.success("Successfully signed up!");
-          
-          navigate("/home");
-        });
-    } catch (error) {
-      console.error(error);
-      error.status == 400
-        ? toast.error("Account already exists.")
-        : toast.error("Error is signing up.");
+    const result = await register(userData);
+
+    if (result.success) {
+      toast.success("Successfully signed up!");
+      navigate(from, { replace: true });
+    } else {
+      if (result.status === 400) {
+        toast.error("Account already exists.");
+      } else {
+        toast.error("Error is signing up.");
+      }
     }
   };
 
@@ -208,14 +196,14 @@ const Register = () => {
             <div className="text-gray-600 text-md flex items-center border min-w-100 border-gray-300 w-min bg-white px-2 p-1 rounded-md mb-4">
               <LockKeyhole className="text-gray-600" />
               <input
-                type={passowrdVisible ? "text" : "password"}
+                type={passwordVisible ? "text" : "password"}
                 className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full"
                 placeholder={"••••••"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              {passowrdVisible ? (
+              {passwordVisible ? (
                 <EyeOff
                   className="text-gray-600 ml-1 cursor-pointer hover:text-black transition ease-in-out duration-100"
                   onClick={() => setPasswordVisible((prevState) => !prevState)}
@@ -293,12 +281,20 @@ const Register = () => {
           )}
         </form>
         <hr className="min-w-100 w-min text-gray-300" />
-        <h3 className="text-md ml-15">
-          Already have an account?{" "}
-          <a href="" className="text-blue-500 ">
-            <Link to={"/login"}>Sign in</Link>
-          </a>
-        </h3>
+        <div className="flex gap-4">
+          <h3 className="text-md ml-15">
+            Already have an account?{" "}
+            <Link to={"/login"} className="text-blue-500">
+              Sign in
+            </Link>
+          </h3>
+          <Link to={"/terms"} className="text-gray-500 text-sm hover:text-blue-500">
+            Terms
+          </Link>
+          <Link to={"/privacy"} className="text-gray-500 text-sm hover:text-blue-500">
+            Privacy
+          </Link>
+        </div>
       </div>
       <div className='flex-1 bg-[url("/networkTexture.png")] bg-gray-800 bg-blend-multiply rounded-2xl flex flex-col items-center justify-center gap-4 px-5'>
         <img src={BuddyBookLogo} alt="" className="rounded-2xl size-20" />

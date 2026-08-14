@@ -1,12 +1,9 @@
-import React from "react";
-import { Plus, Minus } from "lucide-react";
 import { CountUp } from "use-count-up";
 const StatsCard = ({ icon, heading, count, percentage }) => {
   return (
     <div className="flex flex-col gap-3 h-45 w-full rounded-2xl bg-white shadow-md p-5 group">
       <div className="flex justify-between">
         {icon}
-        {console.log(typeof percentage)}
         {typeof percentage == "number" ? (
           <h2
             className={

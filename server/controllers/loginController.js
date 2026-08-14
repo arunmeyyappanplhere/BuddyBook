@@ -1,7 +1,6 @@
 import users from "../models/userModal.js";
 import { generateToken } from "../jwt.js";
 import bcrypt from "bcrypt";
-import cookieParser from "cookie-parser";
 
 const checkUserExist = async (user) => {
   const userPresent = await users.findOne({ email: user.email });

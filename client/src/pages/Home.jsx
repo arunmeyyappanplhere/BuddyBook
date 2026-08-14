@@ -1,39 +1,38 @@
-import React, { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Dashboard from "../Components/Dashboard";
-import { Search } from "lucide-react";
-import defaultImage from "/default_avatar.png";
-import SearchContactCard from "../Components/SearchContactCard";
-import StatsCard from "../Components/StatsCard";
 import { UserRound, Heart, CirclePlus, Plus } from "lucide-react";
+import defaultImage from "/default_avatar.png";
+import ContactSearchBar from "../Components/ContactSearchBar";
+import StatsCard from "../Components/StatsCard";
 import RecentContactCard from "../Components/RecentContactCard";
-import axios from "axios";
-import { useEffect } from "react";
+import { useAuth } from "../context/useAuth";
+import { useNavigate } from "react-router";
+import useContactSearch from "../hooks/useContactSearch";
 
 const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
-  const [searchContact, setSearchContact] = useState("");
-  const [userProfile, setUserProfile] = useState();
+  const { user: userProfile, loading: authLoading, error: authError } = useAuth();
   const [recentContacts, setRecentContacts] = useState([]);
   const [favoriteContacts, setFavoriteContacts] = useState([]);
-  const [filteredSearchContacts, setFilteredSearchContacts] = useState([]);
 
-  const handleSearchContact = (contacts, searchText) => {
-    if (!searchText.trim()) {
-      setFilteredSearchContacts([]);
-      return;
-    } 
-    const filtered = contacts.filter((contact) => {
-      return (
-        contact.contact_name
-        ?.toLowerCase()
-        .includes(searchText.toLowerCase()) ||
-        String(contact.contact_phone)?.includes(searchText)
-      );
-    });
+  const navigate = useNavigate();
 
-    setFilteredSearchContacts(filtered);
-  };
+  const contacts = userProfile?.contacts || [];
 
-  const findRecentContacts = (contacts) => {
+  const {
+    searchText,
+    setSearchText,
+    relationFilter,
+    setRelationFilter,
+    favoriteFilter,
+    setFavoriteFilter,
+    availableRelations,
+    filteredContacts,
+    hasActiveFilters,
+    activeFilterCount,
+    resetFilters,
+  } = useContactSearch(contacts);
+
+  const findRecentContacts = useCallback((contacts) => {
     if (!contacts) {
       setRecentContacts([]);
       return;
@@ -47,9 +46,9 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
     });
 
     setRecentContacts(recent);
-  };
+  }, []);
 
-  const favorites = (contacts) => {
+  const favorites = useCallback((contacts) => {
     if (!contacts) {
       setFavoriteContacts([]);
       return;
@@ -60,109 +59,59 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
     });
 
     setFavoriteContacts(favorite);
-  };
-
-  const getDashboardDetails = async () => {
-    try {
-      const cookies = document.cookie;
-      const getCookie = (str) => {
-        return cookies
-          .split("; ")
-          .find((row) => row.startsWith(`${str}=`))
-          ?.split("=")[1];
-      };
-
-      const token = getCookie("token");
-
-      console.log("Token : ", token);
-      axios.defaults.withCredentials = true;
-      await axios
-        .get("http://localhost:8000/api/home", {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        })
-        .then((response) => {
-          setUserProfile(response.data);
-          console.log(response.data.contacts);
-          findRecentContacts(response.data.contacts);
-        });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getDashboardDetails();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (userProfile?.contacts) {
+        findRecentContacts(userProfile.contacts);
+        favorites(userProfile.contacts);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [userProfile, findRecentContacts, favorites]);
+
+  const totalContacts = contacts.length;
+  const recentCount = recentContacts.length;
+  const recentPercentage =
+    totalContacts === 0 ? 0 : (recentCount / totalContacts) * 100;
+
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <Dashboard
         tabOnView="Dashboard"
         openAddContactModal={openAddContactModal}
         setOpenAddContactModal={setOpenAddContactModal}
       />
-      <div className="p-7 w-full flex flex-col gap-5">
-        <div className="flex justify-between items-start relative">
-          <div
-            className={
-              "w-100 gap-4 p-3 bg-blue-50 rounded-3xl text-md items-start z-50 absolute" +
-              (searchContact.trim().length >= 1 ? " h-75 shadow-2xs" : "")
-            }
-          >
-            <div className="flex gap-4">
-              <Search className="text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search contacts..."
-                className="w-full focus:outline-0"
-                value={searchContact}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSearchContact(value);
-
-                  handleSearchContact(userProfile?.contacts || [], value);
-                }}
-              />
-            </div>
-            {searchContact && (
-              <>
-                <hr className="border-gray-300 mt-3 mx-3" />
-                <div className="px-3.5 mt-1 h-15/17 overflow-auto scrollbar-thumb-blue-200">
-                  <div className="px-3.5 mt-1 h-15/17 overflow-auto scrollbar-thumb-blue-200">
-                    {filteredSearchContacts.length > 0 ? (
-                      filteredSearchContacts.map((contact) => (
-                        <SearchContactCard
-                          key={contact._id}
-                          contactImage={contact.contact_profileImage}
-                          contactName={contact.contact_name}
-                          contactNumber={contact.contact_phone}
-                        />
-                      ))
-                    ) : (
-                      <p className="text-gray-500 py-4 text-center">
-                        No contacts found
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
+      <div className="p-7 w-full flex flex-col gap-5 min-w-0">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+          <div className="w-full lg:w-auto">
+            <ContactSearchBar
+              searchText={searchText}
+              onSearchTextChange={setSearchText}
+              relationFilter={relationFilter}
+              onRelationFilterChange={setRelationFilter}
+              favoriteFilter={favoriteFilter}
+              onFavoriteFilterChange={setFavoriteFilter}
+              availableRelations={availableRelations}
+              filteredContacts={filteredContacts}
+              hasActiveFilters={hasActiveFilters}
+              activeFilterCount={activeFilterCount}
+              onReset={resetFilters}
+              placeholder="Search contacts..."
+            />
           </div>
-          <div className="flex gap-3 items-center absolute right-0">
+          <div className="flex gap-3 items-center lg:self-start shrink-0">
             <div className="text-right">
               <h1 className="font-semibold text-md">{userProfile?.name}</h1>
               <h2 className="text-gray-600 text-md">
                 {userProfile?.phoneNumber}
               </h2>
             </div>
-            {console.log(
-              `http://127.0.0.1:8000/public/profileImages/${userProfile?.profileImage}`,
-            )}
             <img
               src={
                 userProfile
-                  ? `http://127.0.0.1:8000/public/profileImages/${userProfile?.profileImage}`
+                  ? `http://localhost:8000/public/profileImages/${userProfile?.profileImage}`
                   : defaultImage
               }
               className="size-15 rounded-full"
@@ -170,102 +119,151 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-10 mt-14">
-          <h1 className="text-4xl font-semibold">
-            Welcome back, {userProfile?.name}
-          </h1>
-          <h2 className="max-w-3/5">
-            Your network is growing. You have{" "}
-            {userProfile?.contacts.length >= 2
-              ? String(userProfile?.contacts.length) + " contacts"
-              : String(userProfile?.contacts.length) + " contact"}{" "}
-            synced since your sign up. Start your day with smile.
-          </h2>
-          <div className="flex gap-5 font-semibold">
-            <button className="w-40 p-2.5 text-blue-500 bg-white rounded-xl cursor-pointer">
-              View All
-            </button>
-            <button className="w-40 p-2.5 text-white bg-[#a9d1ff4d] rounded-xl cursor-pointer hover:bg-[#a9d1ff88] transition duration-300">
-              View Favorites
+
+        {authError && (
+          <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
+            <p className="text-red-600 text-lg">Failed to load dashboard data.</p>
+            <button
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
+              onClick={() => window.location.reload()}
+            >
+              Retry
             </button>
           </div>
-        </div>
-        <div className="flex gap-5">
-          <StatsCard
-            icon={
-              <UserRound
-                size={28}
-                className="text-purple-500 bg-purple-200 w-15 h-15 p-1 rounded-xl transition duration-100 ease-in-out group-hover:scale-[1.06]"
-              />
-            }
-            heading={"Total Contacts"}
-            count={userProfile?.contacts.length}
-            percentage={
-              // Calc pecentage
-              recentContacts.length == 0
-                ? 0
-                : (recentContacts.length / userProfile?.contacts.length) * 100
-            }
-          />
-          <StatsCard
-            icon={
-              <Heart
-                size={28}
-                className="text-pink-600 bg-pink-200 w-15 h-15 p-1 rounded-xl transition duration-100 ease-in-out group-hover:scale-[1.06]"
-              />
-            }
-            heading={"Favourites"}
-            count={favoriteContacts.length}
-            percentage={"High Priority"}
-          />
-          <StatsCard
-            icon={
-              <CirclePlus
-                size={28}
-                className="text-blue-600 bg-blue-200 w-15 h-15 p-1 rounded-xl transition duration-100 ease-in-out group-hover:scale-[1.06]"
-              />
-            }
-            heading={"Recently Added"}
-            count={recentContacts.length}
-            percentage={"This Week"}
-          />
-        </div>
-        <div className="w-3/7 flex flex-col h-full">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-semibold mb-4">Recent Contacts</h1>
-            <a href="" className="text-blue-500">
-              View All
-            </a>
-          </div>
-          <div className="shadow-md w-full rounded-2xl h-full p-0.5">
-            {recentContacts.length > 0 ? (
-              recentContacts.map((contact, index) => (
-                <div key={contact._id || index} className="w-full p-3">
-                  <RecentContactCard
-                    contactImage={contact.contact_profileImage}
-                    contactName={contact.contact_name}
-                    role={contact.contact_role || "No role specified"}
-                    contactNumber={contact.contact_phone}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="flex justify-center items-center h-full text-gray-500">
-                No contacts added in the last 7 days.
+        )}
+
+        {!authLoading && !authError ? (
+          <>
+            <div className="flex flex-col gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-10 mt-14">
+              <h1 className="text-4xl font-semibold">
+                Welcome back, {userProfile?.name}
+              </h1>
+              <h2 className="max-w-3/5">
+                {totalContacts === 0
+                  ? "Your network is empty. Start adding contacts to grow your circle."
+                  : `Your network is growing. You have ${totalContacts} ${
+                      totalContacts >= 2 ? "contacts" : "contact"
+                    } synced since your sign up. Start your day with smile.`}
+              </h2>
+              <div className="flex gap-5 font-semibold flex-wrap">
+                <button
+                  className="w-40 p-2.5 text-blue-500 bg-white rounded-xl cursor-pointer"
+                  onClick={() => navigate("/contacts")}
+                >
+                  View All
+                </button>
+                <button
+                  className="w-40 p-2.5 text-white bg-[#a9d1ff4d] rounded-xl cursor-pointer hover:bg-[#a9d1ff88] transition duration-300"
+                  onClick={() => navigate("/favorites")}
+                >
+                  View Favorites
+                </button>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+            <div className="flex gap-5 flex-wrap">
+              <StatsCard
+                icon={
+                  <UserRound
+                    size={28}
+                    className="text-purple-500 bg-purple-200 w-15 h-15 p-1 rounded-xl transition duration-100 ease-in-out group-hover:scale-[1.06]"
+                  />
+                }
+                heading={"Total Contacts"}
+                count={totalContacts}
+                percentage={recentPercentage}
+              />
+              <StatsCard
+                icon={
+                  <Heart
+                    size={28}
+                    className="text-pink-600 bg-pink-200 w-15 h-15 p-1 rounded-xl transition duration-100 ease-in-out group-hover:scale-[1.06]"
+                  />
+                }
+                heading={"Favourites"}
+                count={favoriteContacts.length}
+                percentage={"High Priority"}
+              />
+              <StatsCard
+                icon={
+                  <CirclePlus
+                    size={28}
+                    className="text-blue-600 bg-blue-200 w-15 h-15 p-1 rounded-xl transition duration-100 ease-in-out group-hover:scale-[1.06]"
+                  />
+                }
+                heading={"Recently Added"}
+                count={recentCount}
+                percentage={"This Week"}
+              />
+            </div>
+            <div className="w-full lg:w-3/7 flex flex-col h-full">
+              <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-semibold mb-4">Recent Contacts</h1>
+                <a
+                  href="/contacts"
+                  className="text-blue-500 cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/contacts");
+                  }}
+                >
+                  View All
+                </a>
+              </div>
+              <div className="shadow-md w-full rounded-2xl h-full p-0.5">
+                {recentContacts.length > 0 ? (
+                  recentContacts.map((contact, index) => (
+                    <div key={contact._id || index} className="w-full p-3">
+                      <RecentContactCard
+                        contactImage={contact.contact_profileImage}
+                        contactName={contact.contact_name}
+                        role={contact.contact_role || "No role specified"}
+                        contactNumber={contact.contact_phone}
+                      />
+                    </div>
+                  ))
+                ) : totalContacts > 0 ? (
+                  <div className="flex justify-center items-center h-full text-gray-500">
+                    No contacts added in the last 7 days.
+                  </div>
+                ) : (
+                  <div className="flex flex-col justify-center items-center h-full text-gray-500 gap-2 py-10">
+                    <UserRound size={40} className="text-gray-300" />
+                    <p>No contacts yet. Use Quick Add to create your first contact.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Skeleton states while auth is loading */}
+            <div className="flex flex-col gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-10 mt-14 animate-pulse">
+              <div className="h-9 w-72 bg-white/30 rounded-xl" />
+              <div className="h-5 w-3/5 bg-white/20 rounded-xl" />
+              <div className="flex gap-5">
+                <div className="w-40 h-11 bg-white/30 rounded-xl" />
+                <div className="w-40 h-11 bg-white/20 rounded-xl" />
+              </div>
+            </div>
+            <div className="flex gap-5 flex-wrap">
+              <div className="h-45 w-full rounded-2xl bg-gray-100 shadow-md animate-pulse" />
+              <div className="h-45 w-full rounded-2xl bg-gray-100 shadow-md animate-pulse" />
+              <div className="h-45 w-full rounded-2xl bg-gray-100 shadow-md animate-pulse" />
+            </div>
+            <div className="w-full lg:w-3/7 flex flex-col h-full">
+              <div className="h-8 w-52 bg-gray-100 rounded-xl mb-4 animate-pulse" />
+              <div className="shadow-md w-full rounded-2xl h-40 p-0.5 animate-pulse bg-gray-100" />
+            </div>
+          </>
+        )}
       </div>
-      <button className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] ">
-        <Plus
-          className="text-white"
-          size={32}
-          onClick={() => {
-            console.log(1);
-            setOpenAddContactModal(true);
-          }}
-        />
+      <button
+        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
+        onClick={() => {
+          setOpenAddContactModal(true);
+        }}
+      >
+        <Plus className="text-white" size={32} />
       </button>
     </div>
   );

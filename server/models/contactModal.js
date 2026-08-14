@@ -5,7 +5,7 @@ const contactModal = new mongoose.Schema(
     contact_uid: {
       type: String,
       required: true,
-      default: crypto.randomUUID(),
+      default: () => crypto.randomUUID(),
     },
     contact_profileImage: {
       type: String,

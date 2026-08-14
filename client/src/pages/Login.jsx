@@ -1,4 +1,3 @@
-import React from "react";
 import BuddyBookLogo from "/BuddyBookLogo.png";
 import {
   CircleCheck,
@@ -9,25 +8,30 @@ import {
   EyeOff,
   ArrowRight,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router";
-import { useState } from "react";
-import axios from "axios";
+import { Link, useNavigate, useLocation } from "react-router";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/useAuth";
 
 const Login = () => {
-  const [passowrdVisible, setPasswordVisible] = useState(false);
-
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [registerError, setRegisterError] = useState("");
 
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/home";
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
 
   const loginHandler = async (e) => {
-    event.preventDefault();
-
-    // Form Validation
+    e.preventDefault();
 
     if (password.length < 8) {
       setRegisterError("Password must be atleast 8 characters.");
@@ -36,27 +40,19 @@ const Login = () => {
 
     setRegisterError("");
 
-    try {
-      const response = await axios
-        .post(
-          "http://localhost:8000/api/login",
-          { email, password },
-          {
-            withCredentials: true,
-          },
-        )
-        .then((response) => {
-          console.log(response.data);
-          toast.success("Logged in successfully!");
-          navigate("/home");
-        });
-    } catch (error) {
-      console.error(error);
-      error.status == 404
-        ? toast.error("User doesn't exists.")
-        : error.status == 400
-          ? toast.error("Password doesn't match.")
-          : toast.error("Trouble in log in.");
+    const result = await login(email, password);
+
+    if (result.success) {
+      toast.success("Logged in successfully!");
+      navigate(from, { replace: true });
+    } else {
+      if (result.status === 404) {
+        toast.error("User doesn't exists.");
+      } else if (result.status === 400) {
+        toast.error("Password doesn't match.");
+      } else {
+        toast.error("Trouble in log in.");
+      }
     }
   };
 
@@ -112,14 +108,14 @@ const Login = () => {
           <div className="text-gray-600 text-md flex items-center border min-w-100 border-gray-300 w-min bg-white px-2 p-1 rounded-md mb-4">
             <LockKeyhole className="text-gray-600" />
             <input
-              type={passowrdVisible ? "text" : "password"}
+              type={passwordVisible ? "text" : "password"}
               className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full"
               placeholder={"••••••"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {passowrdVisible ? (
+            {passwordVisible ? (
               <EyeOff
                 className="text-gray-600 ml-1 cursor-pointer hover:text-black transition ease-in-out duration-100"
                 onClick={() => setPasswordVisible((prevState) => !prevState)}
@@ -141,12 +137,23 @@ const Login = () => {
           )}
         </form>
         <hr className="min-w-100 w-min text-gray-300" />
-        <h3 className="text-md ml-15">
-          Don't have an account?{" "}
-          <a href="" className="text-blue-500 ">
-            <Link to={"/register"}>Sign up for free</Link>
-          </a>
-        </h3>
+        <div className="flex gap-4">
+          <h3 className="text-md ml-15">
+            Don't have an account?{" "}
+            <Link to={"/register"} className="text-blue-500">
+              Sign up for free
+            </Link>
+          </h3>
+          <Link to={"/terms"} className="text-gray-500 text-sm hover:text-blue-500">
+            Terms
+          </Link>
+          <Link to={"/privacy"} className="text-gray-500 text-sm hover:text-blue-500">
+            Privacy
+          </Link>
+          <Link to={"/help"} className="text-gray-500 text-sm hover:text-blue-500">
+            Help
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,26 +1,24 @@
-import React from "react";
 import { useState } from "react";
 import {
   X,
   MapPin,
   Calendar,
   Phone,
-  Eye,
-  EyeOff,
   Mail,
   UserRound,
-  LockKeyhole,
   BriefcaseBusiness,
   Handshake,
+  Loader2,
 } from "lucide-react";
 import default_profile from "/default_avatar.png";
-import axios from "axios";
+import axiosInstance from "../api/axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/useAuth";
 
 const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
+  const { refreshUser } = useAuth();
   const [profileImage, setProfileImage] = useState("");
 
-  const [fileName, setFileName] = useState("");
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -30,6 +28,15 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
   const [relation, setRelation] = useState("");
 
   const [registerError, setRegisterError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const generateContactUid = () => {
+    try {
+      return crypto.randomUUID();
+    } catch {
+      return `contact_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    }
+  };
 
   const uploadImage = async () => {
     if (!profileImage) {
@@ -39,16 +46,26 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
     const imageFormData = new FormData();
     imageFormData.append("profileImage", profileImage);
 
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/upload",
-      imageFormData,
-    );
+    const response = await axiosInstance.post("/upload", imageFormData);
 
     return response.data.filename;
   };
+
+  const resetForm = () => {
+    setProfileImage("");
+    setUserName("");
+    setEmail("");
+    setPhone("");
+    setAdress("");
+    setDob("");
+    setRole("");
+    setRelation("");
+    setRegisterError("");
+  };
+
   const handleAddContact = async (e) => {
-    event.preventDefault();
-    console.log("Contact Added!");
+    e.preventDefault();
+    setRegisterError("");
 
     if (!profileImage) {
       setRegisterError("Please upload profile image.");
@@ -70,64 +87,57 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
       return;
     }
 
-    setFileName(await uploadImage());
-    setRegisterError("");
-
-    console.log("filename : ", fileName);
-    console.log("username : ", username);
-    console.log("email : ", email);
-    console.log("phone : ", phone);
-    console.log("dob : ", dob);
-    console.log("address : ", address);
+    setSubmitting(true);
 
     try {
-      const cookies = document.cookie;
-      const getCookie = (str) => {
-        return cookies
-          .split("; ")
-          .find((row) => row.startsWith(`${str}=`))
-          ?.split("=")[1];
-      };
-      const token = getCookie("token");
-      const response = await axios
-        .post(
-          "http://127.0.0.1:8000/api/add-contact",
-          {
-            contact_uid: crypto.randomUUID(),
-            profileImage: fileName,
-            contact_name: username,
-            contact_email: email,
-            contact_phone: parseInt(phone, 10),
-            contact_dob: dob,
-            contact_address: address,
-            contact_role: role,
-            contact_relation: relation,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          },
-        )
-        .then((response) => {
-          console.log(response.data);
-          toast.success("Contact added successfully!");
-          setOpenAddContactModal(false);
-        });
+      const uploadedFileName = await uploadImage();
+
+      await axiosInstance.post("/add-contact", {
+        contact_uid: generateContactUid(),
+        profileImage: uploadedFileName,
+        contact_name: username,
+        contact_email: email,
+        contact_phone: parseInt(phone, 10),
+        contact_dob: dob,
+        contact_address: address,
+        contact_role: role,
+        contact_relation: relation,
+      });
+
+      // Refresh user profile so Dashboard/Contacts reflect the new contact
+      await refreshUser();
+
+      toast.success("Contact added successfully!");
+      setOpenAddContactModal(false);
+      resetForm();
     } catch (error) {
       console.error(error);
-      error.status == 400
-        ? toast.error("Contact already added.")
-        : toast.error("Error is signing up.");
+      if (error.response?.status == 400) {
+        setRegisterError("Contact already added.");
+        toast.error("Contact already added.");
+      } else {
+        setRegisterError("Error adding contact. Please try again.");
+        toast.error("Error adding contact.");
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  const handleClose = () => {
+    if (submitting) return;
+    setOpenAddContactModal(false);
+    resetForm();
+  };
+
   return (
     openAddContactModal && (
       <div
         className="flex fixed top-0 left-0 w-full h-full justify-center items-center z-99 bg-[#000000b0] transition duration-300"
-        onClick={() => setOpenAddContactModal(false)}
+        onClick={handleClose}
       >
         <div
-          className="flex flex-col justify-center max-w-2/8 max-h-3/4 rounded-xl shadow-2xl bg-white px-6 py-10"
+          className="flex flex-col justify-center max-w-2/8 max-h-3/4 rounded-xl shadow-2xl bg-white px-6 py-10 overflow-auto"
           onClick={(e) => {
             e.stopPropagation();
           }}
@@ -141,9 +151,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
             </div>
             <X
               className=" text-gray-600 cursor-pointer hover:text-black transition duration-300"
-              onClick={() => {
-                setOpenAddContactModal(false);
-              }}
+              onClick={handleClose}
             />
           </div>
           <div className="mt-10 flex justify-center">
@@ -176,6 +184,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                     }}
                     accept="image/*"
                     required
+                    disabled={submitting}
                   />
                 </div>
                 <div>
@@ -191,6 +200,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                       value={username}
                       onChange={(e) => setUserName(e.target.value)}
                       required
+                      disabled={submitting}
                     />
                   </div>
                 </div>
@@ -208,6 +218,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={submitting}
                 />
               </div>
 
@@ -225,6 +236,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
                       required
+                      disabled={submitting}
                     />
                   </div>
                 </div>
@@ -241,6 +253,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                       value={relation}
                       onChange={(e) => setRelation(e.target.value)}
                       required
+                      disabled={submitting}
                     />
                   </div>
                 </div>
@@ -259,6 +272,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
+                      disabled={submitting}
                     />
                   </div>
                 </div>
@@ -276,6 +290,7 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                         setDob(e.target.value);
                       }}
                       required
+                      disabled={submitting}
                     />
                   </div>
                 </div>
@@ -294,25 +309,31 @@ const ContactModal = ({ openAddContactModal, setOpenAddContactModal }) => {
                     value={address}
                     onChange={(e) => setAdress(e.target.value)}
                     required
+                    disabled={submitting}
                   />
                 </div>
               </div>
               <div className="flex gap-5 justify-end">
                 <button
-                  type="submit"
+                  type="button"
                   className="min-w-30 flex gap-2 items-center justify-center text-black text-md cursor-pointer bg-gray-300 rounded-md min-h-9 p-2.5 hover:bg-gray-400 hover:scale-[1.01]  transition ease-in-out duration-100"
-                  onClick={() => {
-                    setOpenAddContactModal(false);
-                  }}
+                  onClick={handleClose}
+                  disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="min-w-30 flex gap-2 items-center justify-center text-white text-md cursor-pointer bg-blue-500  rounded-md min-h-9 p-2.5 hover:bg-blue-800 hover:scale-[1.01]  transition ease-in-out duration-100"
-                  onClick={handleAddContact}
+                  className="min-w-30 flex gap-2 items-center justify-center text-white text-md cursor-pointer bg-blue-500  rounded-md min-h-9 p-2.5 hover:bg-blue-800 hover:scale-[1.01]  transition ease-in-out duration-100 disabled:opacity-50 disabled:pointer-events-none"
+                  disabled={submitting}
                 >
-                  Save Contact
+                  {submitting ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" /> Saving...
+                    </>
+                  ) : (
+                    "Save Contact"
+                  )}
                 </button>
               </div>
               {registerError && (

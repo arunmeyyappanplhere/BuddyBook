@@ -1,51 +1,30 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import BuddyBookLogo from "/BuddyBookLogo.png";
 import {
   BookUser,
   Heart,
   LayoutDashboard,
   LogOut,
-  Users,
   Plus,
 } from "lucide-react";
-import axios from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/useAuth";
 
-const Dashboard = ({
-  tabOnView,
-  openAddContactModal,
-  setOpenAddContactModal,
-}) => {
+const Dashboard = ({ tabOnView, setOpenAddContactModal }) => {
   const [activeTab, setActiveTab] = useState(tabOnView);
+  const { logout } = useAuth();
 
   const changeTab = (tab) => {
-    console.log(tab);
     setActiveTab(tab);
   };
 
   const navigate = useNavigate();
 
   const logOut = async () => {
-    try {
-      const res = await axios.post(
-        "http://localhost:8000/api/logout",
-        {},
-        {
-          withCredentials: true,
-        },
-      );
-      const data = res.data;
-      console.log(data);
-      if ((data.message = "Account logged out.")) {
-        navigate("/login");
-        toast.success("Logged out successfully!");
-      }
-    } catch (err) {
-      console.log(0);
-      console.log(err);
-      toast.error("Couldn't logout.");
-    }
+    await logout();
+    navigate("/login");
+    toast.success("Logged out successfully!");
   };
 
   return (
@@ -69,7 +48,7 @@ const Dashboard = ({
             }
             onClick={() => {
               changeTab("Dashboard");
-              navigate("/home");
+              navigate("/dashboard");
             }}
           >
             <div
@@ -121,6 +100,7 @@ const Dashboard = ({
             }
             onClick={() => {
               changeTab("Favorites");
+              navigate("/favorites");
             }}
           >
             <div
@@ -150,6 +130,16 @@ const Dashboard = ({
           >
             <div className={"w-1 h-7 "}></div>
             <LogOut className={""} /> Logout
+          </li>
+          <li
+            className={
+              "flex mb-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
+            }
+          >
+            <div className="w-1 h-7"></div>
+            <Link to="/help" className="flex items-center gap-3">
+              Help
+            </Link>
           </li>
         </ul>
       </div>

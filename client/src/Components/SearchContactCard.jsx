@@ -1,16 +1,23 @@
-import React from "react";
 import defaultImage from "/default_avatar.png";
+import { useNavigate } from "react-router";
+
 const SearchContactCard = ({
+  contact_id,
   contactImage,
   contactName,
   contactNumber,
 }) => {
+  const navi = useNavigate();
+
   return (
-    <div className="bg-[#f9f9f934] w-full shadow-xs rounded-sm flex gap-10 items-center py-1 px-4 cursor-pointer">
+    <div
+      className="bg-[#f9f9f934] w-full shadow-xs rounded-sm flex gap-10 items-center py-1 px-4 cursor-pointer hover:bg-blue-100/50 transition"
+      onClick={() => navi(`/contact-profile/${contact_id}`)}
+    >
       <img
         src={
           contactImage
-            ? `http://127.0.0.1:8000/public/profileImages/${contactImage}`
+            ? `http://localhost:8000/public/profileImages/${contactImage}`
             : defaultImage
         }
         alt=""

@@ -21,16 +21,22 @@ app.use(
 app.use("/public", express.static("public"));
 app.use(cookieParser());
 app.use(express.json());
+app.use("/api", routes);
+
 app.get("/", (req, res) => {
   res.send("Hi, from server!");
 });
 
-await connectDB()
-  .then(
+const startServer = async () => {
+  try {
+    await connectDB();
     app.listen(PORT || 3000, () => {
       console.log("Server is UP 👍");
-    }),
-  )
-  .catch((err) => console.log(err));
+    });
+  } catch (err) {
+    console.log(err);
+    process.exit(1);
+  }
+};
 
-app.use("/api", routes);
+startServer();

@@ -1,4 +1,3 @@
-import React from "react";
 import defaultImage from "/default_avatar.png";
 const RecentContactCard = ({
   contactName = "User",
@@ -11,7 +10,7 @@ const RecentContactCard = ({
       <img
         src={
           contactImage
-            ? `http://127.0.0.1:8000/public/profileImages/${contactImage}`
+            ? `http://localhost:8000/public/profileImages/${contactImage}`
             : defaultImage
         }
         alt=""

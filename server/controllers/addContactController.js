@@ -31,7 +31,7 @@ export const addContactController = async (req, res) => {
   try {
     const ContactDetails = await contactModal.findOne({
       savedUser: decodedEmail,
-      email: contact_email,
+      contact_email: contact_email,
     });
 
     const userProfile = await profileModal.findOne({

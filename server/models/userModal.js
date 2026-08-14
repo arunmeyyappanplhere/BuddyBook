@@ -4,7 +4,7 @@ const userModal = new mongoose.Schema(
   {
     uuid: {
       type: String,
-      default: crypto.randomUUID(),
+      default: () => crypto.randomUUID(),
     },
     profileImage: {
       type: String,

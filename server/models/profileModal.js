@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import contactModal from "./contactModal.js";
 
 const profileModal = new mongoose.Schema(
   {
@@ -23,7 +24,12 @@ const profileModal = new mongoose.Schema(
       required: true,
     },
     contacts: {
-      type: Array,
+      type: [contactModal.schema],
+      required: false,
+      default: [],
+    },
+    favorites: {
+      type: [contactModal.schema],
       required: false,
       default: [],
     },

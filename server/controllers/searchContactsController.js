@@ -1,5 +1,4 @@
 import contactModal from "../models/contactModal.js";
-import { verifyToken } from "../jwt.js";
 
 /**
  * GET /api/contacts/search?query=...&relation=...&favorite=true
@@ -7,19 +6,12 @@ import { verifyToken } from "../jwt.js";
  * Searches contacts server-side using query parameters so large address
  * books are filtered in the database rather than loaded into the frontend.
  *
- * Auth: Bearer JWT
+ * Auth: Bearer JWT (protect middleware)
  * Response: 200 → filtered contact array
  */
 export const searchContactsController = async (req, res) => {
-  const token = req.headers.authorization;
-  if (!token) {
-    console.log("Token not found / not Authorized");
-    res.status(401).json({ message: "Session is not Authorized" });
-    return;
-  }
-
-  const authToken = token.toString().split(" ")[1];
-  const decodedEmail = await verifyToken(authToken).email;
+  // req.user is set by the protect middleware.
+  const decodedEmail = req.user.email;
   console.log("decoded : ", decodedEmail);
 
   const { query = "", relation = "", favorite = "" } = req.query;

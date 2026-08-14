@@ -1,19 +1,9 @@
-import dotenv from "dotenv";
-import { verifyToken } from "../jwt.js";
 import contactModal from "../models/contactModal.js";
 import profileModal from "../models/profileModal.js";
 
 export const addContactController = async (req, res) => {
-  const token = req.headers.authorization;
-
-  if (!token) {
-    console.log("Token not found / not Authorized");
-    res.status(401).json({ message: "Session is not Authorized" });
-    return;
-  }
-
-  const authToken = token.toString().split(" ")[1];
-  const decodedEmail = await verifyToken(authToken).email;
+  // req.user is set by the protect middleware.
+  const decodedEmail = req.user.email;
   console.log("decoded : ", decodedEmail);
 
   const {

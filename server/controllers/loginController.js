@@ -1,42 +1,48 @@
 import users from "../models/userModal.js";
 import { generateToken } from "../jwt.js";
-import bcrypt from "bcrypt";
-
-const checkUserExist = async (user) => {
-  const userPresent = await users.findOne({ email: user.email });
-  return userPresent;
-};
 
 export const loginController = async (req, res) => {
-  const loginUser = req.body;
-  console.log(loginUser);
+  const { email, password } = req.body;
+  console.log("Login attempt:", email);
 
   try {
-    const userPresent = await checkUserExist(loginUser);
-    console.log(userPresent);
+    // Fetch user including the password field (select: false by default).
+    const userPresent = await users.findOne({ email }).select("+password");
+
     if (!userPresent) {
-      console.log(`${loginUser.email}, doesn't exists.`);
-      res.status(404).json({ message: `${loginUser.email}, doesn't exists.` });
-    } else {
-      console.log("Entered pass : ", loginUser.password);
-      console.log("DB pass : ", userPresent.password);
-      if (!(await bcrypt.compare(loginUser.password, userPresent.password))) {
-        res.status(400).json({ message: `Password doesn't match.` });
-        console.log(`Password doesn't match.`);
-      } else {
-        console.log(`Loged in successfully.`);
-        const token = generateToken(loginUser);
-        res.cookie("token", token, {
-          maxAge: 60 * 60 * 1000,
-          httpOnly: false,
-          secure : false,
-          path : "/"
-        });
-        res
-          .status(200)
-          .json({ message: `${loginUser.email}, logged in successfully.` });
-      }
+      console.log(`${email}, doesn't exists.`);
+      res.status(404).json({ message: `${email}, doesn't exists.` });
+      return;
     }
+
+    // Compare the provided password with the stored hash.
+    const isMatch = await userPresent.comparePassword(password);
+    if (!isMatch) {
+      console.log(`Password doesn't match.`);
+      res.status(400).json({ message: `Password doesn't match.` });
+      return;
+    }
+
+    console.log(`Logged in successfully.`);
+    const token = generateToken(userPresent);
+    res.cookie("token", token, {
+      maxAge: 60 * 60 * 1000,
+      httpOnly: false,
+      secure: false,
+      path: "/",
+    });
+    res.status(200).json({
+      message: `${email}, logged in successfully.`,
+      token,
+      user: {
+        id: userPresent._id,
+        uuid: userPresent.uuid,
+        name: userPresent.name,
+        email: userPresent.email,
+        profileImage: userPresent.profileImage,
+        phoneNumber: userPresent.phoneNumber,
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

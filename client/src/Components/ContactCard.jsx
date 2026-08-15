@@ -1,6 +1,6 @@
 import { useState } from "react";
 import defaultImage from "/default_avatar.png";
-import { Phone, Mail, Edit, Trash2, Heart } from "lucide-react";
+import { Phone, Mail, Trash2, Heart, ChevronRight, Pencil } from "lucide-react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { toggleFavorite, deleteContact } from "../api/contacts";
@@ -14,6 +14,7 @@ const ContactCard = ({
   contactPhone,
   contactEmail,
   isFavorite,
+  onEdit,
 }) => {
   const [fav, setFav] = useState(isFavorite || false);
   const [favoriteUpdating, setFavoriteUpdating] = useState(false);
@@ -34,8 +35,6 @@ const ContactCard = ({
       await refreshUser();
       toast.success(nextFav ? "Added to favorites" : "Removed from favorites");
     } catch (err) {
-      // Backend endpoint not yet available (Phase 5). Keep the optimistic
-      // local change; it will persist once the PATCH endpoint ships.
       console.warn(
         "Favorite toggle API not yet available. Local state updated only.",
         err,
@@ -66,76 +65,107 @@ const ContactCard = ({
     }
   };
 
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    if (onEdit) {
+      onEdit({
+        contact_uid: contact_id,
+        contact_name: contactName,
+        contact_relation: contactRelation,
+        contact_phone: contactPhone,
+        contact_email: contactEmail,
+        contact_profileImage: profileImage,
+        contact_favorite: isFavorite,
+      });
+    }
+  };
+
+  // profileImage already contains the full Cloudinary secure_url from the upload
+  const contactImageUrl = profileImage || defaultImage;
+
   return (
-    <div className="shadow-md p-5 min-h-36 flex flex-col gap-16 max-w-60 rounded-xl group w-full justify-center">
-      <div>
-        <div className="flex gap-1">
-          <img
-            src={
-              profileImage
-                ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${profileImage}`
-                : defaultImage
-            }
-            alt=""
-            className="aspect-square size-20 rounded-full"
-          />
-          <div className="flex flex-col gap-2 my-auto pl-2">
-            <h1 className="font-semibold text-2xl">{contactName}</h1>
-            <h2 className="font-medium text-[#23ff] bg-[#23ffff23] px-2 rounded-2xl text-center">
-              {contactRelation}
-            </h2>
+    <div className="group bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col w-full max-w-sm">
+      {/* Gradient header with avatar */}
+      <div className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 p-6 pb-14">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <img
+                src={contactImageUrl}
+                alt={contactName}
+                className="w-16 h-16 rounded-full object-cover border-4 border-white/30 shadow-lg"
+              />
+              {fav && (
+                <span className="absolute -bottom-1 -right-1 bg-pink-500 rounded-full p-1.5 shadow-md">
+                  <Heart size={12} fill="white" color="white" />
+                </span>
+              )}
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-lg font-semibold text-white truncate">
+                {contactName}
+              </h3>
+              <p className="text-sm text-blue-100 truncate">
+                {contactRelation || "No relation"}
+              </p>
+            </div>
           </div>
-          <Heart
-            size={22}
-            fill={fav ? "#e60076" : "#ffffff"}
-            color="#e60076"
-            className={
-              "ml-auto hover:cursor-pointer transition duration-100" +
-              (favoriteUpdating ? " opacity-50 pointer-events-none" : "")
-            }
-            onClick={onToggleFavorite}
-          />
+          <div className="flex gap-1.5">
+            <button
+              onClick={handleEdit}
+              className="p-2 rounded-full bg-white/20 text-white hover:bg-blue-400 transition-all duration-200 cursor-pointer"
+              title="Edit contact"
+            >
+              <Pencil size={16} />
+            </button>
+            <button
+              onClick={onToggleFavorite}
+              className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
+                fav
+                  ? "bg-pink-500 text-white shadow-lg"
+                  : "bg-white/20 text-white hover:bg-white/40"
+              }`}
+              title={fav ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Heart size={16} fill={fav ? "white" : "none"} />
+            </button>
+            <button
+              onClick={onDelete}
+              className="p-2 rounded-full bg-white/20 text-white hover:bg-red-500 transition-all duration-200 cursor-pointer"
+              title="Delete contact"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-3">
-          <Phone className="text-gray-500" size={22} />
-          {contactPhone}
+
+      {/* Body */}
+      <div className="flex-1 p-6 pt-4 bg-white">
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 text-sm text-gray-600">
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-500 shrink-0">
+              <Phone size={15} />
+            </span>
+            <span className="truncate">{contactPhone || "No phone"}</span>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-gray-600">
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-500 shrink-0">
+              <Mail size={15} />
+            </span>
+            <span className="truncate">{contactEmail || "No email"}</span>
+          </div>
         </div>
-        <div className="flex gap-3">
-          <Mail className="text-gray-500" size={22} />
-          {contactEmail}
-        </div>
-      </div>
-      <div className="transition duration-300 ease-in-out opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0">
-        <hr className="border-0.5 mb-2" />
-        <div className="flex justify-between items-center">
-          <Edit
-            size={28}
-            title="Edit contact"
-            className="cursor-pointer rounded p-1 hover:text-blue-700 hover:bg-blue-100"
-            onClick={() => {
-              navi(`/contact-profile/${contact_id}`);
-            }}
-          />
-          <Trash2
-            size={28}
-            title="Delete contact"
-            className={
-              "cursor-pointer rounded p-1 hover:text-red-700 hover:bg-red-100" +
-              (deleting ? " opacity-50 pointer-events-none" : "")
-            }
-            onClick={onDelete}
-          />
-          <button
-            className="cursor-pointer rounded p-1 hover:text-blue-700 hover:bg-blue-100"
-            onClick={() => {
-              navi(`/contact-profile/${contact_id}`);
-            }}
-          >
-            View Profile
-          </button>
-        </div>
+
+        <button
+          onClick={() => {
+            navi(`/contact-profile/${contact_id}`);
+          }}
+          className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-all duration-200 cursor-pointer group-hover:shadow-lg group-hover:shadow-blue-200"
+        >
+          View Profile
+          <ChevronRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+        </button>
       </div>
     </div>
   );

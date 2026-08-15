@@ -111,23 +111,23 @@ const Register = () => {
   };
 
   return (
-    <div className="flex min-h-200 min-w-80 max-w-280 mt-15 mx-auto rounded-2xl shadow-2xl">
-      <div className="flex-1 bg-blue-50 rounded-l-2xl flex flex-col gap-8 mx-auto justify-center pl-15 py-5">
-        <div className="flex items-center gap-3 font-semibold text-3xl ">
+    <div className="flex flex-col lg:flex-row min-h-screen w-full max-w-5xl mx-auto rounded-2xl shadow-2xl overflow-hidden">
+      <div className="flex-1 bg-blue-50 flex flex-col gap-8 mx-auto justify-center px-6 py-10 lg:pl-15 w-full">
+        <div className="flex items-center gap-3 font-semibold text-3xl">
           <img src={BuddyBookLogo} alt="" className="rounded-md size-15" />
           <h1 className="text-blue-500 text-3xl">Buddy Book</h1>
         </div>
         <div>
-          <h1 className="font-semibold text-3xl">Welcome Buddy!</h1>
+          <h1 className="font-semibold text-2xl md:text-3xl">Welcome Buddy!</h1>
           <h2 className="text-sm text-gray-500">
             Please enter you details to sign in.
           </h2>
         </div>
-        <form onSubmit={handleRegisterSubmit} className="">
-          <div className="flex gap-2.5">
+        <form onSubmit={handleRegisterSubmit} className="w-full max-w-md">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-2.5">
             <label
               htmlFor="profileImage"
-              className="text-gray-600 text-sm cursor-pointer flex justify-center w-max"
+              className="text-gray-600 text-sm cursor-pointer flex justify-center w-full sm:w-max"
             >
               <div>
                 <h2 className="text-center">Profile</h2>
@@ -154,12 +154,12 @@ const Register = () => {
                 required
               />
             </div>
-            <div>
-              <label htmlFor="" className="text-gray-600 text-sm ">
+            <div className="flex-1 w-full">
+              <label htmlFor="" className="text-gray-600 text-sm">
                 Name
               </label>
-              <div className="text-gray-600 text-md border min-w-80 border-gray-300 w-min flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                <UserRound className="text-gray-600" />
+              <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
+                <UserRound className="text-gray-600 shrink-0" />
                 <input
                   type="text"
                   className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full"
@@ -175,8 +175,8 @@ const Register = () => {
           <label htmlFor="" className="text-gray-600 text-sm">
             Email Address
           </label>
-          <div className="text-gray-600 text-md border min-w-100 border-gray-300 w-min flex items-center bg-white px-2 p-1 rounded-md mb-4">
-            <Mail className="text-gray-600" />
+          <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
+            <Mail className="text-gray-600 shrink-0" />
             <input
               type="text"
               className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full"
@@ -190,8 +190,8 @@ const Register = () => {
             <label htmlFor="" className="text-gray-600 text-sm">
               Password
             </label>
-            <div className="text-gray-600 text-md flex items-center border min-w-100 border-gray-300 w-min bg-white px-2 p-1 rounded-md mb-4">
-              <LockKeyhole className="text-gray-600" />
+            <div className="text-gray-600 text-md flex items-center border w-full border-gray-300 bg-white px-2 p-1 rounded-md mb-4">
+              <LockKeyhole className="text-gray-600 shrink-0" />
               <input
                 type={passwordVisible ? "text" : "password"}
                 className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full"
@@ -202,24 +202,24 @@ const Register = () => {
               />
               {passwordVisible ? (
                 <EyeOff
-                  className="text-gray-600 ml-1 cursor-pointer hover:text-black transition ease-in-out duration-100"
+                  className="text-gray-600 ml-1 cursor-pointer hover:text-black transition ease-in-out duration-100 shrink-0"
                   onClick={() => setPasswordVisible((prevState) => !prevState)}
                 />
               ) : (
                 <Eye
-                  className="text-gray-600 ml-1 cursor-pointer hover:text-black transition ease-in-out duration-100"
+                  className="text-gray-600 ml-1 cursor-pointer hover:text-black transition ease-in-out duration-100 shrink-0"
                   onClick={() => setPasswordVisible((prevState) => !prevState)}
                 />
               )}
             </div>
           </div>
-          <div className="flex gap-10">
-            <div>
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-10">
+            <div className="flex-1">
               <label htmlFor="" className="text-gray-600 text-sm">
                 Phone Number
               </label>
-              <div className="text-gray-600 text-md border min-w-45 border-gray-300 w-min flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                <Phone className="text-gray-600" />
+              <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
+                <Phone className="text-gray-600 shrink-0" />
                 <input
                   type="number"
                   className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -230,12 +230,12 @@ const Register = () => {
                 />
               </div>
             </div>
-            <div>
+            <div className="flex-1">
               <label htmlFor="" className="text-gray-600 text-sm">
                 Date Of Birth
               </label>
-              <div className="text-gray-600 text-md border min-w-45 border-gray-300 w-min flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                <Calendar className="text-gray-600" />
+              <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
+                <Calendar className="text-gray-600 shrink-0" />
                 <input
                   type="date"
                   className="block min-h-9 focus:outline-0 pl-4 mr-0 placeholder:text-gray-300 w-full [&::-webkit-calendar-picker-indicator]:hidden"
@@ -253,8 +253,8 @@ const Register = () => {
             <label htmlFor="" className="text-gray-600 text-sm">
               Address
             </label>
-            <div className="text-gray-600 text-md flex items-start border min-w-100 border-gray-300 w-min bg-white px-2 p-1 rounded-md mb-4">
-              <MapPin className="text-gray-600" />
+            <div className="text-gray-600 text-md flex items-start border w-full border-gray-300 bg-white px-2 p-1 rounded-md mb-4">
+              <MapPin className="text-gray-600 shrink-0" />
               <textarea
                 className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full resize-none"
                 placeholder={"Door no, Street, City, Pincode."}
@@ -267,19 +267,19 @@ const Register = () => {
           </div>
           <button
             type="submit"
-            className="min-w-100 flex gap-2 items-center justify-center text-white text-md cursor-pointer bg-blue-500  rounded-md min-h-9 p-2.5 hover:bg-blue-400 transition ease-in-out duration-100"
+            className="w-full flex gap-2 items-center justify-center text-white text-md cursor-pointer bg-blue-500 rounded-md min-h-9 p-2.5 hover:bg-blue-400 transition ease-in-out duration-100"
           >
             Sign Up <ArrowRight size={18} />
           </button>
           {registerError && (
-            <h3 className="mt-3 text-md text-red-600 max-w-100 text-center">
+            <h3 className="mt-3 text-md text-red-600 text-center">
               {registerError}
             </h3>
           )}
         </form>
-        <hr className="min-w-100 w-min text-gray-300" />
+        <hr className="w-full max-w-md text-gray-300" />
         <div className="flex gap-4">
-          <h3 className="text-md ml-15">
+          <h3 className="text-md">
             Already have an account?{" "}
             <Link to={"/login"} className="text-blue-500">
               Sign in
@@ -300,7 +300,7 @@ const Register = () => {
           </Link>
         </div>
       </div>
-      <div className='flex-1 bg-[url("/networkTexture.png")] bg-gray-800 bg-blend-multiply rounded-2xl flex flex-col items-center justify-center gap-4 px-5'>
+      <div className='hidden lg:flex flex-1 bg-[url("/networkTexture.png")] bg-gray-800 bg-blend-multiply flex-col items-center justify-center gap-4 px-5'>
         <img src={BuddyBookLogo} alt="" className="rounded-2xl size-20" />
         <h1 className="text-white text-center text-3xl px-10">
           Organize your world with precision.

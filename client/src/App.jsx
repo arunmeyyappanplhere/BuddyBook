@@ -20,6 +20,12 @@ import { ThemeProvider } from "./context/ThemeContext";
 
 const App = () => {
   const [openAddContactModal, setOpenAddContactModal] = useState(false);
+  const [editingContact, setEditingContact] = useState(null);
+
+  const handleEditContact = (contact) => {
+    setEditingContact(contact);
+    setOpenAddContactModal(true);
+  };
 
   return (
     <AuthProvider>
@@ -43,6 +49,7 @@ const App = () => {
                     <Home
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
+                      onEditContact={handleEditContact}
                     />
                   </ProtectedRoute>
                 }
@@ -54,6 +61,7 @@ const App = () => {
                     <Home
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
+                      onEditContact={handleEditContact}
                     />
                   </ProtectedRoute>
                 }
@@ -65,6 +73,7 @@ const App = () => {
                     <Contacts
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
+                      onEditContact={handleEditContact}
                     />
                   </ProtectedRoute>
                 }
@@ -76,6 +85,7 @@ const App = () => {
                     <Favorites
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
+                      onEditContact={handleEditContact}
                     />
                   </ProtectedRoute>
                 }
@@ -104,6 +114,8 @@ const App = () => {
             <ContactModal
               openAddContactModal={openAddContactModal}
               setOpenAddContactModal={setOpenAddContactModal}
+              editingContact={editingContact}
+              setEditingContact={setEditingContact}
             />
           </div>
         </BrowserRouter>

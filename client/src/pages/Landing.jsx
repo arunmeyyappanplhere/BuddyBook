@@ -83,16 +83,16 @@ const Landing = () => {
               professionals. Stay connected, stay organized, stay ahead with
               Buddy Book.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 to="/login"
-                className="flex items-center gap-2 px-8 py-4 z-1 text-white text-lg font-semibold bg-blue-500 rounded-xl hover:bg-blue-400 hover:scale-[1.02] transition duration-200 shadow-lg shadow-blue-200"
+                className="flex items-center justify-center gap-2 px-8 py-4 z-1 text-white text-lg font-semibold bg-blue-500 rounded-xl hover:bg-blue-400 hover:scale-[1.02] transition duration-200 shadow-lg shadow-blue-200"
               >
                 Get Started Free <ArrowRight size={20} />
               </Link>
               <Link
                 to="/login"
-                className="flex items-center gap-2 px-8 py-4 z-1 text-blue-600 text-lg font-semibold bg-white border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:scale-[1.02] transition duration-200"
+                className="flex items-center justify-center gap-2 px-8 py-4 z-1 text-blue-600 text-lg font-semibold bg-white border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:scale-[1.02] transition duration-200"
               >
                 <BookOpen size={20} /> View Demo
               </Link>
@@ -243,7 +243,7 @@ const Landing = () => {
 
       {/* CTA Section */}
       <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-400 rounded-3xl p-12 lg:p-16 text-center text-white shadow-2xl shadow-blue-200">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-400 rounded-3xl p-8 md:p-12 lg:p-16 text-center text-white shadow-2xl shadow-blue-200">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
             Ready to organize your world?
           </h2>

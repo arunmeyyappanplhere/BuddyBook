@@ -10,7 +10,7 @@ import { useAuth } from "../context/useAuth";
 import { useNavigate } from "react-router";
 import useContactSearch from "../hooks/useContactSearch";
 
-const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
+const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [recentContacts, setRecentContacts] = useState([]);
   const [favoriteContacts, setFavoriteContacts] = useState([]);
@@ -105,7 +105,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
         openAddContactModal={openAddContactModal}
         setOpenAddContactModal={setOpenAddContactModal}
       />
-      <div className="p-7 w-full flex flex-col gap-5 min-w-0">
+      <div className="p-4 md:p-7 w-full flex flex-col gap-5 min-w-0">
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
           <div className="w-full lg:w-auto">
             <ContactSearchBar
@@ -131,12 +131,8 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
               </h2>
             </div>
             <img
-              src={
-                userProfile
-                  ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${userProfile?.profileImage}`
-                  : defaultImage
-              }
-              className="size-15 rounded-full"
+              src={userProfile?.profileImage || defaultImage}
+              className="size-12 md:size-15 rounded-full"
               alt=""
             />
           </div>
@@ -168,8 +164,8 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
 
         {!authLoading && !contactsLoading && !authError && !contactsError ? (
           <>
-            <div className="flex flex-col gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-10 mt-14">
-              <h1 className="text-4xl font-semibold">
+            <div className="flex flex-col gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-6 md:p-10 mt-14">
+              <h1 className="text-2xl md:text-4xl font-semibold">
                 Welcome back, {userProfile?.name}
               </h1>
               <h2 className="max-w-3/5">
@@ -194,7 +190,8 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
                 </button>
               </div>
             </div>
-            <div className="flex gap-5 flex-wrap">
+            {/* Horizontal stats row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               <StatsCard
                 icon={
                   <UserRound
@@ -231,7 +228,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
             </div>
             <div className="w-full lg:w-3/7 flex flex-col h-full">
               <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-semibold mb-4">Recent Contacts</h1>
+                <h1 className="text-2xl md:text-3xl font-semibold mb-4">Recent Contacts</h1>
                 <a
                   href="/contacts"
                   className="text-blue-500 cursor-pointer"
@@ -279,7 +276,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
                 <div className="w-40 h-11 bg-white/20 rounded-xl" />
               </div>
             </div>
-            <div className="flex gap-5 flex-wrap">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               <div className="h-45 w-full rounded-2xl bg-gray-100 shadow-md animate-pulse" />
               <div className="h-45 w-full rounded-2xl bg-gray-100 shadow-md animate-pulse" />
               <div className="h-45 w-full rounded-2xl bg-gray-100 shadow-md animate-pulse" />
@@ -292,7 +289,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
         )}
       </div>
       <button
-        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
+        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
         onClick={() => {
           setOpenAddContactModal(true);
         }}

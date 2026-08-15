@@ -85,8 +85,8 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-blue-50 flex flex-col">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white rounded-2xl shadow-xl p-10">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-12">
+        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10">
           <h1 className="text-4xl font-semibold mb-2">Contact Us</h1>
           <p className="text-gray-600 mb-8">
             Have a question or feedback? We'd love to hear from you. Fill out

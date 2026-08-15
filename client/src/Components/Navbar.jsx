@@ -1,11 +1,14 @@
 import { Link } from "react-router";
+import { useState } from "react";
 import BuddyBookLogo from "/BuddyBookLogo.png";
-import { Star } from "lucide-react";
+import { Star, Menu, X } from "lucide-react";
 
 const Navbar = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <nav className="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src={BuddyBookLogo} alt="BuddyBook" className="rounded-lg size-11" />
           <h1 className="text-blue-500 text-2xl font-bold">Buddy Book</h1>
@@ -20,7 +23,7 @@ const Navbar = () => {
         <div className="flex items-center gap-3">
           <Link
             to="/login"
-            className="px-5 py-2 text-blue-500 font-semibold border border-blue-500 rounded-lg hover:bg-blue-50 transition duration-100"
+            className="hidden sm:inline-block px-5 py-2 text-blue-500 font-semibold border border-blue-500 rounded-lg hover:bg-blue-50 transition duration-100"
           >
             Log In
           </Link>
@@ -30,8 +33,65 @@ const Navbar = () => {
           >
             Sign Up Free
           </Link>
+          <button
+            className="md:hidden p-2 text-gray-600 hover:text-blue-500 cursor-pointer"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+          <div className="px-4 py-4 flex flex-col gap-3">
+            <Link
+              to="/"
+              className="text-gray-600 font-medium hover:text-blue-500 transition duration-100 py-1"
+              onClick={() => setMobileOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              to="/#features"
+              className="text-gray-600 font-medium hover:text-blue-500 transition duration-100 py-1"
+              onClick={() => setMobileOpen(false)}
+            >
+              Features
+            </Link>
+            <Link
+              to="/#overview"
+              className="text-gray-600 font-medium hover:text-blue-500 transition duration-100 py-1"
+              onClick={() => setMobileOpen(false)}
+            >
+              Overview
+            </Link>
+            <Link
+              to="/help"
+              className="text-gray-600 font-medium hover:text-blue-500 transition duration-100 py-1"
+              onClick={() => setMobileOpen(false)}
+            >
+              Help
+            </Link>
+            <Link
+              to="/contact"
+              className="text-gray-600 font-medium hover:text-blue-500 transition duration-100 py-1"
+              onClick={() => setMobileOpen(false)}
+            >
+              Contact
+            </Link>
+            <Link
+              to="/login"
+              className="text-blue-500 font-semibold border border-blue-500 rounded-lg px-4 py-2 text-center hover:bg-blue-50 transition duration-100"
+              onClick={() => setMobileOpen(false)}
+            >
+              Log In
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

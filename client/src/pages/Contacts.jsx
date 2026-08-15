@@ -8,7 +8,7 @@ import ContactSearchBar from "../Components/ContactSearchBar";
 import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
 
-const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
+const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const {
     user: userProfile,
     loading: authLoading,
@@ -56,16 +56,17 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
     resetFilters,
   } = useContactSearch(contacts);
 
-  return (
+return (
     <div className="flex min-h-screen">
       <Dashboard
         tabOnView="Contacts"
         openAddContactModal={openAddContactModal}
         setOpenAddContactModal={setOpenAddContactModal}
+        contactsCount={contacts.length}
       />
-      <div className="p-7 w-full flex flex-col gap-5 min-w-0">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
-          <div className="w-full lg:w-auto">
+      <div className="p-4 md:p-7 w-full flex flex-col gap-5 min-w-0">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 md:gap-6">
+          <div className="w-full lg:w-auto md:w-full">
             <ContactSearchBar
               searchText={searchText}
               onSearchTextChange={setSearchText}
@@ -82,7 +83,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
               showResultsDropdown={false}
             />
           </div>
-          <div className="flex gap-3 items-center lg:self-start shrink-0">
+          <div className="flex gap-3 items-center lg:self-start shrink-0 md:w-full">
             <div className="text-right">
               <h1 className="font-semibold text-md">{userProfile?.name}</h1>
               <h2 className="text-gray-600 text-md">
@@ -90,12 +91,8 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
               </h2>
             </div>
             <img
-              src={
-                userProfile
-                  ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${userProfile?.profileImage}`
-                  : defaultImage
-              }
-              className="size-15 rounded-full"
+              src={userProfile?.profileImage || defaultImage}
+              className="size-12 md:size-15 rounded-full"
               alt=""
             />
           </div>
@@ -121,7 +118,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
               Failed to load your contacts.
             </p>
             <button
-              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-500 transition"
               onClick={() => window.location.reload()}
             >
               Retry
@@ -131,8 +128,8 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
 
         {!authLoading && !contactsLoading && !authError && !contactsError ? (
           <>
-            <div className="flex flex-col gap-2 rounded-4xl text-black p-10 mt-14">
-              <h1 className="text-4xl font-semibold">Contacts</h1>
+            <div className="flex flex-col gap-2 rounded-4xl text-black p-6 md:p-10 mt-14">
+              <h1 className="text-3xl md:text-4xl font-semibold">Contacts</h1>
               <h2 className="max-w-3/5">
                 {contacts.length >= 2
                   ? `Manage your network of ${contacts.length} contacts`
@@ -141,7 +138,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
                     : "Manage your network. Add your first contact to get started."}
               </h2>
             </div>
-            <div className="flex flex-wrap gap-5 rounded-4xl text-black px-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black px-4 md:px-10">
               {filteredContacts.length > 0 ? (
                 filteredContacts.map((contact) => {
                   return (
@@ -154,11 +151,12 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
                       contactPhone={String(contact?.contact_phone)}
                       contactEmail={contact?.contact_email}
                       isFavorite={contact?.contact_favorite}
+                      onEdit={onEditContact}
                     />
                   );
                 })
               ) : hasActiveFilters ? (
-                <div className="w-full flex flex-col items-center justify-center py-16 text-gray-500">
+                <div className="w-full col-span-full flex flex-col items-center justify-center py-16 text-gray-500">
                   <SlidersHorizontal size={48} className="text-blue-200 mb-4" />
                   <p className="text-xl">No contacts match your search.</p>
                   <p className="text-md mt-2">
@@ -172,7 +170,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
                   </button>
                 </div>
               ) : (
-                <div className="w-full flex flex-col items-center justify-center py-16 text-gray-500">
+                <div className="w-full col-span-full flex flex-col items-center justify-center py-16 text-gray-500">
                   <BookUser size={48} className="text-blue-200 mb-4" />
                   <p className="text-xl">No contacts yet</p>
                   <p className="text-md mt-2">
@@ -191,15 +189,15 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
           </>
         ) : (
           <>
-            <div className="flex flex-col gap-2 rounded-4xl text-black p-10 mt-14">
+            <div className="flex flex-col gap-2 rounded-4xl text-black p-6 md:p-10 mt-14">
               <div className="h-9 w-40 bg-gray-100 rounded-xl animate-pulse" />
               <div className="h-5 w-72 bg-gray-100 rounded-xl animate-pulse" />
             </div>
-            <div className="flex flex-wrap gap-5 rounded-4xl text-black px-10">
-              {Array.from({ length: 4 }).map((_, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black px-4 md:px-10">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="shadow-md p-5 min-h-36 flex flex-col gap-16 max-w-60 rounded-xl w-full bg-gray-100 animate-pulse"
+                  className="shadow-md p-5 min-h-36 flex flex-col gap-16 rounded-xl w-full bg-gray-100 animate-pulse"
                 />
               ))}
             </div>
@@ -207,7 +205,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
         )}
       </div>
       <button
-        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-10 bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
+        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer transition duration-200 hover:scale-[1.01]"
         onClick={() => {
           setOpenAddContactModal(true);
         }}

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import BuddyBookLogo from "/BuddyBookLogo.png";
-import { Mail, MessageSquare, Send, ArrowLeft, Phone, User } from "lucide-react";
+import { Mail, MessageSquare, Send, Phone, User } from "lucide-react";
 import { toast } from "react-toastify";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -82,15 +83,9 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50">
+    <div className="min-h-screen bg-blue-50 flex flex-col">
+      <Navbar />
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="flex items-center gap-3 mb-10">
-          <Link to="/" className="flex items-center gap-2 text-gray-600 hover:text-blue-500">
-            <ArrowLeft size={20} /> Back to Home
-          </Link>
-          <img src={BuddyBookLogo} alt="" className="rounded-md size-12" />
-          <h1 className="text-blue-500 text-3xl font-bold">Buddy Book</h1>
-        </div>
         <div className="bg-white rounded-2xl shadow-xl p-10">
           <h1 className="text-4xl font-semibold mb-2">Contact Us</h1>
           <p className="text-gray-600 mb-8">
@@ -255,17 +250,9 @@ const Contact = () => {
               </button>
             </form>
           </div>
-
-          <div className="mt-10">
-            <Link
-              to="/login"
-              className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-100"
-            >
-              Back to Login
-            </Link>
-          </div>
-        </div>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 };

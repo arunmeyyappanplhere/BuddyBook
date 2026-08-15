@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import BuddyBookLogo from "/BuddyBookLogo.png";
 import {
   Users,
   Heart,
@@ -13,6 +12,8 @@ import {
   BookOpen,
   Network,
 } from "lucide-react";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 const Landing = () => {
   const features = [
@@ -55,43 +56,15 @@ const Landing = () => {
   ];
 
   const stats = [
-    { icon: <Users className="text-white" size={24} />, value: "1.2K+", label: "Contacts Synced" },
-    { icon: <Network className="text-white" size={24} />, value: "500+", label: "Active Users" },
-    { icon: <ShieldCheck className="text-white" size={24} />, value: "100%", label: "Data Protected" },
-    { icon: <Globe className="text-white" size={24} />, value: "24/7", label: "Smart Access" },
+    { icon: <Users className="text-blue-500" size={24} />, value: "1.2K+", label: "Contacts Synced" },
+    { icon: <Network className="text-blue-500" size={24} />, value: "500+", label: "Active Users" },
+    { icon: <ShieldCheck className="text-blue-500" size={24} />, value: "100%", label: "Data Protected" },
+    { icon: <Globe className="text-blue-500" size={24} />, value: "24/7", label: "Smart Access" },
   ];
 
   return (
     <div className="min-h-screen bg-blue-50">
-      {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={BuddyBookLogo} alt="BuddyBook" className="rounded-lg size-11" />
-            <h1 className="text-blue-500 text-2xl font-bold">Buddy Book</h1>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-gray-600 font-medium">
-            <a href="#features" className="hover:text-blue-500 transition duration-100">Features</a>
-            <a href="#overview" className="hover:text-blue-500 transition duration-100">Overview</a>
-            <Link to="/help" className="hover:text-blue-500 transition duration-100">Help</Link>
-            <Link to="/contact" className="hover:text-blue-500 transition duration-100">Contact</Link>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="px-5 py-2 text-blue-500 font-semibold border border-blue-500 rounded-lg hover:bg-blue-50 transition duration-100"
-            >
-              Log In
-            </Link>
-            <Link
-              to="/register"
-              className="px-5 py-2 text-white font-semibold bg-blue-500 rounded-lg hover:bg-blue-400 transition duration-100"
-            >
-              Sign Up Free
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <header className="relative overflow-hidden">
@@ -112,7 +85,7 @@ const Landing = () => {
             </p>
             <div className="flex gap-4">
               <Link
-                to="/register"
+                to="/login"
                 className="flex items-center gap-2 px-8 py-4 text-white text-lg font-semibold bg-blue-500 rounded-xl hover:bg-blue-400 hover:scale-[1.02] transition duration-200 shadow-lg shadow-blue-200"
               >
                 Get Started Free <ArrowRight size={20} />
@@ -126,10 +99,10 @@ const Landing = () => {
             </div>
             <div className="flex items-center gap-4 mt-8 text-sm text-gray-500">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="text-green-500" size={18} /> Free 14-day trial
+                <ShieldCheck className="text-green-500" size={18} /> Completely free to use
               </div>
               <div className="flex items-center gap-2">
-                <Zap className="text-yellow-500" size={18} /> No credit card required
+                <Zap className="text-yellow-500" size={18} /> Paid for customized usage development
               </div>
             </div>
           </div>
@@ -247,7 +220,8 @@ const Landing = () => {
                     "Powerful instant search",
                     "JWT-secured authentication",
                     "Responsive on every device",
-                    "Free & open source",
+                    "Completely free to use",
+                    "Paid for customized usage development",
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-3 text-gray-700">
                       <ShieldCheck className="text-green-500 shrink-0" size={18} />
@@ -257,7 +231,7 @@ const Landing = () => {
                 </div>
               </div>
               <Link
-                to="/register"
+                to="/login"
                 className="flex justify-center items-center gap-2 w-full px-8 py-4 text-lg font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-400 transition duration-200"
               >
                 Start Today <ArrowRight size={20} />
@@ -278,7 +252,7 @@ const Landing = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              to="/register"
+              to="/login"
               className="flex items-center gap-2 px-8 py-4 text-lg font-semibold bg-white text-blue-600 rounded-xl hover:scale-[1.02] transition duration-200"
             >
               Get Started Now <ArrowRight size={20} />
@@ -293,62 +267,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <img src={BuddyBookLogo} alt="BuddyBook" className="rounded-lg size-9" />
-                <h3 className="text-white text-lg font-bold">Buddy Book</h3>
-              </div>
-              <p className="text-sm">
-                The high-performance contact management system for modern professionals.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#features" className="hover:text-blue-400 transition duration-100">Features</a></li>
-                <li><a href="#overview" className="hover:text-blue-400 transition duration-100">How It Works</a></li>
-                <li><Link to="/login" className="hover:text-blue-400 transition duration-100">Log In</Link></li>
-                <li><Link to="/register" className="hover:text-blue-400 transition duration-100">Sign Up</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link to="/help" className="hover:text-blue-400 transition duration-100">Help Center</Link></li>
-                <li><Link to="/contact" className="hover:text-blue-400 transition duration-100">Contact Us</Link></li>
-                <li><Link to="/terms" className="hover:text-blue-400 transition duration-100">Terms of Service</Link></li>
-                <li><Link to="/privacy" className="hover:text-blue-400 transition duration-100">Privacy Policy</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Stay Updated</h4>
-              <p className="text-sm mb-4">Get product updates and tips.</p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-0 focus:border-blue-500"
-                />
-                <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition duration-100">
-                  Join
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-            <p>© 2026 Buddy Book. All rights reserved.</p>
-            <div className="flex gap-6">
-              <Link to="/terms" className="hover:text-blue-400">Terms</Link>
-              <Link to="/privacy" className="hover:text-blue-400">Privacy</Link>
-              <Link to="/help" className="hover:text-blue-400">Help</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import BuddyBookLogo from "/BuddyBookLogo.png";
 import {
   Mail,
   Search,
   ChevronDown,
   ChevronUp,
-  ArrowLeft,
 } from "lucide-react";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 const faqs = [
   {
@@ -96,15 +96,9 @@ const Help = () => {
   const categories = [...new Set(faqs.map((f) => f.category))];
 
   return (
-    <div className="min-h-screen bg-blue-50">
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="flex items-center gap-3 mb-10">
-          <Link to="/" className="flex items-center gap-2 text-gray-600 hover:text-blue-500">
-            <ArrowLeft size={20} /> Back to Home
-          </Link>
-          <img src={BuddyBookLogo} alt="" className="rounded-md size-12" />
-          <h1 className="text-blue-500 text-3xl font-bold">Buddy Book</h1>
-        </div>
+    <div className="min-h-screen bg-blue-50 flex flex-col">
+      <Navbar />
+      <div className="w-3/4 mx-auto px-6 py-12">
         <div className="bg-white rounded-2xl shadow-xl p-10">
           <h1 className="text-4xl font-semibold mb-2">Help Center</h1>
           <p className="text-gray-600 mb-8">
@@ -213,6 +207,7 @@ const Help = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

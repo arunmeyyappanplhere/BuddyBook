@@ -14,6 +14,7 @@ import ContactModal from "./Components/ContactModal";
 import Contacts from "./pages/Contacts";
 import Favorites from "./pages/Favorites";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import ScrollToTop from "./Components/ScrollToTop";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
@@ -25,6 +26,7 @@ const App = () => {
       <ThemeProvider>
         <BrowserRouter>
           <div>
+            <ScrollToTop />
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />

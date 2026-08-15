@@ -85,13 +85,18 @@ const faqs = [
 const Help = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [openFaq, setOpenFaq] = useState(null);
+  const [activeCategory, setActiveCategory] = useState(null);
 
-  const filteredFaqs = faqs.filter(
-    (faq) =>
+  const filteredFaqs = faqs.filter((faq) => {
+    const matchesSearch =
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.category.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+      faq.category.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory
+      ? faq.category === activeCategory
+      : true;
+    return matchesSearch && matchesCategory;
+  });
 
   const categories = [...new Set(faqs.map((f) => f.category))];
 
@@ -179,12 +184,21 @@ const Help = () => {
               </h2>
               <div className="flex flex-wrap gap-3">
                 {categories.map((cat) => (
-                  <span
+                  <button
                     key={cat}
-                    className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium"
+                    onClick={() =>
+                      setActiveCategory(
+                        activeCategory === cat ? null : cat
+                      )
+                    }
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-100 ${
+                      activeCategory === cat
+                        ? "bg-blue-500 text-white"
+                        : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                    }`}
                   >
                     {cat}
-                  </span>
+                  </button>
                 ))}
               </div>
             </div>

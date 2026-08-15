@@ -288,11 +288,18 @@ const Register = () => {
               Sign in
             </Link>
           </h3>
-          <Link to={"/terms"} className="text-gray-500 text-sm hover:text-blue-500">
+        </div>
+      </div>
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 py-3">
+        <div className="max-w-7xl mx-auto px-6 flex justify-center gap-6 text-sm">
+          <Link to={"/terms"} className="text-gray-500 hover:text-blue-500 transition duration-100">
             Terms
           </Link>
-          <Link to={"/privacy"} className="text-gray-500 text-sm hover:text-blue-500">
+          <Link to={"/privacy"} className="text-gray-500 hover:text-blue-500 transition duration-100">
             Privacy
+          </Link>
+          <Link to={"/help"} className="text-gray-500 hover:text-blue-500 transition duration-100">
+            Help
           </Link>
         </div>
       </div>

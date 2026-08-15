@@ -18,8 +18,8 @@ const ScrollToTop = () => {
         return;
       }
     }
-    // Otherwise, scroll to top
-    window.scrollTo(0, 0);
+    // Otherwise, scroll to top with smooth behavior
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [pathname, hash]);
 
   return null;

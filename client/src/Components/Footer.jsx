@@ -8,29 +8,74 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img src={BuddyBookLogo} alt="BuddyBook" className="rounded-lg size-9" />
+              <img
+                src={BuddyBookLogo}
+                alt="BuddyBook"
+                className="rounded-lg size-9"
+              />
               <h3 className="text-white text-lg font-bold">Buddy Book</h3>
             </div>
             <p className="text-sm">
-              The high-performance contact management system for modern professionals.
+              The high-performance contact management system for modern
+              professionals.
             </p>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/#features" className="hover:text-blue-400 transition duration-100">Features</Link></li>
-              <li><Link to="/#overview" className="hover:text-blue-400 transition duration-100">How It Works</Link></li>
-              <li><Link to="/login" className="hover:text-blue-400 transition duration-100">Log In</Link></li>
-              <li><Link to="/register" className="hover:text-blue-400 transition duration-100">Sign Up</Link></li>
+              <li>
+                <Link
+                  to="/#features"
+                  className="hover:text-blue-400 transition duration-100"
+                >
+                  Features
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/#overview"
+                  className="hover:text-blue-400 transition duration-100"
+                >
+                  How It Works
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/help" className="hover:text-blue-400 transition duration-100">Help Center</Link></li>
-              <li><Link to="/contact" className="hover:text-blue-400 transition duration-100">Contact Us</Link></li>
-              <li><Link to="/terms" className="hover:text-blue-400 transition duration-100">Terms of Service</Link></li>
-              <li><Link to="/privacy" className="hover:text-blue-400 transition duration-100">Privacy Policy</Link></li>
+              <li>
+                <Link
+                  to="/help"
+                  className="hover:text-blue-400 transition duration-100"
+                >
+                  Help Center
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className="hover:text-blue-400 transition duration-100"
+                >
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms"
+                  className="hover:text-blue-400 transition duration-100"
+                >
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/privacy"
+                  className="hover:text-blue-400 transition duration-100"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
@@ -51,9 +96,21 @@ const Footer = () => {
         <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
           <p>© 2026 Buddy Book. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link to="/terms" className="hover:text-blue-400">Terms</Link>
-            <Link to="/privacy" className="hover:text-blue-400">Privacy</Link>
-            <Link to="/help" className="hover:text-blue-400">Help</Link>
+            <Link to="/login" className="hover:text-blue-400">
+              Log In
+            </Link>
+            <Link to="/register" className="hover:text-blue-400">
+              Sign Up
+            </Link>
+            <Link to="/terms" className="hover:text-blue-400">
+              Terms
+            </Link>
+            <Link to="/privacy" className="hover:text-blue-400">
+              Privacy
+            </Link>
+            <Link to="/help" className="hover:text-blue-400">
+              Help
+            </Link>
           </div>
         </div>
       </div>

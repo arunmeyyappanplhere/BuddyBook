@@ -11,6 +11,7 @@ const Navbar = () => {
           <h1 className="text-blue-500 text-2xl font-bold">Buddy Book</h1>
         </div>
         <div className="hidden md:flex items-center gap-8 text-gray-600 font-medium">
+          <Link to="/" className="hover:text-blue-500 transition duration-100">Home</Link>
           <Link to="/#features" className="hover:text-blue-500 transition duration-100">Features</Link>
           <Link to="/#overview" className="hover:text-blue-500 transition duration-100">Overview</Link>
           <Link to="/help" className="hover:text-blue-500 transition duration-100">Help</Link>

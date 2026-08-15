@@ -73,7 +73,7 @@ const ContactCard = ({
           <img
             src={
               profileImage
-                ? `http://localhost:8000/public/profileImages/${profileImage}`
+                ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${profileImage}`
                 : defaultImage
             }
             alt=""

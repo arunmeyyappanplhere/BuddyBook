@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import axiosInstance from "../api/axios";
 import Dashboard from "../Components/Dashboard";
 import { UserRound, Heart, CirclePlus, Plus } from "lucide-react";
 import defaultImage from "/default_avatar.png";
@@ -10,13 +11,36 @@ import { useNavigate } from "react-router";
 import useContactSearch from "../hooks/useContactSearch";
 
 const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
-  const { user: userProfile, loading: authLoading, error: authError } = useAuth();
+  const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [recentContacts, setRecentContacts] = useState([]);
   const [favoriteContacts, setFavoriteContacts] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [contactsLoading, setContactsLoading] = useState(true);
+  const [contactsError, setContactsError] = useState(null);
 
   const navigate = useNavigate();
 
-  const contacts = userProfile?.contacts || [];
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (!isAuthenticated) {
+        setContactsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axiosInstance.get("/contacts");
+        setContacts(response.data);
+        setContactsError(null);
+      } catch (err) {
+        console.error("Failed to fetch contacts:", err);
+        setContactsError(err.response?.data?.message || "Failed to fetch contacts");
+      } finally {
+        setContactsLoading(false);
+      }
+    };
+
+    fetchContacts();
+  }, [isAuthenticated]);
 
   const {
     searchText,
@@ -63,13 +87,11 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (userProfile?.contacts) {
-        findRecentContacts(userProfile.contacts);
-        favorites(userProfile.contacts);
-      }
+      findRecentContacts(contacts);
+      favorites(contacts);
     }, 0);
     return () => clearTimeout(timer);
-  }, [userProfile, findRecentContacts, favorites]);
+  }, [contacts, findRecentContacts, favorites]);
 
   const totalContacts = contacts.length;
   const recentCount = recentContacts.length;
@@ -111,7 +133,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
             <img
               src={
                 userProfile
-                  ? `http://localhost:8000/public/profileImages/${userProfile?.profileImage}`
+                  ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${userProfile?.profileImage}`
                   : defaultImage
               }
               className="size-15 rounded-full"
@@ -132,7 +154,19 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
           </div>
         )}
 
-        {!authLoading && !authError ? (
+        {contactsError && (
+          <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
+            <p className="text-red-600 text-lg">Failed to load your contacts.</p>
+            <button
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {!authLoading && !contactsLoading && !authError && !contactsError ? (
           <>
             <div className="flex flex-col gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-10 mt-14">
               <h1 className="text-4xl font-semibold">

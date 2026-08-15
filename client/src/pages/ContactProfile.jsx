@@ -94,7 +94,7 @@ const ContactProfile = () => {
   };
 
   const contactImage = contact?.contact_profileImage
-    ? `http://localhost:8000/public/profileImages/${contact.contact_profileImage}`
+    ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${contact.contact_profileImage}`
     : defaultImage;
 
   return (
@@ -122,7 +122,7 @@ const ContactProfile = () => {
             <img
               src={
                 userProfile?.profileImage
-                  ? `http://localhost:8000/public/profileImages/${userProfile.profileImage}`
+                  ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${userProfile.profileImage}`
                   : defaultImage
               }
               className="size-15"

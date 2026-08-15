@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axios";
 
 export const AuthContext = createContext(null);
 
@@ -20,8 +20,6 @@ export const useAuth = () => {
   return context;
 };
 
-const API_BASE = "http://localhost:8000/api";
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -38,11 +36,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      axios.defaults.withCredentials = true;
-      const response = await axios.get(`${API_BASE}/home`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
+      const response = await axiosInstance.get("/home");
       setUser(response.data);
       setIsAuthenticated(true);
       setError(null);
@@ -72,11 +66,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      axios.defaults.withCredentials = true;
-      const response = await axios.get(`${API_BASE}/home`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
+      const response = await axiosInstance.get("/home");
       setUser(response.data);
       setError(null);
       return response.data;
@@ -89,12 +79,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      axios.defaults.withCredentials = true;
-      const response = await axios.post(
-        `${API_BASE}/login`,
-        { email, password },
-        { withCredentials: true },
-      );
+      const response = await axiosInstance.post("/login", { email, password });
       setIsAuthenticated(true);
       await checkAuth();
       return { success: true, data: response.data };
@@ -109,12 +94,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      axios.defaults.withCredentials = true;
-      const response = await axios.post(
-        `${API_BASE}/register`,
-        userData,
-        { withCredentials: true },
-      );
+      const response = await axiosInstance.post("/register", userData);
       setIsAuthenticated(true);
       await checkAuth();
       return { success: true, data: response.data };
@@ -129,8 +109,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      axios.defaults.withCredentials = true;
-      await axios.post(`${API_BASE}/logout`, {}, { withCredentials: true });
+      await axiosInstance.post("/logout", {});
     } catch (err) {
       console.error("Logout error:", err);
     } finally {

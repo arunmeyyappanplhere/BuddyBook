@@ -10,7 +10,7 @@ const RecentContactCard = ({
       <img
         src={
           contactImage
-            ? `http://localhost:8000/public/profileImages/${contactImage}`
+            ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${contactImage}`
             : defaultImage
         }
         alt=""

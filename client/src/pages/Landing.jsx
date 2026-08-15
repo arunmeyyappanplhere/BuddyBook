@@ -86,13 +86,13 @@ const Landing = () => {
             <div className="flex gap-4">
               <Link
                 to="/login"
-                className="flex items-center gap-2 px-8 py-4 text-white text-lg font-semibold bg-blue-500 rounded-xl hover:bg-blue-400 hover:scale-[1.02] transition duration-200 shadow-lg shadow-blue-200"
+                className="flex items-center gap-2 px-8 py-4 z-1 text-white text-lg font-semibold bg-blue-500 rounded-xl hover:bg-blue-400 hover:scale-[1.02] transition duration-200 shadow-lg shadow-blue-200"
               >
                 Get Started Free <ArrowRight size={20} />
               </Link>
               <Link
                 to="/login"
-                className="flex items-center gap-2 px-8 py-4 text-blue-600 text-lg font-semibold bg-white border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:scale-[1.02] transition duration-200"
+                className="flex items-center gap-2 px-8 py-4 z-1 text-blue-600 text-lg font-semibold bg-white border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:scale-[1.02] transition duration-200"
               >
                 <BookOpen size={20} /> View Demo
               </Link>

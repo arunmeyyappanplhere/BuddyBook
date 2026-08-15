@@ -16,7 +16,7 @@ import { useState } from "react";
 import default_profile from "/default_avatar.png";
 import { Link, useNavigate, useLocation } from "react-router";
 
-import axios from "axios";
+import axiosInstance from "../api/axios";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -49,10 +49,7 @@ const Register = () => {
     const imageFormData = new FormData();
     imageFormData.append("profileImage", profileImage);
 
-    const response = await axios.post(
-      "http://localhost:8000/api/upload",
-      imageFormData,
-    );
+    const response = await axiosInstance.post("/upload", imageFormData);
 
     return response.data.filename;
   };

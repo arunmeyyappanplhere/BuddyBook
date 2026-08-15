@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import axiosInstance from "../api/axios";
 import Dashboard from "../Components/Dashboard";
 import { Plus, BookUser, SlidersHorizontal } from "lucide-react";
 import defaultImage from "/default_avatar.png";
@@ -11,9 +13,34 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
     user: userProfile,
     loading: authLoading,
     error: authError,
+    isAuthenticated,
   } = useAuth();
 
-  const contacts = userProfile?.contacts || [];
+  const [contacts, setContacts] = useState([]);
+  const [contactsLoading, setContactsLoading] = useState(true);
+  const [contactsError, setContactsError] = useState(null);
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (!isAuthenticated) {
+        setContactsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axiosInstance.get("/contacts");
+        setContacts(response.data);
+        setContactsError(null);
+      } catch (err) {
+        console.error("Failed to fetch contacts:", err);
+        setContactsError(err.response?.data?.message || "Failed to fetch contacts");
+      } finally {
+        setContactsLoading(false);
+      }
+    };
+
+    fetchContacts();
+  }, [isAuthenticated]);
 
   const {
     searchText,
@@ -65,7 +92,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
             <img
               src={
                 userProfile
-                  ? `http://localhost:8000/public/profileImages/${userProfile?.profileImage}`
+                  ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${userProfile?.profileImage}`
                   : defaultImage
               }
               className="size-15 rounded-full"
@@ -88,7 +115,21 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal }) => {
           </div>
         )}
 
-        {!authLoading && !authError ? (
+        {contactsError && (
+          <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
+            <p className="text-red-600 text-lg">
+              Failed to load your contacts.
+            </p>
+            <button
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {!authLoading && !contactsLoading && !authError && !contactsError ? (
           <>
             <div className="flex flex-col gap-2 rounded-4xl text-black p-10 mt-14">
               <h1 className="text-4xl font-semibold">Contacts</h1>

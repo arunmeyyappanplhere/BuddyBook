@@ -98,6 +98,31 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
   const recentPercentage =
     totalContacts === 0 ? 0 : (recentCount / totalContacts) * 100;
 
+  const handleFavoriteChange = (contactId, isFav) => {
+    setContacts((prev) =>
+      prev.map((c) =>
+        (c.contact_uid || c._id) === contactId
+          ? { ...c, contact_favorite: isFav }
+          : c,
+      ),
+    );
+    setRecentContacts((prev) =>
+      prev.map((c) =>
+        (c.contact_uid || c._id) === contactId
+          ? { ...c, contact_favorite: isFav }
+          : c,
+      ),
+    );
+    setFavoriteContacts((prev) =>
+      isFav
+        ? [
+            ...prev.filter((c) => (c.contact_uid || c._id) !== contactId),
+            ...contacts.filter((c) => (c.contact_uid || c._id) === contactId),
+          ]
+        : prev.filter((c) => (c.contact_uid || c._id) !== contactId),
+    );
+  };
+
   return (
     <div className="flex min-h-screen">
       <Dashboard
@@ -121,6 +146,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
               activeFilterCount={activeFilterCount}
               onReset={resetFilters}
               placeholder="Search contacts..."
+              onContactFavoriteChange={handleFavoriteChange}
             />
           </div>
           <div className="flex gap-3 items-center lg:self-start shrink-0">
@@ -243,12 +269,16 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
               <div className="shadow-md w-full rounded-2xl h-full p-0.5">
                 {recentContacts.length > 0 ? (
                   recentContacts.map((contact, index) => (
-                    <div key={contact._id || index} className="w-full p-3">
+                    <div key={contact._id || index} className="w-full p-1.5">
                       <RecentContactCard
+                        contact_id={contact.contact_uid || contact._id}
                         contactImage={contact.contact_profileImage}
                         contactName={contact.contact_name}
                         role={contact.contact_role || "No role specified"}
                         contactNumber={contact.contact_phone}
+                        contactRelation={contact.contact_relation}
+                        isFavorite={contact.contact_favorite}
+                        onFavoriteChange={handleFavoriteChange}
                       />
                     </div>
                   ))

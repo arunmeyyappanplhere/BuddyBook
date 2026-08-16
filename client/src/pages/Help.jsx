@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router";
 import {
   Mail,
   Search,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import Dashboard from "../Components/Dashboard";
 import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
+import { useAuth } from "../context/useAuth";
+import defaultImage from "/default_avatar.png";
 
 const faqs = [
   {
@@ -43,7 +44,7 @@ const faqs = [
     category: "Contacts",
     question: "How do I mark a contact as a favorite?",
     answer:
-      "Click on any contact card to open their profile. The favorite (heart) icon on the contact card toggles the favorite status. Favorited contacts appear in the Favorites section of the dashboard.",
+      "Click the heart icon on any contact card to toggle the favorite status. Favorited contacts appear in the Favorites section of the dashboard.",
   },
   {
     id: 6,
@@ -82,7 +83,8 @@ const faqs = [
   },
 ];
 
-const Help = () => {
+const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
+  const { user: userProfile, loading: authLoading, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [openFaq, setOpenFaq] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
@@ -100,128 +102,168 @@ const Help = () => {
 
   const categories = [...new Set(faqs.map((f) => f.category))];
 
+  // When authenticated, show the Dashboard layout (tab view).
+  // When anonymous, show the public landing layout with Navbar.
+  const faqContent = (
+    <div className="w-full rounded-2xl bg-white shadow-xl p-6 md:p-10">
+      <p className="text-gray-600 mb-6">
+        Find answers to common questions about using Buddy Book.
+      </p>
+
+      {/* Search */}
+      <div className="relative mb-8">
+        <div className="flex items-center gap-3 bg-blue-50 border border-gray-300 rounded-xl px-4 py-3">
+          <Search className="text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search for help articles..."
+            className="w-full focus:outline-0 bg-transparent text-gray-700"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        {searchQuery && (
+          <p className="text-sm text-gray-500 mt-2">
+            {filteredFaqs.length} result
+            {filteredFaqs.length !== 1 ? "s" : ""} found
+          </p>
+        )}
+      </div>
+
+      {/* FAQ Accordion */}
+      <div className="space-y-4">
+        {filteredFaqs.length > 0 ? (
+          filteredFaqs.map((faq) => (
+            <div
+              key={faq.id}
+              className="border border-gray-200 rounded-xl overflow-hidden"
+            >
+              <button
+                className="w-full flex justify-between items-center p-5 text-left hover:bg-blue-50 transition duration-100"
+                onClick={() =>
+                  setOpenFaq(openFaq === faq.id ? null : faq.id)
+                }
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2.5 py-1 rounded-full">
+                    {faq.category}
+                  </span>
+                  <h3 className="font-semibold text-gray-800">
+                    {faq.question}
+                  </h3>
+                </div>
+                {openFaq === faq.id ? (
+                  <ChevronUp className="text-gray-500" size={20} />
+                ) : (
+                  <ChevronDown className="text-gray-500" size={20} />
+                )}
+              </button>
+              {openFaq === faq.id && (
+                <div className="px-5 pb-5 text-gray-600 leading-relaxed">
+                  {faq.answer}
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            <Search className="mx-auto mb-4 text-gray-300" size={48} />
+            <p className="text-lg">No results found for "{searchQuery}"</p>
+            <p className="text-sm mt-2">
+              Try searching for keywords like "account", "contact", "search", or "password"
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Categories */}
+      {!searchQuery && (
+        <div className="mt-10 pt-8 border-t border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Browse by Category
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() =>
+                  setActiveCategory(
+                    activeCategory === cat ? null : cat
+                  )
+                }
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-100 ${
+                  activeCategory === cat
+                    ? "bg-blue-500 text-white"
+                    : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Contact Support */}
+      <div className="mt-10 pt-8 border-t border-gray-200 text-center">
+        <h2 className="text-xl font-semibold text-gray-800 mb-3">
+          Still need help?
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Contact our support team and we'll get back to you within 24 hours.
+        </p>
+        <a
+          href="mailto:support@buddybook.app"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-400 transition duration-100"
+        >
+          <Mail size={18} /> Contact Support
+        </a>
+      </div>
+    </div>
+  );
+
+  // Authenticated view: Dashboard sidebar + content area
+  if (isAuthenticated) {
+    return (
+      <div className="flex min-h-screen">
+        <Dashboard
+          tabOnView="Help"
+          openAddContactModal={openAddContactModal}
+          setOpenAddContactModal={setOpenAddContactModal}
+        />
+        <div className="p-4 md:p-7 w-full flex flex-col gap-5 min-w-0">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+            <div className="w-full lg:w-auto">
+              <h1 className="text-2xl md:text-3xl font-semibold">Help Center</h1>
+            </div>
+            <div className="flex gap-3 items-center lg:self-start shrink-0">
+              <div className="text-right">
+                <h1 className="font-semibold text-md">{userProfile?.name}</h1>
+                <h2 className="text-gray-600 text-md">
+                  {userProfile?.phoneNumber}
+                </h2>
+              </div>
+              <img
+                src={userProfile?.profileImage || defaultImage}
+                className="size-12 md:size-15 rounded-full"
+                alt=""
+              />
+            </div>
+          </div>
+          <div className="mt-4">{faqContent}</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Public view: Navbar + Help content
   return (
     <div className="min-h-screen bg-blue-50 flex flex-col">
       <Navbar />
       <div className="w-full max-w-4xl mx-auto px-4 md:px-6 py-12">
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10">
-          <h1 className="text-4xl font-semibold mb-2">Help Center</h1>
-          <p className="text-gray-600 mb-8">
-            Find answers to common questions about using Buddy Book.
-          </p>
-
-          {/* Search */}
-          <div className="relative mb-8">
-            <div className="flex items-center gap-3 bg-blue-50 border border-gray-300 rounded-xl px-4 py-3">
-              <Search className="text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Search for help articles..."
-                className="w-full focus:outline-0 bg-transparent text-gray-700"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            {searchQuery && (
-              <p className="text-sm text-gray-500 mt-2">
-                {filteredFaqs.length} result
-                {filteredFaqs.length !== 1 ? "s" : ""} found
-              </p>
-            )}
-          </div>
-
-          {/* FAQ Accordion */}
-          <div className="space-y-4">
-            {filteredFaqs.length > 0 ? (
-              filteredFaqs.map((faq) => (
-                <div
-                  key={faq.id}
-                  className="border border-gray-200 rounded-xl overflow-hidden"
-                >
-                  <button
-                    className="w-full flex justify-between items-center p-5 text-left hover:bg-blue-50 transition duration-100"
-                    onClick={() =>
-                      setOpenFaq(openFaq === faq.id ? null : faq.id)
-                    }
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2.5 py-1 rounded-full">
-                        {faq.category}
-                      </span>
-                      <h3 className="font-semibold text-gray-800">
-                        {faq.question}
-                      </h3>
-                    </div>
-                    {openFaq === faq.id ? (
-                      <ChevronUp className="text-gray-500" size={20} />
-                    ) : (
-                      <ChevronDown className="text-gray-500" size={20} />
-                    )}
-                  </button>
-                  {openFaq === faq.id && (
-                    <div className="px-5 pb-5 text-gray-600 leading-relaxed">
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-12 text-gray-500">
-                <Search className="mx-auto mb-4 text-gray-300" size={48} />
-                <p className="text-lg">No results found for "{searchQuery}"</p>
-                <p className="text-sm mt-2">
-                  Try searching for keywords like "account", "contact", "search", or "password"
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Categories */}
-          {!searchQuery && (
-            <div className="mt-10 pt-8 border-t border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Browse by Category
-              </h2>
-              <div className="flex flex-wrap gap-3">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() =>
-                      setActiveCategory(
-                        activeCategory === cat ? null : cat
-                      )
-                    }
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-100 ${
-                      activeCategory === cat
-                        ? "bg-blue-500 text-white"
-                        : "bg-blue-50 text-blue-600 hover:bg-blue-100"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Contact Support */}
-          <div className="mt-10 pt-8 border-t border-gray-200 text-center">
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">
-              Still need help?
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Contact our support team and we'll get back to you within 24 hours.
-            </p>
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-400 transition duration-100"
-            >
-              <Mail size={18} /> Contact Support
-            </Link>
-          </div>
-        </div>
+        <h1 className="text-4xl font-semibold mb-2 ml-2">Help Center</h1>
+        {faqContent}
       </div>
-      <Footer />
     </div>
   );
 };

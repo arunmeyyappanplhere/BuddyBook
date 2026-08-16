@@ -49,6 +49,11 @@ const contactModal = new mongoose.Schema(
       required: false,
       default: false,
     },
+    contact_stashed: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   { timestamps: true },
 );

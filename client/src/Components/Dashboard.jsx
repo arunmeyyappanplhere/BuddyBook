@@ -1,5 +1,3 @@
-import { CountUp } from "use-count-up";
-import StatsCard from "./StatsCard";
 import { useState } from "react";
 import BuddyBookLogo from "/BuddyBookLogo.png";
 import {
@@ -10,18 +8,33 @@ import {
   Plus,
   Menu,
   X,
+  CircleHelp,
+  Clock,
+  Settings as SettingsIcon,
 } from "lucide-react";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/useAuth";
 
 const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
-  const [activeTab, setActiveTab] = useState(tabOnView);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { logout } = useAuth();
+  const location = useLocation();
+
+  // Sync active tab with the current route
+  const activeTab = location.pathname.includes("/contacts")
+    ? "Contacts"
+    : location.pathname.includes("/favorites")
+      ? "Favorites"
+      : location.pathname.includes("/recent")
+        ? "Recent"
+        : location.pathname.includes("/settings")
+          ? "Settings"
+          : location.pathname.includes("/help")
+            ? "Help"
+            : "Dashboard";
 
   const changeTab = (tab) => {
-    setActiveTab(tab);
     setSidebarOpen(false);
   };
 
@@ -57,9 +70,10 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
         />
       )}
 
+      {/* Floating sidebar */}
       <div
         className={
-          "h-screen min-w-1/6 rounded-r-xl shadow-2xl sticky top-0 left-0 bg-white transition-transform duration-300 " +
+          "h-screen min-w-1/6 rounded-r-3xl shadow-2xl sticky top-0 left-0 bg-gradient-to-b from-white to-blue-50/50 backdrop-blur-xl border-r border-blue-100/50 transition-transform duration-300 " +
           (sidebarOpen
             ? "translate-x-0 fixed z-50 w-72"
             : "-translate-x-full lg:translate-x-0 lg:static lg:w-auto")
@@ -72,7 +86,7 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
             <h2 className="">Contact Management</h2>
           </div>
         </div>
-        <h1 className="p-5 mt-4 text-md text-gray-600">USER</h1>
+        <h1 className="p-5 mt-4 text-ms text-gray-600">USER</h1>
         <div className="p-5 pt-0">
           <ul>
             <li
@@ -103,7 +117,7 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
                 (activeTab == "Contacts"
                   ? "text-blue-500 bg-blue-100"
                   : "text-gray-600") +
-                  " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
+                " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
               }
               onClick={() => handleNav("/contacts", "Contacts")}
             >
@@ -126,7 +140,7 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
                 (activeTab == "Favorites"
                   ? "text-blue-500 bg-blue-100"
                   : "text-gray-600") +
-                  " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
+                " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
               }
               onClick={() => handleNav("/favorites", "Favorites")}
             >
@@ -144,12 +158,81 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
               />{" "}
               Favorites
             </li>
+            <li
+              className={
+                (activeTab == "Recent"
+                  ? "text-blue-500 bg-blue-100"
+                  : "text-gray-600") +
+                " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
+              }
+              onClick={() => handleNav("/recent", "Recent")}
+            >
+              <div
+                className={
+                  "w-1 h-7 " +
+                  (activeTab == "Recent" ? "bg-blue-500" : "bg-white")
+                }
+              ></div>
+              <Clock
+                className={
+                  "group-hover:text-blue-500 " +
+                  (activeTab == "Recent" ? "text-blue-500" : "text-gray-600")
+                }
+              />{" "}
+              Recent
+            </li>
           </ul>
         </div>
-        
+
         <h1 className="p-5 text-md text-gray-600">SYSTEM</h1>
         <div className="p-5 pt-0">
           <ul>
+            <li
+              className={
+                (activeTab == "Help"
+                  ? "text-blue-500 bg-blue-100"
+                  : "text-gray-600") +
+                " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
+              }
+              onClick={() => handleNav("/help", "Help")}
+            >
+              <div
+                className={
+                  "w-1 h-7 " +
+                  (activeTab == "Help" ? "bg-blue-500" : "bg-white")
+                }
+              ></div>
+              <CircleHelp
+                className={
+                  "group-hover:text-blue-500 " +
+                  (activeTab == "Help" ? "text-blue-500" : "text-gray-600")
+                }
+              />{" "}
+              Help
+            </li>
+            <li
+              className={
+                (activeTab == "Settings"
+                  ? "text-blue-500 bg-blue-100"
+                  : "text-gray-600") +
+                " flex my-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
+              }
+              onClick={() => handleNav("/settings", "Settings")}
+            >
+              <div
+                className={
+                  "w-1 h-7 " +
+                  (activeTab == "Settings" ? "bg-blue-500" : "bg-white")
+                }
+              ></div>
+              <SettingsIcon
+                className={
+                  "group-hover:text-blue-500 " +
+                  (activeTab == "Settings" ? "text-blue-500" : "text-gray-600")
+                }
+              />{" "}
+              Settings
+            </li>
             <li
               className={
                 "flex mb-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-red-500 transition duration-100 "
@@ -158,16 +241,6 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
             >
               <div className={"w-1 h-7 "}></div>
               <LogOut className={""} /> Logout
-            </li>
-            <li
-              className={
-                "flex mb-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-blue-500 transition duration-100 "
-              }
-            >
-              <div className="w-1 h-7"></div>
-              <Link to="/help" className="flex items-center gap-3">
-                Help
-              </Link>
             </li>
           </ul>
         </div>

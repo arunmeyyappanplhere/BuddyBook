@@ -1,17 +1,20 @@
+import mongoose from "mongoose";
 import contactModal from "../models/contactModal.js";
 import profileModal from "../models/profileModal.js";
 
-/**
- * GET /api/contacts
- * Returns all contacts belonging to the authenticated user.
- * Auth: Bearer JWT (protect middleware) — req.user.email is available.
- */
+const findContactById = async (email, id) => {
+  let contact = await contactModal.findOne({ savedUser: email, contact_uid: id });
+  if (!contact && mongoose.isValidObjectId(id)) {
+    contact = await contactModal.findOne({ savedUser: email, _id: id });
+  }
+  return contact;
+};
+
 export const getContactsController = async (req, res) => {
   const email = req.user.email;
-
   try {
     const contacts = await contactModal
-      .find({ savedUser: email })
+      .find({ savedUser: email, contact_stashed: { $ne: true } })
       .sort({ createdAt: -1 });
     res.status(200).json(contacts);
   } catch (err) {
@@ -20,16 +23,11 @@ export const getContactsController = async (req, res) => {
   }
 };
 
-/**
- * GET /api/contacts/favorites
- * Returns favorite contacts belonging to the authenticated user.
- */
 export const getFavoriteContactsController = async (req, res) => {
   const email = req.user.email;
-
   try {
     const contacts = await contactModal
-      .find({ savedUser: email, contact_favorite: true })
+      .find({ savedUser: email, contact_favorite: true, contact_stashed: { $ne: true } })
       .sort({ createdAt: -1 });
     res.status(200).json(contacts);
   } catch (err) {
@@ -38,26 +36,42 @@ export const getFavoriteContactsController = async (req, res) => {
   }
 };
 
-/**
- * GET /api/contacts/:id
- * Returns a single contact by contact_uid or Mongo _id.
- */
+export const getStashedContactsController = async (req, res) => {
+  const email = req.user.email;
+  try {
+    const contacts = await contactModal
+      .find({ savedUser: email, contact_stashed: true })
+      .sort({ createdAt: -1 });
+    res.status(200).json(contacts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const getRecentContactsController = async (req, res) => {
+  const email = req.user.email;
+  try {
+    const contacts = await contactModal
+      .find({ savedUser: email, contact_stashed: { $ne: true } })
+      .sort({ createdAt: -1 })
+      .limit(20);
+    res.status(200).json(contacts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const getContactController = async (req, res) => {
   const email = req.user.email;
-
   const { id } = req.params;
-
   try {
-    const contact = await contactModal.findOne({
-      savedUser: email,
-      $or: [{ contact_uid: id }, { _id: id }],
-    });
-
+    const contact = await findContactById(email, id);
     if (!contact) {
       res.status(404).json({ message: "Contact not found" });
       return;
     }
-
     res.status(200).json(contact);
   } catch (err) {
     console.error(err);
@@ -65,36 +79,22 @@ export const getContactController = async (req, res) => {
   }
 };
 
-/**
- * PATCH /api/contacts/:id/favorite
- * Toggles the favorite status of a contact.
- */
 export const toggleFavoriteController = async (req, res) => {
   const email = req.user.email;
-
   const { id } = req.params;
   const { contact_favorite } = req.body;
-
   try {
-    const contact = await contactModal.findOne({
-      savedUser: email,
-      $or: [{ contact_uid: id }, { _id: id }],
-    });
-
+    const contact = await findContactById(email, id);
     if (!contact) {
       res.status(404).json({ message: "Contact not found" });
       return;
     }
-
     contact.contact_favorite = Boolean(contact_favorite);
     await contact.save();
-
-    // Keep the embedded profile copy in sync.
     await profileModal.updateOne(
       { email, "contacts.contact_uid": contact.contact_uid },
       { $set: { "contacts.$.contact_favorite": contact.contact_favorite } },
     );
-
     res.status(200).json(contact);
   } catch (err) {
     console.error(err);
@@ -102,34 +102,89 @@ export const toggleFavoriteController = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/contacts/:id
- * Deletes a contact from the contacts collection and the embedded profile copy.
- */
-export const deleteContactController = async (req, res) => {
+export const toggleStashController = async (req, res) => {
   const email = req.user.email;
-
   const { id } = req.params;
-
+  const { contact_stashed } = req.body;
   try {
-    const contact = await contactModal.findOne({
-      savedUser: email,
-      $or: [{ contact_uid: id }, { _id: id }],
-    });
-
+    const contact = await findContactById(email, id);
     if (!contact) {
       res.status(404).json({ message: "Contact not found" });
       return;
     }
+    contact.contact_stashed = Boolean(contact_stashed);
+    await contact.save();
+    await profileModal.updateOne(
+      { email, "contacts.contact_uid": contact.contact_uid },
+      { $set: { "contacts.$.contact_stashed": contact.contact_stashed } },
+    );
+    res.status(200).json(contact);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
+export const stashAllContactsController = async (req, res) => {
+  const email = req.user.email;
+  const { contact_stashed } = req.body;
+  try {
+    const result = await contactModal.updateMany(
+      { savedUser: email },
+      { $set: { contact_stashed: Boolean(contact_stashed) } },
+    );
+    const contacts = await contactModal.find({ savedUser: email });
+    await profileModal.updateOne(
+      { email },
+      { $set: { contacts: contacts.map((c) => c.toObject()) } },
+    );
+    res.status(200).json({
+      message: `Updated ${result.modifiedCount} contacts`,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const unstashContactsController = async (req, res) => {
+  const email = req.user.email;
+  const { contact_ids } = req.body;
+  try {
+    const result = await contactModal.updateMany(
+      { savedUser: email, contact_uid: { $in: contact_ids } },
+      { $set: { contact_stashed: false } },
+    );
+    const contacts = await contactModal.find({ savedUser: email });
+    await profileModal.updateOne(
+      { email },
+      { $set: { contacts: contacts.map((c) => c.toObject()) } },
+    );
+    res.status(200).json({
+      message: `Unstashed ${result.modifiedCount} contacts`,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deleteContactController = async (req, res) => {
+  const email = req.user.email;
+  const { id } = req.params;
+  try {
+    const contact = await findContactById(email, id);
+    if (!contact) {
+      res.status(404).json({ message: "Contact not found" });
+      return;
+    }
     await contactModal.deleteOne({ _id: contact._id });
-
-    // Remove the embedded profile copy.
     await profileModal.updateOne(
       { email },
       { $pull: { contacts: { contact_uid: contact.contact_uid } } },
     );
-
     res.status(200).json({ message: "Contact deleted" });
   } catch (err) {
     console.error(err);
@@ -137,14 +192,8 @@ export const deleteContactController = async (req, res) => {
   }
 };
 
-/**
- * PUT /api/contacts/:id
- * Updates a contact's details in both the contacts collection and the
- * embedded profile copy.
- */
 export const updateContactController = async (req, res) => {
   const email = req.user.email;
-
   const { id } = req.params;
   const {
     contact_name,
@@ -156,19 +205,12 @@ export const updateContactController = async (req, res) => {
     contact_address,
     profileImage,
   } = req.body;
-
   try {
-    const contact = await contactModal.findOne({
-      savedUser: email,
-      $or: [{ contact_uid: id }, { _id: id }],
-    });
-
+    const contact = await findContactById(email, id);
     if (!contact) {
       res.status(404).json({ message: "Contact not found" });
       return;
     }
-
-    // Validate unique contact_email per user (same rule as add-contact).
     if (contact_email && contact_email !== contact.contact_email) {
       const existing = await contactModal.findOne({
         savedUser: email,
@@ -180,7 +222,6 @@ export const updateContactController = async (req, res) => {
         return;
       }
     }
-
     if (contact_name !== undefined) contact.contact_name = contact_name;
     if (contact_role !== undefined) contact.contact_role = contact_role;
     if (contact_relation !== undefined)
@@ -191,10 +232,7 @@ export const updateContactController = async (req, res) => {
     if (contact_address !== undefined) contact.contact_address = contact_address;
     if (profileImage !== undefined)
       contact.contact_profileImage = profileImage;
-
     await contact.save();
-
-    // Keep the embedded profile copy in sync.
     await profileModal.updateOne(
       { email, "contacts.contact_uid": contact.contact_uid },
       {
@@ -210,7 +248,6 @@ export const updateContactController = async (req, res) => {
         },
       },
     );
-
     res.status(200).json(contact);
   } catch (err) {
     console.error(err);

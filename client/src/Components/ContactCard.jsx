@@ -1,9 +1,9 @@
 import { useState } from "react";
 import defaultImage from "/default_avatar.png";
-import { Phone, Mail, Trash2, Heart, ChevronRight, Pencil } from "lucide-react";
+import { Phone, Mail, Trash2, Heart, ChevronRight, Pencil, Archive } from "lucide-react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { toggleFavorite, deleteContact } from "../api/contacts";
+import { toggleFavorite, deleteContact, toggleStash } from "../api/contacts";
 import { useAuth } from "../context/useAuth";
 
 const ContactCard = ({
@@ -14,11 +14,16 @@ const ContactCard = ({
   contactPhone,
   contactEmail,
   isFavorite,
+  isStashed,
   onEdit,
+  onFavoriteChange,
+  onStashChange,
 }) => {
   const [fav, setFav] = useState(isFavorite || false);
   const [favoriteUpdating, setFavoriteUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [stashed, setStashed] = useState(isStashed || false);
+  const [stashUpdating, setStashUpdating] = useState(false);
   const { refreshUser } = useAuth();
   const navi = useNavigate();
 
@@ -33,14 +38,36 @@ const ContactCard = ({
     try {
       await toggleFavorite(contact_id, nextFav);
       await refreshUser();
+      if (onFavoriteChange) onFavoriteChange(contact_id, nextFav);
       toast.success(nextFav ? "Added to favorites" : "Removed from favorites");
     } catch (err) {
-      console.warn(
-        "Favorite toggle API not yet available. Local state updated only.",
-        err,
-      );
+      console.warn("Failed to update favorite status", err);
+      setFav(!nextFav); // rollback
+      toast.error("Failed to update favorite status");
     } finally {
       setFavoriteUpdating(false);
+    }
+  };
+
+  const onToggleStash = async (e) => {
+    e.stopPropagation();
+    if (stashUpdating) return;
+
+    const nextStash = !stashed;
+    setStashed(nextStash); // optimistic update
+    setStashUpdating(true);
+
+    try {
+      await toggleStash(contact_id, nextStash);
+      await refreshUser();
+      if (onStashChange) onStashChange(contact_id, nextStash);
+      toast.success(nextStash ? "Contact stashed" : "Contact un-stashed");
+    } catch (err) {
+      console.warn("Failed to update stash status", err);
+      setStashed(!nextStash); // rollback
+      toast.error("Failed to update stash status");
+    } finally {
+      setStashUpdating(false);
     }
   };
 
@@ -87,7 +114,7 @@ const ContactCard = ({
     <div className="group bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col w-full max-w-sm">
       {/* Gradient header with avatar */}
       <div className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 p-6 pb-14">
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
             <div className="relative">
               <img
@@ -110,32 +137,45 @@ const ContactCard = ({
               </p>
             </div>
           </div>
-          <div className="flex gap-1.5">
-            <button
-              onClick={handleEdit}
-              className="p-2 rounded-full bg-white/20 text-white hover:bg-blue-400 transition-all duration-200 cursor-pointer"
-              title="Edit contact"
-            >
-              <Pencil size={16} />
-            </button>
-            <button
-              onClick={onToggleFavorite}
-              className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
-                fav
-                  ? "bg-pink-500 text-white shadow-lg"
-                  : "bg-white/20 text-white hover:bg-white/40"
-              }`}
-              title={fav ? "Remove from favorites" : "Add to favorites"}
-            >
-              <Heart size={16} fill={fav ? "white" : "none"} />
-            </button>
-            <button
-              onClick={onDelete}
-              className="p-2 rounded-full bg-white/20 text-white hover:bg-red-500 transition-all duration-200 cursor-pointer"
-              title="Delete contact"
-            >
-              <Trash2 size={16} />
-            </button>
+          <div className="flex justify-end">
+            <div className="flex gap-2">
+              <button
+                onClick={handleEdit}
+                className="p-2 rounded-full bg-white/20 text-white hover:bg-blue-400 transition-all duration-200 cursor-pointer"
+                title="Edit contact"
+              >
+                <Pencil size={16} />
+              </button>
+              <button
+                onClick={onToggleFavorite}
+                className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
+                  fav
+                    ? "bg-pink-500 text-white shadow-lg"
+                    : "bg-white/20 text-white hover:bg-white/40"
+                }`}
+                title={fav ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Heart size={16} fill={fav ? "white" : "none"} />
+              </button>
+              <button
+                onClick={onToggleStash}
+                className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
+                  stashed
+                    ? "bg-green-500 text-white shadow-lg"
+                    : "bg-white/20 text-white hover:bg-white/40"
+                }`}
+                title={stashed ? "Un-stash contact" : "Stash contact"}
+              >
+                <Archive size={16} />
+              </button>
+              <button
+                onClick={onDelete}
+                className="p-2 rounded-full bg-white/20 text-white hover:bg-red-500 transition-all duration-200 cursor-pointer"
+                title="Delete contact"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </div>

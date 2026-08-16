@@ -13,6 +13,8 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import ContactModal from "./Components/ContactModal";
 import Contacts from "./pages/Contacts";
 import Favorites from "./pages/Favorites";
+import RecentContacts from "./pages/RecentContacts";
+import Settings from "./pages/Settings";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import ScrollToTop from "./Components/ScrollToTop";
 import { AuthProvider } from "./context/AuthContext";
@@ -40,7 +42,6 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
-              <Route path="/help" element={<Help />} />
               <Route path="/contact" element={<Contact />} />
               <Route
                 path="/dashboard"
@@ -94,7 +95,42 @@ const App = () => {
                 path="/contact-profile/:id"
                 element={
                   <ProtectedRoute>
-                    <ContactProfile />
+                    <ContactProfile
+                      openAddContactModal={openAddContactModal}
+                      setOpenAddContactModal={setOpenAddContactModal}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/help"
+                element={
+                  <Help
+                    openAddContactModal={openAddContactModal}
+                    setOpenAddContactModal={setOpenAddContactModal}
+                  />
+                }
+              />
+              <Route
+                path="/recent"
+                element={
+                  <ProtectedRoute>
+                    <RecentContacts
+                      openAddContactModal={openAddContactModal}
+                      setOpenAddContactModal={setOpenAddContactModal}
+                      onEditContact={handleEditContact}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings
+                      openAddContactModal={openAddContactModal}
+                      setOpenAddContactModal={setOpenAddContactModal}
+                    />
                   </ProtectedRoute>
                 }
               />

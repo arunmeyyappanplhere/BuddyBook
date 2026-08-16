@@ -45,6 +45,7 @@ const ContactSearchBar = ({
   placeholder = "Search contacts...",
   showFavoriteFilter = true,
   showResultsDropdown = true,
+  onContactFavoriteChange,
   className = "",
 }) => {
   const showDropdown = Boolean(
@@ -145,6 +146,9 @@ const ContactSearchBar = ({
                     contactImage={contact.contact_profileImage}
                     contactName={contact.contact_name}
                     contactNumber={contact.contact_phone}
+                    contactRelation={contact.contact_relation}
+                    isFavorite={contact.contact_favorite}
+                    onFavoriteChange={onContactFavoriteChange}
                   />
                 </div>
               ))

@@ -9,11 +9,20 @@ import { searchContactsController } from "../controllers/searchContactsControlle
 import {
   getContactsController,
   getFavoriteContactsController,
+  getStashedContactsController,
+  getRecentContactsController,
   getContactController,
   toggleFavoriteController,
+  toggleStashController,
+  stashAllContactsController,
+  unstashContactsController,
   deleteContactController,
   updateContactController,
 } from "../controllers/contactController.js";
+import {
+  updateProfileController,
+  deleteAccountController,
+} from "../controllers/settingsController.js";
 import { getCurrentUserController } from "../controllers/currentUserController.js";
 import { createContactSupport, getContactSupportTickets, updateContactSupportStatus } from "../controllers/contactSupportController.js";
 import logoutController from "../controllers/logoutController.js";
@@ -29,6 +38,10 @@ routes.post("/logout", logoutController);
 // Protected auth route — current user.
 routes.get("/auth/me", protect, getCurrentUserController);
 
+// Protected settings routes.
+routes.put("/settings/profile", protect, updateProfileController);
+routes.delete("/auth/delete-account", protect, deleteAccountController);
+
 // Protected upload route.
 routes.post("/upload", protect, upload.single("profileImage"), uploadController);
 
@@ -40,8 +53,13 @@ routes.post("/add-contact", protect, addContactController);
 routes.get("/contacts", protect, getContactsController);
 routes.get("/contacts/search", protect, searchContactsController);
 routes.get("/contacts/favorites", protect, getFavoriteContactsController);
+routes.get("/contacts/stashed", protect, getStashedContactsController);
+routes.get("/contacts/recent", protect, getRecentContactsController);
 routes.get("/contacts/:id", protect, getContactController);
 routes.patch("/contacts/:id/favorite", protect, toggleFavoriteController);
+routes.patch("/contacts/:id/stash", protect, toggleStashController);
+routes.patch("/contacts/stash-all", protect, stashAllContactsController);
+routes.patch("/contacts/unstash", protect, unstashContactsController);
 routes.delete("/contacts/:id", protect, deleteContactController);
 routes.put("/contacts/:id", protect, updateContactController);
 

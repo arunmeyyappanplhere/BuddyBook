@@ -1,49 +1,63 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import Dashboard from "../Components/Dashboard";
-import { Plus, Heart, SlidersHorizontal } from "lucide-react";
+import { Plus, Heart, SlidersHorizontal, Inbox } from "lucide-react";
 import defaultImage from "/default_avatar.png";
 import ContactCard from "../Components/ContactCard";
 import ContactSearchBar from "../Components/ContactSearchBar";
 import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
+import UnstashModal from "../Components/UnstashModal";
 
 const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
+  const [openUnstashModal, setOpenUnstashModal] = useState(false);
+
+  const fetchFavorites = async () => {
+    if (!isAuthenticated) {
+      setContactsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.get("/contacts/favorites");
+      setContacts(response.data);
+      setContactsError(null);
+    } catch (err) {
+      console.error("Failed to fetch favorites:", err);
+      setContactsError(err.response?.data?.message || "Failed to fetch favorites");
+    } finally {
+      setContactsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchContacts = async () => {
-      if (!isAuthenticated) {
-        setContactsLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axiosInstance.get("/contacts");
-        setContacts(response.data);
-        setContactsError(null);
-      } catch (err) {
-        console.error("Failed to fetch contacts:", err);
-        setContactsError(err.response?.data?.message || "Failed to fetch contacts");
-      } finally {
-        setContactsLoading(false);
-      }
-    };
-
-    fetchContacts();
+    setContactsLoading(true);
+    fetchFavorites();
   }, [isAuthenticated]);
 
-  const favoriteContacts = useCallback(() => {
-    if (!contacts) return [];
-    return contacts.filter(
-      (contact) => contact.contact_favorite === true,
-    );
-  }, [contacts]);
+  const handleFavoriteChange = (contactId, isFav) => {
+    if (!isFav) {
+      // Remove from favorites list when un-favorited
+      setContacts((prev) => prev.filter((c) => (c.contact_uid || c._id) !== contactId));
+    } else {
+      // Re-fetch to pick up any contacts that were just favorited
+      setTimeout(() => fetchFavorites(), 0);
+    }
+  };
 
-  const favorites = favoriteContacts();
+  const handleStashChange = (contactId, isStashed) => {
+    if (isStashed) {
+      setContacts((prev) => prev.filter((c) => (c.contact_uid || c._id) !== contactId));
+    }
+  };
+
+  const handleUnstashSuccess = () => {
+    fetchFavorites();
+  };
 
   const {
     searchText,
@@ -57,7 +71,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
     hasActiveFilters,
     activeFilterCount,
     resetFilters,
-  } = useContactSearch(favorites, { favoriteOnly: true });
+  } = useContactSearch(contacts, { favoriteOnly: true });
 
   return (
     <div className="flex min-h-screen">
@@ -65,6 +79,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
         tabOnView="Favorites"
         openAddContactModal={openAddContactModal}
         setOpenAddContactModal={setOpenAddContactModal}
+        contactsCount={contacts.length}
       />
       <div className="p-4 md:p-7 w-full flex flex-col gap-5 min-w-0">
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
@@ -84,6 +99,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
               placeholder="Search favorites..."
               showFavoriteFilter={false}
               showResultsDropdown={false}
+              onContactFavoriteChange={handleFavoriteChange}
             />
           </div>
           <div className="flex gap-3 items-center lg:self-start shrink-0">
@@ -115,7 +131,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
 
         {contactsError && (
           <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
-            <p className="text-red-600 text-lg">Failed to load your contacts.</p>
+            <p className="text-red-600 text-lg">Failed to load your favorites.</p>
             <button
               className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
               onClick={() => window.location.reload()}
@@ -127,18 +143,29 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
 
         {!authLoading && !contactsLoading && !authError && !contactsError ? (
           <>
-            <div className="flex flex-col gap-2 rounded-4xl text-black p-6 md:p-10 mt-14">
-              <h1 className="text-3xl md:text-4xl font-semibold flex items-center gap-3">
-                <Heart className="text-pink-600" size={36} /> Favorites
-              </h1>
-              <h2 className="max-w-3/5">
-                {favorites.length >= 2
-                  ? `You have ${favorites.length} favorite contacts`
-                  : favorites.length === 1
-                    ? "You have 1 favorite contact"
-                    : "You have no favorite contacts yet. Tap the heart on any contact to add it here."}
-              </h2>
-            </div>
+             <div className="flex flex-col gap-2 rounded-4xl text-black p-6 md:p-10 mt-14">
+               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                 <div>
+                   <h1 className="text-3xl md:text-4xl font-semibold flex items-center gap-3">
+                     <Heart className="text-pink-600" size={36} /> Favorites
+                   </h1>
+                   <h2 className="max-w-3/5">
+                     {contacts.length >= 2
+                       ? `You have ${contacts.length} favorite contacts`
+                       : contacts.length === 1
+                         ? "You have 1 favorite contact"
+                         : "You have no favorite contacts yet. Tap the heart on any contact to add it here."}
+                   </h2>
+                 </div>
+                 <button
+                   onClick={() => setOpenUnstashModal(true)}
+                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition shrink-0"
+                 >
+                   <Inbox size={18} />
+                   Unstash
+                 </button>
+               </div>
+             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black px-4 md:px-10">
               {filteredContacts.length > 0 ? (
                 filteredContacts.map((contact) => {
@@ -152,7 +179,10 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
                       contactPhone={String(contact?.contact_phone)}
                       contactEmail={contact?.contact_email}
                       isFavorite={contact?.contact_favorite}
+                      isStashed={contact?.contact_stashed}
                       onEdit={onEditContact}
+                      onFavoriteChange={handleFavoriteChange}
+                      onStashChange={handleStashChange}
                     />
                   );
                 })
@@ -198,6 +228,11 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
           </>
         )}
       </div>
+      <UnstashModal
+        open={openUnstashModal}
+        onClose={() => setOpenUnstashModal(false)}
+        onUnstashSuccess={handleUnstashSuccess}
+      />
       <button
         className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
         onClick={() => {

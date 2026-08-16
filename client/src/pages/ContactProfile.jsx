@@ -7,7 +7,7 @@ import { useAuth } from "../context/useAuth";
 import { toast } from "react-toastify";
 import axiosInstance from "../api/axios";
 
-const ContactProfile = ({ contactId }) => {
+const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal }) => {
   const { id } = useParams();
   const {
     user: userProfile,
@@ -98,7 +98,11 @@ const ContactProfile = ({ contactId }) => {
 
   return (
     <div className="flex min-h-screen">
-      <Dashboard tabOnView={"Contacts"} />
+      <Dashboard
+        tabOnView={"Contacts"}
+        openAddContactModal={openAddContactModal}
+        setOpenAddContactModal={setOpenAddContactModal}
+      />
       <div className="flex flex-col items-center w-full min-w-0">
         <div className="text-center flex items-center justify-between p-5 shadow-sm rounded-b-sm w-full">
           <div className="flex items-center gap-5">

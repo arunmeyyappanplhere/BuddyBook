@@ -13,6 +13,53 @@ export const toggleFavorite = async (contactId, isFavorite) => {
 };
 
 /**
+ * Toggle the stashed status of a contact.
+ */
+export const toggleStash = async (contactId, isStashed) => {
+  const response = await axiosInstance.patch(
+    `/contacts/${contactId}/stash`,
+    { contact_stashed: isStashed },
+  );
+  return response.data;
+};
+
+/**
+ * Stash or un-stash all contacts at once.
+ */
+export const stashAllContacts = async (isStashed) => {
+  const response = await axiosInstance.patch(`/contacts/stash-all`, {
+    contact_stashed: isStashed,
+  });
+  return response.data;
+};
+
+/**
+ * Unstash selected contacts by their IDs.
+ */
+export const unstashContacts = async (contactIds) => {
+  const response = await axiosInstance.patch(`/contacts/unstash`, {
+    contact_ids: contactIds,
+  });
+  return response.data;
+};
+
+/**
+ * Fetch stashed contacts for the current user.
+ */
+export const getStashedContacts = async () => {
+  const response = await axiosInstance.get("/contacts/stashed");
+  return response.data;
+};
+
+/**
+ * Fetch recent contacts for the current user.
+ */
+export const getRecentContacts = async () => {
+  const response = await axiosInstance.get("/contacts/recent");
+  return response.data;
+};
+
+/**
  * Delete a contact.
  * Requires backend endpoint: DELETE /api/contacts/:id
  */
@@ -32,7 +79,6 @@ export const updateContact = async (contactId, contactData) => {
 
 /**
  * Fetch a single contact by id.
- * Requires backend endpoint: GET /api/contacts/:id
  */
 export const getContactById = async (contactId) => {
   const response = await axiosInstance.get(`/contacts/${contactId}`);
@@ -41,7 +87,6 @@ export const getContactById = async (contactId) => {
 
 /**
  * Fetch all contacts for the current user.
- * Requires backend endpoint: GET /api/contacts
  */
 export const getContacts = async () => {
   const response = await axiosInstance.get("/contacts");
@@ -50,7 +95,6 @@ export const getContacts = async () => {
 
 /**
  * Fetch favorite contacts for the current user.
- * Requires backend endpoint: GET /api/contacts/favorites
  */
 export const getFavoriteContacts = async () => {
   const response = await axiosInstance.get("/contacts/favorites");
@@ -59,11 +103,6 @@ export const getFavoriteContacts = async () => {
 
 /**
  * Search contacts via the backend.
- * Backend-ready: when GET /api/contacts/search?query=... ships, this will
- * offload filtering to the server instead of the client-side hook.
- *
- * @param {string} query - Text to search across name/phone/email/role/relation.
- * @param {Object} filters - Optional { relation, favorite } filters.
  */
 export const searchContacts = async (query, filters = {}) => {
   const params = {};
@@ -72,5 +111,21 @@ export const searchContacts = async (query, filters = {}) => {
   if (filters.favorite) params.favorite = "true";
 
   const response = await axiosInstance.get("/contacts/search", { params });
+  return response.data;
+};
+
+/**
+ * Update the authenticated user's profile.
+ */
+export const updateProfile = async (profileData) => {
+  const response = await axiosInstance.put("/settings/profile", profileData);
+  return response.data;
+};
+
+/**
+ * Delete the authenticated user's account permanently.
+ */
+export const deleteAccount = async () => {
+  const response = await axiosInstance.delete("/auth/delete-account");
   return response.data;
 };

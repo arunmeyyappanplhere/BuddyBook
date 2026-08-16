@@ -64,6 +64,7 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
       if (uploadedFileName) payload.profileImage = uploadedFileName;
       await updateProfile(payload);
       await refreshUser();
+      setProfileImage(null);
       toast.success("Profile updated successfully!");
     } catch (err) {
       console.error(err);
@@ -114,15 +115,15 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
     toast.success("Logged out successfully!");
   };
 
-  return (
-    <>
-      <div className="flex min-h-screen">
-        <Dashboard
-          tabOnView="Settings"
-          openAddContactModal={openAddContactModal}
-          setOpenAddContactModal={setOpenAddContactModal}
-        />
-        <div className="p-4 md:p-7 w-full flex flex-col gap-5 min-w-0">
+   return (
+     <>
+       <div className="min-h-screen">
+         <Dashboard
+           tabOnView="Settings"
+           openAddContactModal={openAddContactModal}
+           setOpenAddContactModal={setOpenAddContactModal}
+         />
+          <div className="p-4 md:p-7 lg:ml-72 flex flex-col gap-5 min-w-0">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
             <div className="w-full lg:w-auto">
               <h1 className="text-2xl md:text-3xl font-semibold">Settings</h1>

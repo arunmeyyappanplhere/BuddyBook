@@ -74,15 +74,15 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
     }
   };
 
-return (
-    <div className="flex min-h-screen">
-      <Dashboard
-        tabOnView="Contacts"
-        openAddContactModal={openAddContactModal}
-        setOpenAddContactModal={setOpenAddContactModal}
-        contactsCount={contacts.length}
-      />
-      <div className="p-4 md:p-7 w-full flex flex-col gap-5 min-w-0">
+ return (
+     <div className="min-h-screen">
+       <Dashboard
+         tabOnView="Contacts"
+         openAddContactModal={openAddContactModal}
+         setOpenAddContactModal={setOpenAddContactModal}
+         contactsCount={contacts.length}
+       />
+        <div className="p-4 md:p-7 lg:ml-72 flex flex-col gap-5 min-w-0">
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 md:gap-6">
           <div className="w-full lg:w-auto md:w-full">
             <ContactSearchBar

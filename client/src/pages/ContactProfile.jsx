@@ -21,6 +21,7 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({});
+  const [profileImage, setProfileImage] = useState(null);
 
   // Fetch contact data from API when component mounts
   const loadContact = useCallback(async () => {
@@ -77,12 +78,27 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const uploadImage = async () => {
+    if (!profileImage) return "";
+    const imageFormData = new FormData();
+    imageFormData.append("profileImage", profileImage);
+    const response = await axiosInstance.post("/upload", imageFormData);
+    return response.data.filename;
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const response = await axiosInstance.put(`/contacts/${id}`, formData);
+      let uploadedFileName = "";
+      if (profileImage) {
+        uploadedFileName = await uploadImage();
+      }
+      const payload = { ...formData };
+      if (uploadedFileName) payload.profileImage = uploadedFileName;
+      const response = await axiosInstance.put(`/contacts/${id}`, payload);
       setContact(response.data);
+      setProfileImage(null);
       toast.success("Contact updated successfully!");
       setIsEditing(false);
     } catch (err) {
@@ -96,14 +112,14 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
   // contact_profileImage already contains the full Cloudinary secure_url
   const contactImage = contact?.contact_profileImage || defaultImage;
 
-  return (
-    <div className="flex min-h-screen">
-      <Dashboard
-        tabOnView={"Contacts"}
-        openAddContactModal={openAddContactModal}
-        setOpenAddContactModal={setOpenAddContactModal}
-      />
-      <div className="flex flex-col items-center w-full min-w-0">
+   return (
+     <div className="min-h-screen">
+       <Dashboard
+         tabOnView={"Contacts"}
+         openAddContactModal={openAddContactModal}
+         setOpenAddContactModal={setOpenAddContactModal}
+       />
+        <div className="flex flex-col items-center lg:ml-72 min-w-0">
         <div className="text-center flex items-center justify-between p-5 shadow-sm rounded-b-sm w-full">
           <div className="flex items-center gap-5">
             <ArrowLeft
@@ -174,11 +190,31 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
             </div>
           ) : contact ? (
             <>
-              <img
-                src={contactImage}
-                alt=""
-                className="w-45 cursor-pointer mb-8 rounded-full border border-white shadow-md"
-              />
+              {isEditing ? (
+                <label htmlFor="contactProfileImage" className="w-45 cursor-pointer mb-8 relative inline-block">
+                  <img
+                    src={profileImage ? URL.createObjectURL(profileImage) : contactImage}
+                    alt=""
+                    className="w-45 rounded-full border border-white shadow-md object-cover"
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full text-white text-sm font-medium">
+                    Change Photo
+                  </span>
+                  <input
+                    type="file"
+                    id="contactProfileImage"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => setProfileImage(e.target.files[0])}
+                  />
+                </label>
+              ) : (
+                <img
+                  src={contactImage}
+                  alt=""
+                  className="w-45 cursor-pointer mb-8 rounded-full border border-white shadow-md"
+                />
+              )}
               <h1 className="text-3xl md:text-4xl font-semibold mb-3 text-center">
                 {isEditing ? (
                   <input
@@ -222,6 +258,7 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
                         className="right-0 cursor-pointer p-1 rounded-md hover:text-red-500 hover:bg-red-100"
                         onClick={() => {
                           setIsEditing(false);
+                          setProfileImage(null);
                           setFormData({
                             contact_name: contact.contact_name,
                             contact_role: contact.contact_role,

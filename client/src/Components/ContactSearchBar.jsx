@@ -54,8 +54,8 @@ const ContactSearchBar = ({
 
   return (
     <div
-      className={
-        "relative w-full sm:w-100 flex flex-col gap-3 p-3 bg-blue-50 rounded-3xl text-md z-50" +
+className={
+        "relative w-full sm:w-100 flex flex-col gap-3 p-3 bg-blue-50 rounded-3xl text-md z-40" +
         (className ? " " + className : "")
       }
     >

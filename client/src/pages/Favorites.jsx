@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import Dashboard from "../Components/Dashboard";
-import { Plus, Heart, SlidersHorizontal, Inbox } from "lucide-react";
+import { Plus, Heart, SlidersHorizontal } from "lucide-react";
 import defaultImage from "/default_avatar.png";
 import ContactCard from "../Components/ContactCard";
 import ContactSearchBar from "../Components/ContactSearchBar";
 import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
-import UnstashModal from "../Components/UnstashModal";
 
 const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
-  const [openUnstashModal, setOpenUnstashModal] = useState(false);
 
   const fetchFavorites = async () => {
     if (!isAuthenticated) {
@@ -53,10 +51,6 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
     if (isStashed) {
       setContacts((prev) => prev.filter((c) => (c.contact_uid || c._id) !== contactId));
     }
-  };
-
-  const handleUnstashSuccess = () => {
-    fetchFavorites();
   };
 
   const {
@@ -145,27 +139,20 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
           <>
              <div className="flex flex-col gap-2 rounded-4xl text-black p-6 md:p-10 mt-14">
                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                 <div>
-                   <h1 className="text-3xl md:text-4xl font-semibold flex items-center gap-3">
-                     <Heart className="text-pink-600" size={36} /> Favorites
-                   </h1>
-                   <h2 className="max-w-3/5">
-                     {contacts.length >= 2
-                       ? `You have ${contacts.length} favorite contacts`
-                       : contacts.length === 1
-                         ? "You have 1 favorite contact"
-                         : "You have no favorite contacts yet. Tap the heart on any contact to add it here."}
-                   </h2>
-                 </div>
-                 <button
-                   onClick={() => setOpenUnstashModal(true)}
-                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition shrink-0"
-                 >
-                   <Inbox size={18} />
-                   Unstash
-                 </button>
-               </div>
-             </div>
+                  <div>
+                    <h1 className="text-3xl md:text-4xl font-semibold flex items-center gap-3">
+                      <Heart className="text-pink-600" size={36} /> Favorites
+                    </h1>
+                    <h2 className="max-w-3/5">
+                      {contacts.length >= 2
+                        ? `You have ${contacts.length} favorite contacts`
+                        : contacts.length === 1
+                          ? "You have 1 favorite contact"
+                          : "You have no favorite contacts yet. Tap the heart on any contact to add it here."}
+                    </h2>
+                  </div>
+                </div>
+              </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black px-4 md:px-10">
               {filteredContacts.length > 0 ? (
                 filteredContacts.map((contact) => {
@@ -228,11 +215,6 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
           </>
         )}
       </div>
-      <UnstashModal
-        open={openUnstashModal}
-        onClose={() => setOpenUnstashModal(false)}
-        onUnstashSuccess={handleUnstashSuccess}
-      />
       <button
         className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
         onClick={() => {

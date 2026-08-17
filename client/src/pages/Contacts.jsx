@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import Dashboard from "../Components/Dashboard";
-import { Plus, BookUser, SlidersHorizontal } from "lucide-react";
+import { Plus, BookUser, SlidersHorizontal, Inbox } from "lucide-react";
 import defaultImage from "/default_avatar.png";
 import ContactCard from "../Components/ContactCard";
 import ContactSearchBar from "../Components/ContactSearchBar";
 import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
+import UnstashModal from "../Components/UnstashModal";
 
 const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const {
@@ -19,6 +20,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
+  const [openUnstashModal, setOpenUnstashModal] = useState(false);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -72,6 +74,10 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
         prev.filter((c) => (c.contact_uid || c._id) !== contactId),
       );
     }
+  };
+
+  const handleUnstashSuccess = () => {
+    fetchContacts();
   };
 
  return (
@@ -148,14 +154,25 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
         {!authLoading && !contactsLoading && !authError && !contactsError ? (
           <>
             <div className="flex flex-col gap-2 rounded-4xl text-black p-6 md:p-10 mt-14">
-              <h1 className="text-3xl md:text-4xl font-semibold">Contacts</h1>
-              <h2 className="max-w-3/5">
-                {contacts.length >= 2
-                  ? `Manage your network of ${contacts.length} contacts`
-                  : contacts.length === 1
-                    ? "Manage your network of 1 contact"
-                    : "Manage your network. Add your first contact to get started."}
-              </h2>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-semibold">Contacts</h1>
+                  <h2 className="max-w-3/5">
+                    {contacts.length >= 2
+                      ? `Manage your network of ${contacts.length} contacts`
+                      : contacts.length === 1
+                        ? "Manage your network of 1 contact"
+                        : "Manage your network. Add your first contact to get started."}
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setOpenUnstashModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition shrink-0"
+                >
+                  <Inbox size={18} />
+                  Unstash
+                </button>
+              </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black px-4 md:px-10">
               {filteredContacts.length > 0 ? (
@@ -226,6 +243,11 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
           </>
         )}
       </div>
+      <UnstashModal
+        open={openUnstashModal}
+        onClose={() => setOpenUnstashModal(false)}
+        onUnstashSuccess={handleUnstashSuccess}
+      />
       <button
         className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer transition duration-200 hover:scale-[1.01]"
         onClick={() => {

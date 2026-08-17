@@ -73,7 +73,7 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
       {/* Floating sidebar */}
       <div
         className={
-          "h-screen w-72 rounded-r-3xl shadow-2xl bg-gradient-to-b from-white to-blue-50/50 backdrop-blur-xl border-r border-blue-100/50 transition-transform duration-300 fixed top-0 left-0 z-40 " +
+          "h-screen w-80 rounded-r-3xl shadow-2xl bg-gradient-to-b from-white to-blue-50/50 backdrop-blur-xl border-r border-blue-100/50 transition-transform duration-300 fixed top-0 left-0 z-40 " +
           (sidebarOpen
             ? "translate-x-0 z-50"
             : "-translate-x-full lg:translate-x-0")
@@ -82,8 +82,8 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
         <div className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto">
             <div className="flex gap-5 p-5">
-              <img src={BuddyBookLogo} alt="" className="rounded-2xl size-18" />
-              <div className="">
+              <img src={BuddyBookLogo} alt="" className="rounded-2xl size-18 shrink-0" />
+              <div className="min-w-0">
                 <h1 className="text-blue-500 text-3xl font-bold">Buddy Book</h1>
                 <h2 className="">Contact Management</h2>
               </div>

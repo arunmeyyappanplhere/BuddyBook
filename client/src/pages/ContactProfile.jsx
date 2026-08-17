@@ -119,7 +119,7 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
          openAddContactModal={openAddContactModal}
          setOpenAddContactModal={setOpenAddContactModal}
        />
-        <div className="flex flex-col items-center lg:ml-72 min-w-0">
+        <div className="flex flex-col items-center lg:ml-80 min-w-0">
         <div className="text-center flex items-center justify-between p-5 shadow-sm rounded-b-sm w-full">
           <div className="flex items-center gap-5">
             <ArrowLeft

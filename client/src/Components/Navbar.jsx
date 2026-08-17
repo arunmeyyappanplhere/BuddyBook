@@ -1,10 +1,12 @@
 import { Link } from "react-router";
 import { useState } from "react";
 import BuddyBookLogo from "/BuddyBookLogo.png";
-import { Star, Menu, X } from "lucide-react";
+import { Star, Menu, X, Moon, Sun } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-50">
@@ -33,6 +35,25 @@ const Navbar = () => {
           >
             Sign Up Free
           </Link>
+          <button
+            type="button"
+            role="switch"
+            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+            onClick={toggleTheme}
+            className="rounded-md bg-gray-200 dark:bg-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="mr-1 h-4 w-4" />
+                Light
+              </>
+            ) : (
+              <>
+                <Moon className="mr-1 h-4 w-4" />
+                Dark
+              </>
+            )}
+          </button>
           <button
             className="md:hidden p-2 text-gray-600 hover:text-blue-500 cursor-pointer"
             onClick={() => setMobileOpen(!mobileOpen)}

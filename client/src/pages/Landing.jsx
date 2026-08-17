@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useContext } from "react";
 import {
   Users,
   Heart,
@@ -11,11 +12,16 @@ import {
   BookUser,
   BookOpen,
   Network,
+  Moon,
+  Sun,
 } from "lucide-react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
+import { useTheme } from "../context/ThemeContext";
 
 const Landing = () => {
+  const { theme, toggleTheme } = useTheme();
+
   const features = [
     {
       icon: <BookUser className="text-blue-500" size={32} />,
@@ -63,22 +69,22 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-blue-50">
+    <div className="min-h-screen transition-colors duration-300 bg-blue-50 dark:bg-gray-900">
       <Navbar />
 
       {/* Hero Section */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-400 to-blue-600 opacity-10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-400 to-blue-600 opacity-10 dark:opacity-5" />
         <div className="max-w-7xl mx-auto px-6 py-20 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
               <Star size={16} /> The #1 Contact Management Platform
             </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 leading-tight mb-6">
               Organize your world with{" "}
-              <span className="text-blue-500">precision.</span>
+              <span className="text-blue-500 dark:text-blue-400">precision.</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
               The high-performance contact management system for modern
               professionals. Stay connected, stay organized, stay ahead with
               Buddy Book.
@@ -92,12 +98,12 @@ const Landing = () => {
               </Link>
               <Link
                 to="/login"
-                className="flex items-center justify-center gap-2 px-8 py-4 z-1 text-blue-600 text-lg font-semibold bg-white border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:scale-[1.02] transition duration-200"
+                className="flex items-center justify-center gap-2 px-8 py-4 z-1 text-blue-600 dark:text-blue-300 text-lg font-semibold bg-white dark:bg-gray-800 border-2 border-blue-200 dark:border-gray-600 rounded-xl hover:border-blue-400 hover:scale-[1.02] transition duration-200"
               >
                 <BookOpen size={20} /> View Demo
               </Link>
             </div>
-            <div className="flex items-center gap-4 mt-8 text-sm text-gray-500">
+            <div className="flex items-center gap-4 mt-8 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="text-green-500" size={18} /> Completely free to use
               </div>
@@ -109,7 +115,7 @@ const Landing = () => {
           {/* 3D Style Hero Card */}
           <div className="relative">
             <div className="absolute inset-0 bg-blue-400 blur-3xl opacity-30 rounded-full" />
-            <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden transform rotate-2 hover:rotate-0 transition-transform duration-500">
+            <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden transform rotate-2 hover:rotate-0 transition-all duration-500 dark:shadow-blue-900">
               <div className="bg-gradient-to-r from-blue-500 to-blue-400 p-6">
                 <div className="text-white">
                   <h3 className="text-xl font-semibold mb-1">Welcome back, Alex!</h3>
@@ -118,28 +124,28 @@ const Landing = () => {
               </div>
               <div className="p-6 space-y-4">
                 {[
-                  { name: "Alexander Grahambell", role: "Senior Developer", color: "bg-purple-200" },
-                  { name: "Marie Curios", role: "Research Lead", color: "bg-pink-200" },
-                  { name: "Alan Turing", role: "AI Engineer", color: "bg-green-200" },
+                  { name: "Alexander Grahambell", role: "Senior Developer", color: "bg-purple-200 dark:bg-purple-900" },
+                  { name: "Marie Curios", role: "Research Lead", color: "bg-pink-200 dark:bg-pink-900" },
+                  { name: "Alan Turing", role: "AI Engineer", color: "bg-green-200 dark:bg-green-900" },
                 ].map((contact) => (
-                  <div key={contact.name} className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
-                    <div className={`size-11 rounded-full ${contact.color} flex items-center justify-center font-bold text-gray-700`}>
+                  <div key={contact.name} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 rounded-xl p-3">
+                    <div className={`size-11 rounded-full ${contact.color} flex items-center justify-center font-bold text-gray-700 dark:text-gray-200`}>
                       {contact.name.split(" ").map((n) => n[0]).join("")}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-800">{contact.name}</h4>
-                      <p className="text-sm text-gray-500">{contact.role}</p>
+                      <h4 className="font-semibold text-gray-800 dark:text-gray-200">{contact.name}</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{contact.role}</p>
                     </div>
                   </div>
                 ))}
                 <div className="flex gap-3 pt-2">
-                  <div className="flex-1 bg-blue-50 rounded-xl p-4 text-center">
-                    <h5 className="text-2xl font-bold text-blue-600">24</h5>
-                    <p className="text-xs text-gray-500">Total Contacts</p>
+                  <div className="flex-1 bg-blue-50 dark:bg-gray-700 rounded-xl p-4 text-center">
+                    <h5 className="text-2xl font-bold text-blue-600 dark:text-blue-400">24</h5>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Total Contacts</p>
                   </div>
-                  <div className="flex-1 bg-green-50 rounded-xl p-4 text-center">
-                    <h5 className="text-2xl font-bold text-green-600">18</h5>
-                    <p className="text-xs text-gray-500">Active This Week</p>
+                  <div className="flex-1 bg-green-50 dark:bg-gray-700 rounded-xl p-4 text-center">
+                    <h5 className="text-2xl font-bold text-green-600 dark:text-green-400">18</h5>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Active This Week</p>
                   </div>
                 </div>
               </div>
@@ -149,14 +155,14 @@ const Landing = () => {
       </header>
 
       {/* Stats Bar */}
-      <section className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="py-10 dark:bg-gray-900 dark:text-gray-200">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat) => (
             <div key={stat.label} className="flex items-center justify-center gap-4">
-              <div className="bg-blue-100 rounded-xl p-3">{stat.icon}</div>
+              <div className="bg-blue-100 rounded-xl p-3 dark:bg-gray-800 dark:text-blue-300">{stat.icon}</div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stat.value}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-300">{stat.label}</p>
               </div>
             </div>
           ))}

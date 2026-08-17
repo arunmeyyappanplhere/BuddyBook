@@ -157,7 +157,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-semibold">Contacts</h1>
-                  <h2 className="max-w-3/5">
+<h2 className="truncate">
                     {contacts.length >= 2
                       ? `Manage your network of ${contacts.length} contacts`
                       : contacts.length === 1

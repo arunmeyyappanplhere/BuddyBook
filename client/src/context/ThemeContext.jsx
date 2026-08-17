@@ -12,14 +12,7 @@ export const useTheme = () => {
 };
 
 const getInitialTheme = () => {
-  if (typeof window !== "undefined") {
-    const saved = localStorage.getItem("buddybook-theme");
-    if (saved) return saved;
-    // Check prefers-color-scheme media query
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    }
-  }
+  // Always default to "light" as requested
   return "light";
 };
 

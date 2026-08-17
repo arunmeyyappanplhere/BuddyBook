@@ -143,7 +143,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
                     <h1 className="text-3xl md:text-4xl font-semibold flex items-center gap-3">
                       <Heart className="text-pink-600" size={36} /> Favorites
                     </h1>
-                    <h2 className="max-w-3/5">
+                    <h2 className="max-w-3/5 text-nowrap">
                       {contacts.length >= 2
                         ? `You have ${contacts.length} favorite contacts`
                         : contacts.length === 1

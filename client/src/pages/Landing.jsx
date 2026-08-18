@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { useContext } from "react";
 import {
   Users,
   Heart,
@@ -12,16 +11,11 @@ import {
   BookUser,
   BookOpen,
   Network,
-  Moon,
-  Sun,
 } from "lucide-react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
-import { useTheme } from "../context/ThemeContext";
 
 const Landing = () => {
-  const { theme, toggleTheme } = useTheme();
-
   const features = [
     {
       icon: <BookUser className="text-blue-500" size={32} />,
@@ -169,83 +163,83 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Everything you need to stay connected
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Powerful features designed for professionals who value their network and their time.
-          </p>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="bg-white rounded-2xl p-8 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
-            >
-              <div className="bg-blue-50 w-fit rounded-xl p-3 mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Overview Section */}
-      <section id="overview" className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                How Buddy Book Works
-              </h2>
-              <div className="space-y-6">
-                {[
-                  { step: "01", title: "Create your account", desc: "Sign up in seconds, add your profile, and start building your network." },
-                  { step: "02", title: "Add your contacts", desc: "Import your contacts with photos, roles, relationships, and all the details that matter." },
-                  { step: "03", title: "Stay organized", desc: "Search, filter, and manage your network beautifully with real-time updates." },
-                ].map((item) => (
-                  <div key={item.step} className="flex gap-4">
-                    <div className="text-blue-500 font-bold text-2xl w-14">{item.step}</div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
-                      <p className="text-gray-600">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
+        {/* Features Section */}
+        <section id="features" className="max-w-7xl mx-auto px-6 py-20">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Everything you need to stay connected
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Powerful features designed for professionals who value their network and their time.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature) => (
+              <div
+                key={feature.title}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
+              >
+                <div className="bg-blue-50 dark:bg-gray-700/50 w-fit rounded-xl p-3 mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{feature.description}</p>
               </div>
-            </div>
-            <div className="bg-white rounded-3xl shadow-2xl p-8">
-              <div className="bg-blue-50 rounded-2xl p-6 mb-4">
-                <h3 className="font-semibold text-gray-800 mb-3">Why choose Buddy Book?</h3>
-                <div className="space-y-3">
+            ))}
+          </div>
+        </section>
+
+        {/* Overview Section */}
+        <section id="overview" className="bg-white dark:bg-gray-800 py-20">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+                  How Buddy Book Works
+                </h2>
+                <div className="space-y-6">
                   {[
-                    "Modern, clean interface",
-                    "Powerful instant search",
-                    "JWT-secured authentication",
-                    "Responsive on every device",
-                    "Completely free to use",
-                    "Paid for customized usage development",
+                    { step: "01", title: "Create your account", desc: "Sign up in seconds, add your profile, and start building your network." },
+                    { step: "02", title: "Add your contacts", desc: "Import your contacts with photos, roles, relationships, and all the details that matter." },
+                    { step: "03", title: "Stay organized", desc: "Search, filter, and manage your network beautifully with real-time updates." },
                   ].map((item) => (
-                    <div key={item} className="flex items-center gap-3 text-gray-700">
-                      <ShieldCheck className="text-green-500 shrink-0" size={18} />
-                      {item}
+                    <div key={item.step} className="flex gap-4">
+                      <div className="text-blue-500 dark:text-blue-400 font-bold text-2xl w-14">{item.step}</div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{item.title}</h3>
+                        <p className="text-gray-600 dark:text-gray-300">{item.desc}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
-              <Link
-                to="/login"
-                className="flex justify-center items-center gap-2 w-full px-8 py-4 text-lg font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-400 transition duration-200"
-              >
-                Start Today <ArrowRight size={20} />
-              </Link>
+              <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8">
+                <div className="bg-blue-50 dark:bg-gray-700/50 rounded-2xl p-6 mb-4">
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-3">Why choose Buddy Book?</h3>
+                  <div className="space-y-3">
+                    {[
+                      "Modern, clean interface",
+                      "Powerful instant search",
+                      "JWT-secured authentication",
+                      "Responsive on every device",
+                      "Completely free to use",
+                      "Paid for customized usage development",
+                    ].map((item) => (
+                      <div key={item} className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                        <ShieldCheck className="text-green-500 shrink-0" size={18} />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <Link
+                  to="/login"
+                  className="flex justify-center items-center gap-2 w-full px-8 py-4 text-lg font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-400 transition duration-200"
+                >
+                  Start Today <ArrowRight size={20} />
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* CTA Section */}
       <section className="max-w-7xl mx-auto px-6 py-20">

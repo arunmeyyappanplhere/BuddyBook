@@ -12,7 +12,16 @@ export const useTheme = () => {
 };
 
 const getInitialTheme = () => {
-  // Always default to "light" as requested
+  // Default to "light" on first visit
+  // Respect a previously saved preference if it exists
+  try {
+    const saved = localStorage.getItem("buddybook-theme");
+    if (saved === "dark" || saved === "light") {
+      return saved;
+    }
+  } catch (e) {
+    // localStorage unavailable — fall through to default
+  }
   return "light";
 };
 
@@ -28,7 +37,11 @@ export const ThemeProvider = ({ children }) => {
       root.classList.add("light");
       root.classList.remove("dark");
     }
-    localStorage.setItem("buddybook-theme", theme);
+    try {
+      localStorage.setItem("buddybook-theme", theme);
+    } catch (e) {
+      // localStorage unavailable — ignore
+    }
   }, [theme]);
 
   const toggleTheme = () => {

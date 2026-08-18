@@ -5,9 +5,29 @@
     <link rel="icon" type="image/svg+xml" href="/BuddyBookLogo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Buddy Book</title>
+    <script>
+      // Apply saved theme before React mounts to prevent flash of wrong theme
+      (function () {
+        try {
+          var saved = localStorage.getItem("buddybook-theme");
+          // Default to light when no preference is saved
+          var theme = saved === "dark" ? "dark" : "light";
+          if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+            document.documentElement.classList.remove("light");
+          } else {
+            document.documentElement.classList.add("light");
+            document.documentElement.classList.remove("dark");
+          }
+        } catch (e) {
+          document.documentElement.classList.add("light");
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-  </body> 
+  </body>
 </html>

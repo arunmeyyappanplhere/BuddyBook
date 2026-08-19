@@ -12,16 +12,7 @@ export const useTheme = () => {
 };
 
 const getInitialTheme = () => {
-  // Default to "light" on first visit
-  // Respect a previously saved preference if it exists
-  try {
-    const saved = localStorage.getItem("buddybook-theme");
-    if (saved === "dark" || saved === "light") {
-      return saved;
-    }
-  } catch (e) {
-    // localStorage unavailable — fall through to default
-  }
+  // Default to "light" on start
   return "light";
 };
 

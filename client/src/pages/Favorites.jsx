@@ -7,13 +7,14 @@ import ContactCard from "../Components/ContactCard";
 import ContactSearchBar from "../Components/ContactSearchBar";
 import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
+import { useNavigate } from "react-router";
 
 const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
-
+  const handleNav = useNavigate();
   const fetchFavorites = async () => {
     if (!isAuthenticated) {
       setContactsLoading(false);
@@ -107,6 +108,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
               src={userProfile?.profileImage || defaultImage}
               className="size-12 md:size-15 rounded-full"
               alt=""
+              onClick={()=>handleNav("/settings")}
             />
           </div>
         </div>

@@ -10,6 +10,7 @@ import { useAuth } from "../context/useAuth";
 import { useNavigate } from "react-router";
 import useContactSearch from "../hooks/useContactSearch";
 
+
 const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [recentContacts, setRecentContacts] = useState([]);
@@ -17,8 +18,9 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
-
+  
   const navigate = useNavigate();
+  const handleNav = useNavigate();
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -160,6 +162,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
               src={userProfile?.profileImage || defaultImage}
               className="size-12 md:size-15 rounded-full"
               alt=""
+              onClick={()=>handleNav("/settings")}
             />
           </div>
         </div>

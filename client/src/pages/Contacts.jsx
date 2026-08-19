@@ -8,6 +8,7 @@ import ContactSearchBar from "../Components/ContactSearchBar";
 import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
 import UnstashModal from "../Components/UnstashModal";
+import { useNavigate } from "react-router";
 
 const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const {
@@ -21,7 +22,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
   const [openUnstashModal, setOpenUnstashModal] = useState(false);
-
+  const handleNav = useNavigate();
   useEffect(() => {
     const fetchContacts = async () => {
       if (!isAuthenticated) {
@@ -108,7 +109,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
               onContactFavoriteChange={handleFavoriteChange}
             />
           </div>
-          <div className="flex gap-3 items-center lg:self-start shrink-0 md:w-full">
+          <div className="flex gap-3 items-center lg:self-start shrink-0">  
             <div className="text-right">
               <h1 className="font-semibold text-md">{userProfile?.name}</h1>
               <h2 className="text-gray-600 text-md">
@@ -119,6 +120,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
               src={userProfile?.profileImage || defaultImage}
               className="size-12 md:size-15 rounded-full"
               alt=""
+              onClick={()=>handleNav("/settings")}
             />
           </div>
         </div>

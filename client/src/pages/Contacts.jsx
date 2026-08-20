@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import Dashboard from "../Components/Dashboard";
 import { Plus, BookUser, SlidersHorizontal, Inbox } from "lucide-react";
-import defaultImage from "/default_avatar.png";
 import ContactCard from "../Components/ContactCard";
 import ContactSearchBar from "../Components/ContactSearchBar";
 import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
 import UnstashModal from "../Components/UnstashModal";
-import NotificationBell from "../Components/NotificationBell";
 import { useNavigate } from "react-router";
 
 const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
@@ -23,7 +21,6 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
   const [openUnstashModal, setOpenUnstashModal] = useState(false);
-  const handleNav = useNavigate();
   useEffect(() => {
     const fetchContacts = async () => {
       if (!isAuthenticated) {
@@ -91,40 +88,23 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
          contactsCount={contacts.length}
        />
         <div className="p-4 md:p-7 lg:ml-80 flex flex-col gap-5 min-w-0">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 md:gap-6 sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 -mx-3 shadow-sm">
-          <div className="w-full lg:w-auto md:w-full">
-            <ContactSearchBar
-              searchText={searchText}
-              onSearchTextChange={setSearchText}
-              relationFilter={relationFilter}
-              onRelationFilterChange={setRelationFilter}
-              favoriteFilter={favoriteFilter}
-              onFavoriteFilterChange={setFavoriteFilter}
-              availableRelations={availableRelations}
-              filteredContacts={filteredContacts}
-              hasActiveFilters={hasActiveFilters}
-              activeFilterCount={activeFilterCount}
-              onReset={resetFilters}
-              placeholder="Search contacts..."
-              showResultsDropdown={false}
-              onContactFavoriteChange={handleFavoriteChange}
-            />
-          </div>
-          <div className="flex gap-3 items-center lg:self-start shrink-0 my-auto">  
-            <NotificationBell />
-            <div className="text-right">
-              <h1 className="font-semibold text-md">{userProfile?.name}</h1>
-              <h2 className="text-gray-600 text-md">
-                {userProfile?.phoneNumber}
-              </h2>
-            </div>
-            <img
-              src={userProfile?.profileImage || defaultImage}
-              className="size-12 md:size-15 rounded-full"
-              alt=""
-              onClick={()=>handleNav("/settings")}
-            />
-          </div>
+        <div className="sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 pl-16 lg:pl-3 -mx-3 shadow-sm">
+          <ContactSearchBar
+            searchText={searchText}
+            onSearchTextChange={setSearchText}
+            relationFilter={relationFilter}
+            onRelationFilterChange={setRelationFilter}
+            favoriteFilter={favoriteFilter}
+            onFavoriteFilterChange={setFavoriteFilter}
+            availableRelations={availableRelations}
+            filteredContacts={filteredContacts}
+            hasActiveFilters={hasActiveFilters}
+            activeFilterCount={activeFilterCount}
+            onReset={resetFilters}
+            placeholder="Search contacts..."
+            showResultsDropdown={false}
+            onContactFavoriteChange={handleFavoriteChange}
+          />
         </div>
 
         {authError && (

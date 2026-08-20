@@ -15,11 +15,14 @@ import {
 import { useNavigate, useLocation } from "react-router";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/useAuth";
+import NotificationBell from "./NotificationBell";
+import defaultImage from "/default_avatar.png";
 
 const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { logout } = useAuth();
+  const { user: userProfile, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Sync active tab with the current route
   const activeTab = location.pathname.includes("/contacts")
@@ -37,8 +40,6 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
   const changeTab = (tab) => {
     setSidebarOpen(false);
   };
-
-  const navigate = useNavigate();
 
   const logOut = async () => {
     await logout();
@@ -86,6 +87,26 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
               <div className="min-w-0">
                 <h1 className="text-blue-500 text-3xl font-bold">Buddy Book</h1>
                 <h2 className="">Contact Management</h2>
+              </div>
+            </div>
+
+            {/* Profile section */}
+            <div className="mx-5 mb-2 flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-blue-100/50 shadow-sm">
+              <NotificationBell />
+              <img
+                src={userProfile?.profileImage || defaultImage}
+                alt=""
+                className="size-11 rounded-full object-cover border-2 border-blue-100 cursor-pointer"
+                onClick={() => {
+                  setSidebarOpen(false);
+                  navigate("/settings");
+                }}
+              />
+              <div className="min-w-0 flex-1">
+                <h1 className="font-semibold text-sm truncate">{userProfile?.name}</h1>
+                <h2 className="text-gray-500 text-xs truncate">
+                  {userProfile?.phoneNumber}
+                </h2>
               </div>
             </div>
             <h1 className="p-5 mt-4 text-ms text-gray-600">USER</h1>

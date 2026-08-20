@@ -8,6 +8,7 @@ import ContactSearchBar from "../Components/ContactSearchBar";
 import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
 import { useNavigate } from "react-router";
+import NotificationBell from "../Components/NotificationBell";
 
 const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
@@ -77,7 +78,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
          contactsCount={contacts.length}
        />
         <div className="p-4 md:p-7 lg:ml-80 flex flex-col gap-5 min-w-0">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 -mx-3 shadow-sm">
           <div className="w-full lg:w-auto">
             <ContactSearchBar
               searchText={searchText}
@@ -97,7 +98,8 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
               onContactFavoriteChange={handleFavoriteChange}
             />
           </div>
-          <div className="flex gap-3 items-center lg:self-start shrink-0">
+          <div className="flex gap-3 items-center lg:self-start shrink-0 my-auto">
+            <NotificationBell />
             <div className="text-right">
               <h1 className="font-semibold text-md">{userProfile?.name}</h1>
               <h2 className="text-gray-600 text-md">

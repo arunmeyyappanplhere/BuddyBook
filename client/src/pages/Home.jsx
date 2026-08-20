@@ -6,6 +6,8 @@ import defaultImage from "/default_avatar.png";
 import ContactSearchBar from "../Components/ContactSearchBar";
 import StatsCard from "../Components/StatsCard";
 import RecentContactCard from "../Components/RecentContactCard";
+import ContactInsights from "../Components/ContactInsights";
+import NotificationBell from "../Components/NotificationBell";
 import { useAuth } from "../context/useAuth";
 import { useNavigate } from "react-router";
 import useContactSearch from "../hooks/useContactSearch";
@@ -132,8 +134,8 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
         openAddContactModal={openAddContactModal}
         setOpenAddContactModal={setOpenAddContactModal}
       />
-      <div className="p-4 md:p-7 lg:ml-80 flex flex-col gap-5 min-w-0">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+        <div className="p-4 md:p-7 lg:ml-80 flex flex-col gap-5 min-w-0">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 -mx-3 shadow-sm">
           <div className="w-full lg:w-auto">
             <ContactSearchBar
               searchText={searchText}
@@ -151,7 +153,8 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
               onContactFavoriteChange={handleFavoriteChange}
             />
           </div>
-          <div className="flex gap-3 items-center lg:self-start shrink-0">
+          <div className="flex gap-3 items-center lg:self-start shrink-0 my-auto">
+            <NotificationBell />
             <div className="text-right">
               <h1 className="font-semibold text-md">{userProfile?.name}</h1>
               <h2 className="text-gray-600 text-md">
@@ -255,46 +258,56 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
                 percentage={"This Week"}
               />
             </div>
-            <div className="w-full lg:w-3/7 flex flex-col h-full">
-              <div className="flex justify-between items-center">
-                <h1 className="text-2xl md:text-3xl font-semibold mb-4">Recent Contacts</h1>
-                <a
-                  href="/contacts"
-                  className="text-blue-500 cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/contacts");
-                  }}
-                >
-                  View All
-                </a>
-              </div>
-              <div className="shadow-md w-full rounded-2xl h-full p-0.5">
-                {recentContacts.length > 0 ? (
-                  recentContacts.map((contact, index) => (
-                    <div key={contact._id || index} className="w-full p-1.5">
-                      <RecentContactCard
-                        contact_id={contact.contact_uid || contact._id}
-                        contactImage={contact.contact_profileImage}
-                        contactName={contact.contact_name}
-                        role={contact.contact_role || "No role specified"}
-                        contactNumber={contact.contact_phone}
-                        contactRelation={contact.contact_relation}
-                        isFavorite={contact.contact_favorite}
-                        onFavoriteChange={handleFavoriteChange}
-                      />
+            <div className="grid grid-cols-1 lg:grid-cols-7 gap-5">
+              <div className="lg:col-span-3 flex flex-col h-full">
+                <div className="flex justify-between items-center">
+                  <h1 className="text-2xl md:text-3xl font-semibold mb-4">Recent Contacts</h1>
+                  <a
+                    href="/contacts"
+                    className="text-blue-500 cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate("/contacts");
+                    }}
+                  >
+                    View All
+                  </a>
+                </div>
+                <div className="shadow-md w-full rounded-2xl h-full p-0.5">
+                  {recentContacts.length > 0 ? (
+                    recentContacts.map((contact, index) => (
+                      <div key={contact._id || index} className="w-full p-1.5">
+                        <RecentContactCard
+                          contact_id={contact.contact_uid || contact._id}
+                          contactImage={contact.contact_profileImage}
+                          contactName={contact.contact_name}
+                          role={contact.contact_role || "No role specified"}
+                          contactNumber={contact.contact_phone}
+                          contactRelation={contact.contact_relation}
+                          isFavorite={contact.contact_favorite}
+                          onFavoriteChange={handleFavoriteChange}
+                        />
+                      </div>
+                    ))
+                  ) : totalContacts > 0 ? (
+                    <div className="flex justify-center items-center h-full text-gray-500">
+                      No contacts added in the last 7 days.
                     </div>
-                  ))
-                ) : totalContacts > 0 ? (
-                  <div className="flex justify-center items-center h-full text-gray-500">
-                    No contacts added in the last 7 days.
-                  </div>
-                ) : (
-                  <div className="flex flex-col justify-center items-center h-full text-gray-500 gap-2 py-10">
-                    <UserRound size={40} className="text-gray-300" />
-                    <p>No contacts yet. Use Quick Add to create your first contact.</p>
-                  </div>
-                )}
+                  ) : (
+                    <div className="flex flex-col justify-center items-center h-full text-gray-500 gap-2 py-10">
+                      <UserRound size={40} className="text-gray-300" />
+                      <p>No contacts yet. Use Quick Add to create your first contact.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="lg:col-span-4 flex flex-col h-full">
+                <ContactInsights
+                  contacts={contacts}
+                  favoriteCount={favoriteContacts.length}
+                  recentCount={recentCount}
+                  onAddContact={() => setOpenAddContactModal(true)}
+                />
               </div>
             </div>
           </>
@@ -314,9 +327,15 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
               <div className="h-45 w-full rounded-2xl bg-gray-100 shadow-md animate-pulse" />
               <div className="h-45 w-full rounded-2xl bg-gray-100 shadow-md animate-pulse" />
             </div>
-            <div className="w-full lg:w-3/7 flex flex-col h-full">
-              <div className="h-8 w-52 bg-gray-100 rounded-xl mb-4 animate-pulse" />
-              <div className="shadow-md w-full rounded-2xl h-40 p-0.5 animate-pulse bg-gray-100" />
+            <div className="grid grid-cols-1 lg:grid-cols-7 gap-5">
+              <div className="lg:col-span-3 flex flex-col h-full">
+                <div className="h-8 w-52 bg-gray-100 rounded-xl mb-4 animate-pulse" />
+                <div className="shadow-md w-full rounded-2xl h-40 p-0.5 animate-pulse bg-gray-100" />
+              </div>
+              <div className="lg:col-span-4 flex flex-col gap-5">
+                <div className="h-60 w-full bg-gray-100 rounded-2xl animate-pulse" />
+                <div className="h-60 w-full bg-gray-100 rounded-2xl animate-pulse" />
+              </div>
             </div>
           </>
         )}

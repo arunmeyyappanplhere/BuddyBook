@@ -8,14 +8,12 @@ import { useAuth } from "../context/useAuth";
 import useContactSearch from "../hooks/useContactSearch";
 import UnstashModal from "../Components/UnstashModal";
 import { useNavigate } from "react-router";
+import NotificationBell from "../Components/NotificationBell";
+import defaultImage from "/default_avatar.png";
 
 const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
-  const {
-    user: userProfile,
-    loading: authLoading,
-    error: authError,
-    isAuthenticated,
-  } = useAuth();
+  const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(true);
@@ -88,7 +86,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
          contactsCount={contacts.length}
        />
         <div className="p-4 md:p-7 lg:ml-80 flex flex-col gap-5 min-w-0">
-        <div className="sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 pl-16 lg:pl-3 -mx-3 shadow-sm">
+        <div className="sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 pl-16 lg:pl-3 lg:pr-3 -mx-3 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           <ContactSearchBar
             searchText={searchText}
             onSearchTextChange={setSearchText}
@@ -105,6 +103,15 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
             showResultsDropdown={false}
             onContactFavoriteChange={handleFavoriteChange}
           />
+          <div className="hidden lg:flex items-center gap-3">
+            <NotificationBell />
+            <img
+              src={userProfile?.profileImage || defaultImage}
+              className="size-11 rounded-full object-cover border-2 border-blue-100 cursor-pointer"
+              onClick={() => navigate("/settings")}
+              alt=""
+            />
+          </div>
         </div>
 
         {authError && (

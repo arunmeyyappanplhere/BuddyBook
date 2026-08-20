@@ -12,8 +12,8 @@ const Navbar = () => {
     <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-sm fixed top-0 left-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img src={BuddyBookLogo} alt="BuddyBook" className="rounded-lg size-11" />
-          <h1 className="text-blue-500 dark:text-blue-400 text-2xl font-bold">Buddy Book</h1>
+          <img src={BuddyBookLogo} alt="BuddyBook" className="rounded-lg size-8 sm:size-11" />
+          <h1 className="text-blue-500 dark:text-blue-400 text-lg sm:text-2xl font-bold">Buddy Book</h1>
         </div>
         <div className="hidden md:flex items-center gap-8 text-gray-600 dark:text-gray-300 font-medium">
           <Link to="/" className="hover:text-blue-500 dark:hover:text-blue-400 transition duration-100">Home</Link>
@@ -31,7 +31,7 @@ const Navbar = () => {
           </Link>
           <Link
             to="/register"
-            className="px-5 py-2 text-white font-semibold bg-blue-500 rounded-lg hover:bg-blue-400 transition duration-100"
+            className="px-3 py-1.5 text-sm sm:px-5 sm:py-2 sm:text-base text-white font-semibold bg-blue-500 rounded-lg hover:bg-blue-400 transition duration-100"
           >
             Sign Up Free
           </Link>
@@ -41,17 +41,17 @@ const Navbar = () => {
             role="switch"
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
             onClick={toggleTheme}
-            className="rounded-lg px-5 py-2 font-semibold border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 bg-transparent hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center whitespace-nowrap"
+            className="rounded-lg px-2 py-2 sm:px-5 sm:py-2 font-semibold border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 bg-transparent hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center"
           >
             {theme === "dark" ? (
               <>
-                <Sun className="mr-1 h-4 w-4 text-yellow-500" />
-                Light
+                <Sun className="h-4 w-4 text-yellow-500" />
+                <span className="hidden sm:inline ml-1">Light</span>
               </>
             ) : (
               <>
-                <Moon className="mr-1 h-4 w-4 text-blue-500" />
-                Dark
+                <Moon className="h-4 w-4 text-blue-500" />
+                <span className="hidden sm:inline ml-1">Dark</span>
               </>
             )}
           </button>

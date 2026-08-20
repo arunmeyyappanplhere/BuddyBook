@@ -137,7 +137,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
                   </div>
                 </div>
               </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black px-4 md:px-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black p-6 md:p-10">
               {filteredContacts.length > 0 ? (
                 filteredContacts.map((contact) => {
                   return (
@@ -188,7 +188,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
               <div className="h-9 w-40 bg-gray-100 rounded-xl animate-pulse" />
               <div className="h-5 w-72 bg-gray-100 rounded-xl animate-pulse" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black px-4 md:px-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 rounded-4xl text-black p-6 md:p-10">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}

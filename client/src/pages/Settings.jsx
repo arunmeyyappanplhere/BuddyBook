@@ -123,23 +123,10 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
            openAddContactModal={openAddContactModal}
            setOpenAddContactModal={setOpenAddContactModal}
          />
-          <div className="p-4 md:p-7 lg:ml-80 flex flex-col gap-5 min-w-0">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
-            <div className="w-full lg:w-auto">
-              <h1 className="text-2xl md:text-3xl font-semibold">Settings</h1>
-              <p className="text-gray-600 mt-1">Manage your account and preferences.</p>
-            </div>
-            <div className="flex gap-3 items-center lg:self-start shrink-0">
-              <div className="text-right">
-                <h1 className="font-semibold text-md">{userProfile?.name}</h1>
-                <h2 className="text-gray-600 text-md">{userProfile?.phoneNumber}</h2>
-              </div>
-              <img
-                src={userProfile?.profileImage || defaultImage}
-                className="size-12 md:size-15 rounded-full"
-                alt=""
-              />
-            </div>
+           <div className="p-4 md:p-7 lg:ml-80 pt-16 lg:pt-0 flex flex-col gap-5 min-w-0">
+          <div className="w-full lg:w-auto">
+            <h1 className="text-2xl md:text-3xl font-semibold">Settings</h1>
+            <p className="text-gray-600 mt-1">Manage your account and preferences.</p>
           </div>
 
           {authError && (

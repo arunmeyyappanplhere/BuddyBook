@@ -27,14 +27,6 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const checkAuth = useCallback(async () => {
-    const token = getCookie("token");
-    if (!token) {
-      setIsAuthenticated(false);
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await axiosInstance.get("/home");
       setUser(response.data);
@@ -58,13 +50,6 @@ export const AuthProvider = ({ children }) => {
   }, [checkAuth]);
 
   const refreshUser = useCallback(async () => {
-    const token = getCookie("token");
-    if (!token) {
-      setIsAuthenticated(false);
-      setUser(null);
-      return;
-    }
-
     try {
       const response = await axiosInstance.get("/home");
       setUser(response.data);
@@ -80,7 +65,6 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await axiosInstance.post("/login", { email, password });
-      setIsAuthenticated(true);
       await checkAuth();
       return { success: true, data: response.data };
     } catch (error) {
@@ -95,7 +79,6 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await axiosInstance.post("/register", userData);
-      setIsAuthenticated(true);
       await checkAuth();
       return { success: true, data: response.data };
     } catch (error) {

@@ -23,7 +23,6 @@ const ContactModal = ({
 }) => {
   const { refreshUser } = useAuth();
   const [profileImage, setProfileImage] = useState("");
-
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -31,22 +30,18 @@ const ContactModal = ({
   const [dob, setDob] = useState("");
   const [role, setRole] = useState("");
   const [relation, setRelation] = useState("");
-
   const [registerError, setRegisterError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const isEditing = Boolean(editingContact);
 
-  // Pre-fill form when editing a contact
   useEffect(() => {
     if (editingContact) {
       setUserName(editingContact.contact_name || "");
       setEmail(editingContact.contact_email || "");
       setPhone(editingContact.contact_phone ? String(editingContact.contact_phone) : "");
       setAdress(editingContact.contact_address || "");
-      setDob(editingContact.contact_dob
-        ? String(editingContact.contact_dob).slice(0, 10)
-        : "");
+      setDob(editingContact.contact_dob ? String(editingContact.contact_dob).slice(0, 10) : "");
       setRole(editingContact.contact_role || "");
       setRelation(editingContact.contact_relation || "");
       setProfileImage("");
@@ -65,15 +60,10 @@ const ContactModal = ({
   };
 
   const uploadImage = async () => {
-    if (!profileImage) {
-      return "";
-    }
-
+    if (!profileImage) return "";
     const imageFormData = new FormData();
     imageFormData.append("profileImage", profileImage);
-
     const response = await axiosInstance.post("/upload", imageFormData);
-
     return response.data.filename;
   };
 
@@ -103,7 +93,7 @@ const ContactModal = ({
       return;
     }
 
-    if (phone.length != 10) {
+    if (phone.length !== 10) {
       setRegisterError("Phone Number must be 10 digits.");
       return;
     }
@@ -122,7 +112,6 @@ const ContactModal = ({
       }
 
       if (isEditing) {
-        // Update existing contact
         const contactId = editingContact.contact_uid || editingContact._id;
         await axiosInstance.put(`/contacts/${contactId}`, {
           contact_name: username,
@@ -136,7 +125,6 @@ const ContactModal = ({
         });
         toast.success("Contact updated successfully!");
       } else {
-        // Add new contact
         await axiosInstance.post("/add-contact", {
           contact_uid: generateContactUid(),
           profileImage: uploadedFileName,
@@ -151,15 +139,13 @@ const ContactModal = ({
         toast.success("Contact added successfully!");
       }
 
-      // Refresh user profile so Dashboard/Contacts reflect the change
       await refreshUser();
-
       setOpenAddContactModal(false);
       setEditingContact(null);
       resetForm();
     } catch (error) {
       console.error(error);
-      if (error.response?.status == 400) {
+      if (error.response?.status === 400) {
         setRegisterError("Contact already added.");
         toast.error("Contact already added.");
       } else {
@@ -181,73 +167,68 @@ const ContactModal = ({
   return (
     openAddContactModal && (
       <div
-        className="flex fixed top-0 left-0 w-full h-full justify-center items-center z-99 bg-[#000000b0] transition duration-300 p-4"
+        className="flex fixed inset-0 w-full h-full items-end sm:items-center justify-center z-[100] bg-black/60 transition duration-300 p-0 sm:p-4"
         onClick={handleClose}
       >
         <div
-          className="flex flex-col justify-center w-full max-w-lg max-h-[90vh] rounded-xl shadow-2xl bg-white px-4 md:px-6 py-6 md:py-10 overflow-auto"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
+          className="w-full sm:max-w-lg max-h-[95vh] sm:max-h-[90vh] rounded-t-2xl sm:rounded-xl shadow-2xl bg-white flex flex-col overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-semibold">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100 shrink-0">
+            <div className="min-w-0 pr-4">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 truncate">
                 {isEditing ? "Edit Contact" : "Add New Contact"}
               </h1>
-              <h2 className="text-lg md:text-xl text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5 truncate">
                 {isEditing
                   ? "Update the details of your connection."
                   : "Enter the details of your new connection."}
-              </h2>
+              </p>
             </div>
-            <X
-              className="text-gray-600 cursor-pointer hover:text-black transition duration-300 shrink-0"
+            <button
               onClick={handleClose}
-            />
+              disabled={submitting}
+              className="shrink-0 p-2 rounded-full hover:bg-gray-100 transition cursor-pointer disabled:opacity-50"
+              aria-label="Close"
+            >
+              <X size={20} className="text-gray-600" />
+            </button>
           </div>
-          <div className="mt-6 md:mt-10 flex justify-center">
-            <form onSubmit={handleAddContact} className="w-full">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-2.5">
+
+          {/* Scrollable body */}
+          <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6">
+            <form onSubmit={handleAddContact} className="space-y-3 sm:space-y-4">
+              {/* Profile image + Name */}
+              <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 items-start">
                 <label
                   htmlFor="profileImage"
-                  className="text-gray-600 text-sm cursor-pointer flex justify-center w-full sm:w-max"
+                  className="cursor-pointer flex flex-col items-center gap-1 shrink-0 mx-auto xs:mx-0"
                 >
-                  <div>
-                    <h2 className="text-center">Profile</h2>
-                    <img
-                      src={
-                        profileImage
-                          ? URL.createObjectURL(profileImage)
-                          : editingContact?.contact_profileImage || default_profile
-                      }
-                      alt=""
-                      className="size-15 rounded-full mx-auto border border-dashed"
-                    />
-                  </div>
-                </label>
-                <div className="text-gray-600 text-md w-min flex items-center bg-white mb-4">
-                  <input
-                    type="file"
-                    id="profileImage"
-                    className="hidden"
-                    onChange={(e) => {
-                      setProfileImage(e.target.files[0]);
-                    }}
-                    accept="image/*"
-                    disabled={submitting}
+                  <img
+                    src={
+                      profileImage
+                        ? URL.createObjectURL(profileImage)
+                        : editingContact?.contact_profileImage || default_profile
+                    }
+                    alt="Profile"
+                    className="size-16 sm:size-20 rounded-full object-cover border-2 border-dashed border-gray-300"
                   />
-                </div>
+                  <span className="text-[10px] sm:text-xs text-blue-500 font-medium">
+                    {isEditing ? "Change" : "Upload"}
+                  </span>
+                </label>
                 <div className="flex-1 w-full">
-                  <label htmlFor="" className="text-gray-600 text-sm">
+                  <label htmlFor="name" className="text-xs sm:text-sm text-gray-600 mb-1 block">
                     Name
                   </label>
-                  <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                    <UserRound className="text-gray-600 shrink-0" />
+                  <div className="flex items-center border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg">
+                    <UserRound className="text-gray-400 shrink-0 size-4 sm:size-5" />
                     <input
+                      id="name"
                       type="text"
-                      className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full"
-                      placeholder={"Your name"}
+                      className="w-full min-h-0 focus:outline-0 pl-2 sm:pl-3 placeholder:text-gray-300 text-sm sm:text-base"
+                      placeholder="Your name"
                       value={username}
                       onChange={(e) => setUserName(e.target.value)}
                       required
@@ -257,33 +238,48 @@ const ContactModal = ({
                 </div>
               </div>
 
-              <label htmlFor="" className="text-gray-600 text-sm">
-                Email Address
-              </label>
-              <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                <Mail className="text-gray-600 shrink-0" />
-                <input
-                  type="text"
-                  className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full"
-                  placeholder={"name@company.com"}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={submitting}
-                />
+              <input
+                type="file"
+                id="profileImage"
+                className="hidden"
+                onChange={(e) => setProfileImage(e.target.files[0])}
+                accept="image/*"
+                disabled={submitting}
+              />
+
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="text-xs sm:text-sm text-gray-600 mb-1 block">
+                  Email Address
+                </label>
+                <div className="flex items-center border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg">
+                  <Mail className="text-gray-400 shrink-0 size-4 sm:size-5" />
+                  <input
+                    id="email"
+                    type="text"
+                    className="w-full min-h-0 focus:outline-0 pl-2 sm:pl-3 placeholder:text-gray-300 text-sm sm:text-base"
+                    placeholder="name@company.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={submitting}
+                  />
+                </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-10">
-                <div className="flex-1">
-                  <label htmlFor="" className="text-gray-600 text-sm">
+              {/* Role + Relation */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                  <label htmlFor="role" className="text-xs sm:text-sm text-gray-600 mb-1 block">
                     Role
                   </label>
-                  <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                    <BriefcaseBusiness className="text-gray-600 shrink-0" />
+                  <div className="flex items-center border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg">
+                    <BriefcaseBusiness className="text-gray-400 shrink-0 size-4 sm:size-5" />
                     <input
+                      id="role"
                       type="text"
-                      className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder={"Software Developer || Google"}
+                      className="w-full min-h-0 focus:outline-0 pl-2 sm:pl-3 placeholder:text-gray-300 text-sm sm:text-base"
+                      placeholder="Software Developer"
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
                       required
@@ -291,16 +287,17 @@ const ContactModal = ({
                     />
                   </div>
                 </div>
-                <div className="flex-1">
-                  <label htmlFor="" className="text-gray-600 text-sm">
+                <div>
+                  <label htmlFor="relation" className="text-xs sm:text-sm text-gray-600 mb-1 block">
                     Relation
                   </label>
-                  <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                    <Handshake className="text-gray-600 shrink-0" />
+                  <div className="flex items-center border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg">
+                    <Handshake className="text-gray-400 shrink-0 size-4 sm:size-5" />
                     <input
+                      id="relation"
                       type="text"
-                      className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder={"Friend"}
+                      className="w-full min-h-0 focus:outline-0 pl-2 sm:pl-3 placeholder:text-gray-300 text-sm sm:text-base"
+                      placeholder="Friend"
                       value={relation}
                       onChange={(e) => setRelation(e.target.value)}
                       required
@@ -309,17 +306,21 @@ const ContactModal = ({
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-10">
-                <div className="flex-1">
-                  <label htmlFor="" className="text-gray-600 text-sm">
+
+              {/* Phone + DOB */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                  <label htmlFor="phone" className="text-xs sm:text-sm text-gray-600 mb-1 block">
                     Phone Number
                   </label>
-                  <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                    <Phone className="text-gray-600 shrink-0" />
+                  <div className="flex items-center border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg">
+                    <Phone className="text-gray-400 shrink-0 size-4 sm:size-5" />
                     <input
-                      type="number"
-                      className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder={"12345 12345"}
+                      id="phone"
+                      type="tel"
+                      inputMode="numeric"
+                      className="w-full min-h-0 focus:outline-0 pl-2 sm:pl-3 placeholder:text-gray-300 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      placeholder="1234567890"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
@@ -327,19 +328,18 @@ const ContactModal = ({
                     />
                   </div>
                 </div>
-                <div className="flex-1">
-                  <label htmlFor="" className="text-gray-600 text-sm">
-                    Date Of Birth
+                <div>
+                  <label htmlFor="dob" className="text-xs sm:text-sm text-gray-600 mb-1 block">
+                    Date of Birth
                   </label>
-                  <div className="text-gray-600 text-md border w-full border-gray-300 flex items-center bg-white px-2 p-1 rounded-md mb-4">
-                    <Calendar className="text-gray-600 shrink-0" />
+                  <div className="flex items-center border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg">
+                    <Calendar className="text-gray-400 shrink-0 size-4 sm:size-5" />
                     <input
+                      id="dob"
                       type="date"
-                      className="block min-h-9 focus:outline-0 pl-4 mr-0 placeholder:text-gray-300 w-full [&::-webkit-calendar-picker-indicator]:hidden"
+                      className="w-full min-h-0 focus:outline-0 pl-2 sm:pl-3 placeholder:text-gray-300 text-sm sm:text-base [&::-webkit-calendar-picker-indicator]:hidden"
                       value={dob}
-                      onChange={(e) => {
-                        setDob(e.target.value);
-                      }}
+                      onChange={(e) => setDob(e.target.value)}
                       required
                       disabled={submitting}
                     />
@@ -347,16 +347,17 @@ const ContactModal = ({
                 </div>
               </div>
 
+              {/* Address */}
               <div>
-                <label htmlFor="" className="text-gray-600 text-sm">
+                <label htmlFor="address" className="text-xs sm:text-sm text-gray-600 mb-1 block">
                   Address
                 </label>
-                <div className="text-gray-600 text-md flex items-start border w-full border-gray-300 bg-white px-2 p-1 rounded-md mb-4">
-                  <MapPin className="text-gray-600 shrink-0" />
+                <div className="flex items-start border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg">
+                  <MapPin className="text-gray-400 shrink-0 size-4 sm:size-5 mt-0.5" />
                   <textarea
-                    className="block min-h-9 focus:outline-0 pl-4 placeholder:text-gray-300 w-full resize-none"
-                    placeholder={"Door no, Street, City, Pincode."}
-                    rows={4}
+                    id="address"
+                    className="w-full min-h-[60px] sm:min-h-[80px] focus:outline-0 pl-2 sm:pl-3 placeholder:text-gray-300 text-sm sm:text-base resize-none"
+                    placeholder="Door no, Street, City, Pincode."
                     value={address}
                     onChange={(e) => setAdress(e.target.value)}
                     required
@@ -364,33 +365,39 @@ const ContactModal = ({
                   />
                 </div>
               </div>
-              <div className="flex gap-5 justify-end">
+
+              {/* Actions */}
+              <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-1 sm:pt-2">
                 <button
                   type="button"
-                  className="min-w-30 flex gap-2 items-center justify-center text-black text-md cursor-pointer bg-gray-300 rounded-md min-h-9 p-2.5 hover:bg-gray-400 hover:scale-[1.01] transition ease-in-out duration-100"
                   onClick={handleClose}
                   disabled={submitting}
+                  className="w-full sm:w-auto min-h-[44px] px-4 py-2.5 text-sm sm:text-base font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition disabled:opacity-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="min-w-30 flex gap-2 items-center justify-center text-white text-md cursor-pointer bg-blue-500 rounded-md min-h-9 p-2.5 hover:bg-blue-800 hover:scale-[1.01] transition ease-in-out duration-100 disabled:opacity-50 disabled:pointer-events-none"
                   disabled={submitting}
+                  className="w-full sm:w-auto min-h-[44px] px-4 py-2.5 text-sm sm:text-base font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <>
-                      <Loader2 size={20} className="animate-spin" /> Saving...
+                      <Loader2 size={18} className="animate-spin" />
+                      <span>Saving...</span>
                     </>
+                  ) : isEditing ? (
+                    "Update Contact"
                   ) : (
-                    isEditing ? "Update Contact" : "Save Contact"
+                    "Save Contact"
                   )}
                 </button>
               </div>
+
               {registerError && (
-                <h3 className="mt-3 text-md text-red-600 max-w-100 text-center">
+                <p className="text-xs sm:text-sm text-red-600 text-center font-medium">
                   {registerError}
-                </h3>
+                </p>
               )}
             </form>
           </div>

@@ -1,8 +1,0 @@
-# .env Secret configuration file
-.env
-
-# Enternal Packages
-node_modules
-
-#images
-public\profileImages\

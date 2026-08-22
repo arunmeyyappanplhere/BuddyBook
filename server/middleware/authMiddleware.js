@@ -1,5 +1,6 @@
 import { verifyToken } from "../jwt.js";
 import users from "../models/userModal.js";
+import { hashForAudit } from "../middleware/security.js";
 
 /**
  * JWT authentication middleware.
@@ -8,27 +9,43 @@ import users from "../models/userModal.js";
  * Sends 401 when the token is missing or invalid.
  */
 export const protect = async (req, res, next) => {
-  const token = req.headers.authorization;
+  let token;
+  let source = "";
 
-  if (!token) {
-    res.status(401).json({ message: "Session is not Authorized" });
-    return;
+  // 1. Try Authorization header first
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+    source = "header";
   }
 
-  const authToken = token.toString().split(" ")[1];
+  // 2. Fallback to httpOnly cookie
+  if (!token && req.cookies?.token) {
+    token = req.cookies.token;
+    source = "cookie";
+  }
+
+  if (!token) {
+    return res.status(401).json({ message: "Session is not Authorized" });
+  }
 
   try {
-    const decoded = await verifyToken(authToken);
+    const decoded = verifyToken(token);
     const user = await users.findById(decoded.id || decoded.sub).select("-password");
 
     if (!user) {
-      res.status(401).json({ message: "Session is not Authorized" });
-      return;
+      return res.status(401).json({ message: "Session is not Authorized" });
     }
 
+    // Audit log for sensitive actions (hashed, no plaintext)
+    console.log(
+      `[AUTH] User ${hashForAudit(user.email)} accessed via ${source} at ${new Date().toISOString()}`,
+    );
+
     req.user = user;
+    req.authSource = source;
     next();
   } catch (err) {
-    res.status(401).json({ message: "Session is not Authorized" });
+    return res.status(401).json({ message: "Session is not Authorized" });
   }
 };

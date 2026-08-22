@@ -1,36 +1,37 @@
 import users from "../models/userModal.js";
 import { generateToken } from "../jwt.js";
+import { isValidEmail } from "../middleware/security.js";
 
 export const loginController = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login attempt:", email);
 
   try {
-    // Fetch user including the password field (select: false by default).
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Please provide a valid email address." });
+    }
+
     const userPresent = await users.findOne({ email }).select("+password");
 
     if (!userPresent) {
-      console.log(`${email}, doesn't exists.`);
-      res.status(404).json({ message: `${email}, doesn't exists.` });
-      return;
+      return res.status(404).json({ message: "Invalid email or password." });
     }
 
-    // Compare the provided password with the stored hash.
     const isMatch = await userPresent.comparePassword(password);
     if (!isMatch) {
-      console.log(`Password doesn't match.`);
-      res.status(400).json({ message: `Password doesn't match.` });
-      return;
+      return res.status(400).json({ message: "Invalid email or password." });
     }
 
-    console.log(`Logged in successfully.`);
     const token = generateToken(userPresent);
+
+    // Secure cookie settings
     res.cookie("token", token, {
-      maxAge: 60 * 60 * 1000,
-      httpOnly: false,
-      secure: false,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       path: "/",
     });
+
     res.status(200).json({
       message: `${email}, logged in successfully.`,
       token,
@@ -44,7 +45,7 @@ export const loginController = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
+    console.error("Login error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

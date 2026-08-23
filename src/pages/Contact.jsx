@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router";
 import { Mail, MessageSquare, Send, Phone, User } from "lucide-react";
 import { toast } from "react-toastify";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
+import { sendContactEmail } from "../api/email";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -60,7 +60,7 @@ const Contact = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) {
@@ -69,7 +69,8 @@ const Contact = () => {
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
+    try {
+      await sendContactEmail(formData);
       toast.success("Message sent! We'll get back to you within 24 hours.");
       setFormData({
         name: "",
@@ -78,8 +79,15 @@ const Contact = () => {
         subject: "",
         message: "",
       });
+    } catch (error) {
+      console.error("Failed to send contact email:", error);
+      toast.error(
+        error.message ||
+          "Failed to send your message. Please try again or email us directly at evocodes.co@gmail.com.",
+      );
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (

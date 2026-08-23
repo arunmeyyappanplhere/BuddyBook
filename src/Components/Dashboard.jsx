@@ -17,12 +17,15 @@ import { toast } from "react-toastify";
 import { useAuth } from "../context/useAuth";
 import NotificationBell from "./NotificationBell";
 import defaultImage from "/default_avatar.png";
+import Spinner from "./Spinner";
 
 const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user: userProfile, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [quickAdding, setQuickAdding] = useState(false);
 
   // Sync active tab with the current route
   const activeTab = location.pathname.includes("/contacts")
@@ -42,6 +45,7 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
   };
 
   const logOut = async () => {
+    setLoggingOut(true);
     await logout();
     navigate("/login");
     toast.success("Logged out successfully!");
@@ -256,13 +260,13 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
                   Settings
                 </li>
                 <li
-                  className={
-                    "flex mb-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-red-500 transition duration-100 "
-                  }
-                  onClick={logOut}
-                >
-                  <div className={"w-1 h-7 "}></div>
-                  <LogOut className={""} /> Logout
+                className={
+                  "flex mb-4 gap-3 text-xl items-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:text-red-500 transition duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                }
+                onClick={logOut}
+              >
+                <div className={"w-1 h-7 "}></div>
+                {loggingOut ? <Spinner size={20} className="text-red-500" /> : <LogOut className={""} />} Logout
                 </li>
               </ul>
             </div>
@@ -271,14 +275,16 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
             <ul>
               <li
                 className={
-                  "flex bg-blue-500 text-white mb-4 gap-3 text-xl items-center justify-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:scale-[1.01] transition duration-100 "
+                  "flex bg-blue-500 text-white mb-4 gap-3 text-xl items-center justify-center font-semibold rounded-xl p-3 pl-0 cursor-pointer group hover:scale-[1.01] transition duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
                 }
                 onClick={() => {
+                  setQuickAdding(true);
                   setOpenAddContactModal(true);
                   setSidebarOpen(false);
+                  setQuickAdding(false);
                 }}
               >
-                <Plus className={""} /> Quick Add
+                {quickAdding ? <Spinner size={20} className="text-white" /> : <Plus className={""} />} Quick Add
               </li>
             </ul>
           </div>

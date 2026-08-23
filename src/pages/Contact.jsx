@@ -3,6 +3,7 @@ import { Mail, MessageSquare, Send, Phone, User } from "lucide-react";
 import { toast } from "react-toastify";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
+import Spinner from "../components/Spinner";
 import { sendContactEmail } from "../api/email";
 
 const Contact = () => {
@@ -249,7 +250,10 @@ const Contact = () => {
                 className="flex gap-2 items-center justify-center w-full px-8 py-3 text-lg font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-400 hover:scale-[1.01] transition duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
-                  "Sending..."
+                  <>
+                    <Spinner size={20} className="text-white" />
+                    Sending...
+                  </>
                 ) : (
                   <>
                     Send Message <Send size={20} />

@@ -77,7 +77,8 @@ const RecentContactCard = ({
       <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={onToggleFavorite}
-          className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
+          disabled={favoriteUpdating}
+          className={`p-2 rounded-full transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
             fav
               ? "bg-pink-100 text-pink-600 scale-110"
               : "text-gray-400 hover:text-pink-500 hover:bg-pink-50"

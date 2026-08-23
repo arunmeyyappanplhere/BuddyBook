@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import defaultImage from "/default_avatar.png";
 import axiosInstance from "../api/axios";
 import UnstashModal from "../Components/UnstashModal";
+import Spinner from "../Components/Spinner";
 
 const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated, refreshUser, logout } = useAuth();
@@ -34,6 +35,8 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
   const [deleting, setDeleting] = useState(false);
   const [stashing, setStashing] = useState(false);
   const [openUnstashModal, setOpenUnstashModal] = useState(false);
+  const [unstashing, setUnstashing] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,6 +113,7 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
   };
 
   const handleLogout = async () => {
+    setLoggingOut(true);
     await logout();
     window.location.href = "/login";
     toast.success("Logged out successfully!");
@@ -254,7 +258,16 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
                     disabled={saving}
                     className="flex gap-2 items-center justify-center w-full px-8 py-3 text-lg font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-400 hover:scale-[1.01] transition duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {saving ? "Saving..." : (<>Save Changes <Save size={18} /></>)}
+                    {saving ? (
+                      <>
+                        <Spinner size={18} className="text-white" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        Save Changes <Save size={18} />
+                      </>
+                    )}
                   </button>
                 </form>
               </div>
@@ -273,15 +286,33 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
                     <button
                       onClick={handleStashAll}
                       disabled={stashing}
-                      className="flex-1 flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-purple-500 rounded-xl hover:bg-purple-600 transition cursor-pointer disabled:opacity-50"
+                      className="flex-1 flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-purple-500 rounded-xl hover:bg-purple-600 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {stashing ? "Stashing..." : "Stash All Contacts"}
+                      {stashing ? (
+                        <>
+                          <Spinner size={18} className="text-white" />
+                          Stashing...
+                        </>
+                      ) : (
+                        "Stash All Contacts"
+                      )}
                     </button>
                     <button
-                      onClick={() => setOpenUnstashModal(true)}
-                      className="flex-1 flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition cursor-pointer"
+                      onClick={() => {
+                        setUnstashing(true);
+                        setOpenUnstashModal(true);
+                      }}
+                      disabled={unstashing}
+                      className="flex-1 flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Unstash Contacts
+                      {unstashing ? (
+                        <>
+                          <Spinner size={18} className="text-white" />
+                          Unstashing...
+                        </>
+                      ) : (
+                        "Unstash Contacts"
+                      )}
                     </button>
                   </div>
                 </div>
@@ -296,9 +327,17 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
                   </p>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition cursor-pointer"
+                    disabled={loggingOut}
+                    className="w-full flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Logout
+                    {loggingOut ? (
+                      <>
+                        <Spinner size={18} className="text-white" />
+                        Logging out...
+                      </>
+                    ) : (
+                      "Logout"
+                    )}
                   </button>
                 </div>
 
@@ -313,9 +352,16 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
                   <button
                     onClick={handleDeleteAccount}
                     disabled={deleting}
-                    className="w-full flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-red-500 rounded-xl hover:bg-red-600 transition cursor-pointer disabled:opacity-50"
+                    className="w-full flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-red-500 rounded-xl hover:bg-red-600 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {deleting ? "Deleting..." : "Delete Account"}
+                    {deleting ? (
+                      <>
+                        <Spinner size={18} className="text-white" />
+                        Deleting...
+                      </>
+                    ) : (
+                      "Delete Account"
+                    )}
                   </button>
                 </div>
               </div>

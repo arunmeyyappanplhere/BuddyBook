@@ -41,7 +41,7 @@ const Navbar = () => {
             role="switch"
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
             onClick={toggleTheme}
-            className="rounded-lg px-2 py-2 sm:px-5 sm:py-2 font-semibold border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 bg-transparent hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center"
+            className="rounded-lg px-2 py-2 sm:px-5 sm:py-2 font-semibold border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 bg-transparent hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center cursor-pointer"
           >
             {theme === "dark" ? (
               <>

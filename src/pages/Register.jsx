@@ -21,6 +21,7 @@ import axiosInstance from "../api/axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/useAuth";
+import Spinner from "../components/Spinner";
 
 const Register = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -35,6 +36,7 @@ const Register = () => {
   const [dob, setDob] = useState("");
 
   const [registerError, setRegisterError] = useState("");
+  const [registering, setRegistering] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -55,58 +57,71 @@ const Register = () => {
   };
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    setRegistering(true);
 
     // Form validation
     if (!profileImage) {
       setRegisterError("Please upload profile image.");
+      setRegistering(false);
       return;
     }
 
     if (username.length < 2) {
       setRegisterError("Username must be atleast 2 characters.");
+      setRegistering(false);
       return;
     }
 
     if (password.length < 8) {
       setRegisterError("Password must be atleast 8 characters.");
+      setRegistering(false);
       return;
     }
 
     if (phone.length != 10) {
       setRegisterError("Phone Number must be 10 digits.");
+      setRegistering(false);
       return;
     }
 
     if (new Date(dob) > new Date()) {
       setRegisterError("Date of Birth cannot be in future.");
+      setRegistering(false);
       return;
     }
 
-    const uploadedFileName = await uploadImage();
-    setRegisterError("");
+    try {
+      const uploadedFileName = await uploadImage();
+      setRegisterError("");
 
-    const userData = {
-      uuid: crypto.randomUUID(),
-      profileImage: uploadedFileName,
-      name: username,
-      email,
-      password,
-      phoneNumber: parseInt(phone, 10),
-      DOB: dob,
-      address,
-    };
+      const userData = {
+        uuid: crypto.randomUUID(),
+        profileImage: uploadedFileName,
+        name: username,
+        email,
+        password,
+        phoneNumber: parseInt(phone, 10),
+        DOB: dob,
+        address,
+      };
 
-    const result = await register(userData);
+      const result = await register(userData);
 
-    if (result.success) {
-      toast.success("Successfully signed up!");
-      navigate(from, { replace: true });
-    } else {
-      if (result.status === 400) {
-        toast.error("Account already exists.");
+      if (result.success) {
+        toast.success("Successfully signed up!");
+        navigate(from, { replace: true });
       } else {
-        toast.error("Error is signing up.");
+        if (result.status === 400) {
+          toast.error("Account already exists.");
+        } else {
+          toast.error("Error is signing up.");
+        }
       }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setRegisterError("Registration failed. Please try again.");
+    } finally {
+      setRegistering(false);
     }
   };
 
@@ -267,9 +282,19 @@ const Register = () => {
           </div>
           <button
             type="submit"
-            className="w-full flex gap-2 items-center justify-center text-white text-md cursor-pointer bg-blue-500 rounded-md min-h-9 p-2.5 hover:bg-blue-400 transition ease-in-out duration-100"
+            disabled={registering}
+            className="w-full flex gap-2 items-center justify-center text-white text-md cursor-pointer bg-blue-500 rounded-md min-h-9 p-2.5 hover:bg-blue-400 transition ease-in-out duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign Up <ArrowRight size={18} />
+            {registering ? (
+              <>
+                <Spinner size={18} className="text-white" />
+                Signing up...
+              </>
+            ) : (
+              <>
+                Sign Up <ArrowRight size={18} />
+              </>
+            )}
           </button>
           {registerError && (
             <h3 className="mt-3 text-md text-red-600 text-center">

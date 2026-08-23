@@ -9,6 +9,7 @@ import useContactSearch from "../hooks/useContactSearch";
 import { useNavigate } from "react-router";
 import NotificationBell from "../Components/NotificationBell";
 import defaultImage from "/default_avatar.png";
+import Spinner from "../Components/Spinner";
 
 const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
@@ -16,6 +17,9 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
+  const [addingContact, setAddingContact] = useState(false);
+  const [clearingFilters, setClearingFilters] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const fetchFavorites = async () => {
     if (!isAuthenticated) {
       setContactsLoading(false);
@@ -111,10 +115,21 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
           <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
             <p className="text-red-600 text-lg">Failed to load dashboard data.</p>
             <button
-              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
-              onClick={() => window.location.reload()}
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                setRetrying(true);
+                window.location.reload();
+              }}
+              disabled={retrying}
             >
-              Retry
+              {retrying ? (
+                <>
+                  <Spinner size={18} className="text-white" />
+                  Retrying...
+                </>
+              ) : (
+                "Retry"
+              )}
             </button>
           </div>
         )}
@@ -123,10 +138,21 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
           <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
             <p className="text-red-600 text-lg">Failed to load your favorites.</p>
             <button
-              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
-              onClick={() => window.location.reload()}
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                setRetrying(true);
+                window.location.reload();
+              }}
+              disabled={retrying}
             >
-              Retry
+              {retrying ? (
+                <>
+                  <Spinner size={18} className="text-white" />
+                  Retrying...
+                </>
+              ) : (
+                "Retry"
+              )}
             </button>
           </div>
         )}
@@ -176,12 +202,23 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
                   <p className="text-md mt-2">
                     Try adjusting your search text or filters.
                   </p>
-                  <button
-                    className="mt-6 px-6 py-2.5 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition"
-                    onClick={resetFilters}
-                  >
-                    Clear all filters
-                  </button>
+                   <button
+                     className="mt-6 px-6 py-2.5 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                     onClick={() => {
+                       setClearingFilters(true);
+                       resetFilters();
+                     }}
+                     disabled={clearingFilters}
+                   >
+                     {clearingFilters ? (
+                       <>
+                         <Spinner size={18} className="text-white" />
+                         Clearing...
+                       </>
+                     ) : (
+                       "Clear all filters"
+                     )}
+                   </button>
                 </div>
               ) : (
                 <div className="w-full col-span-full flex flex-col items-center justify-center py-16 text-gray-500">
@@ -212,12 +249,15 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
         )}
       </div>
       <button
-        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
+        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => {
+          setAddingContact(true);
           setOpenAddContactModal(true);
         }}
+        disabled={addingContact}
+        aria-label="Add contact"
       >
-        <Plus className="text-white" size={32} />
+        {addingContact ? <Spinner size={28} className="text-white" /> : <Plus className="text-white" size={32} />}
       </button>
     </div>
   );

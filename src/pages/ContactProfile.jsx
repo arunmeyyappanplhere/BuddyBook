@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router";
 import { useAuth } from "../context/useAuth";
 import { toast } from "react-toastify";
 import axiosInstance from "../api/axios";
+import Spinner from "../Components/Spinner";
 
 const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal }) => {
   const { id } = useParams();
@@ -22,6 +23,7 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
+  const [backing, setBacking] = useState(false);
 
   // Fetch contact data from API when component mounts
   const loadContact = useCallback(async () => {
@@ -124,8 +126,11 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
           <div className="flex items-center gap-5">
             <ArrowLeft
               size={32}
-              className="text-black font-bold cursor-pointer"
-              onClick={() => navi("/contacts")}
+              className="text-black font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                setBacking(true);
+                navi("/contacts");
+              }}
             />
             <h1 className="text-2xl md:text-4xl font-bold">Contact Profile</h1>
           </div>
@@ -253,40 +258,47 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
                   </div>
                   {isEditing ? (
                     <div className="flex gap-2">
-                      <X
-                        size={32}
-                        className="right-0 cursor-pointer p-1 rounded-md hover:text-red-500 hover:bg-red-100"
-                        onClick={() => {
-                          setIsEditing(false);
-                          setProfileImage(null);
-                          setFormData({
-                            contact_name: contact.contact_name,
-                            contact_role: contact.contact_role,
-                            contact_relation: contact.contact_relation,
-                            contact_email: contact.contact_email,
-                            contact_phone: contact.contact_phone,
-                            contact_dob: contact.contact_dob
-                              ? String(contact.contact_dob).slice(0, 10)
-                              : "",
-                            contact_address: contact.contact_address || "",
-                          });
-                        }}
-                      />
-                      <Check
-                        size={32}
-                        className={
-                          "right-0 cursor-pointer p-1 rounded-md hover:text-green-700 hover:bg-green-100" +
-                          (saving ? " opacity-50 pointer-events-none" : "")
-                        }
-                        onClick={handleSave}
-                      />
+                       <X
+                         size={32}
+                         className={
+                           "right-0 cursor-pointer p-1 rounded-md hover:text-red-500 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed" +
+                           (saving ? " opacity-50 pointer-events-none" : "")
+                         }
+                         onClick={() => {
+                           setIsEditing(false);
+                           setProfileImage(null);
+                           setFormData({
+                             contact_name: contact.contact_name,
+                             contact_role: contact.contact_role,
+                             contact_relation: contact.contact_relation,
+                             contact_email: contact.contact_email,
+                             contact_phone: contact.contact_phone,
+                             contact_dob: contact.contact_dob
+                               ? String(contact.contact_dob).slice(0, 10)
+                               : "",
+                             contact_address: contact.contact_address || "",
+                           });
+                         }}
+                       />
+                       {saving ? (
+                         <Spinner size={28} className="text-green-700" />
+                       ) : (
+                         <Check
+                           size={32}
+                           className={
+                             "right-0 cursor-pointer p-1 rounded-md hover:text-green-700 hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed" +
+                             (saving ? " opacity-50 pointer-events-none" : "")
+                           }
+                           onClick={handleSave}
+                         />
+                       )}
                     </div>
                   ) : (
-                    <Edit
-                      size={32}
-                      className="right-0 cursor-pointer p-1 rounded-md w-min hover:text-[#4648d4] hover:bg-blue-100 "
-                      onClick={() => setIsEditing(true)}
-                    />
+                     <Edit
+                       size={32}
+                       className="right-0 cursor-pointer p-1 rounded-md w-min hover:text-[#4648d4] hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                       onClick={() => setIsEditing(true)}
+                     />
                   )}
                 </div>
                 <div className="flex flex-col md:flex-row gap-6 md:gap-0 md:mb-6">
@@ -397,12 +409,23 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
           ) : (
             <div className="flex flex-col items-center gap-4 text-gray-500 text-xl">
               <p>Contact not found</p>
-              <button
-                className="px-6 py-2 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition"
-                onClick={() => navi("/contacts")}
-              >
-                Back to Contacts
-              </button>
+               <button
+                 className="px-6 py-2 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                 onClick={() => {
+                   setBacking(true);
+                   navi("/contacts");
+                 }}
+                 disabled={backing}
+               >
+                 {backing ? (
+                   <>
+                     <Spinner size={18} className="text-white" />
+                     Loading...
+                   </>
+                 ) : (
+                   "Back to Contacts"
+                 )}
+               </button>
             </div>
           )}
         </div>

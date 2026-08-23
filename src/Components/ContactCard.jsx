@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { toggleFavorite, deleteContact, toggleStash } from "../api/contacts";
 import { useAuth } from "../context/useAuth";
+import Spinner from "./Spinner";
 
 const ContactCard = ({
   contact_id,
@@ -24,6 +25,8 @@ const ContactCard = ({
   const [deleting, setDeleting] = useState(false);
   const [stashed, setStashed] = useState(isStashed || false);
   const [stashUpdating, setStashUpdating] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [viewing, setViewing] = useState(false);
   const { refreshUser } = useAuth();
   const navi = useNavigate();
 
@@ -94,6 +97,8 @@ const ContactCard = ({
 
   const handleEdit = (e) => {
     e.stopPropagation();
+    if (editing) return;
+    setEditing(true);
     if (onEdit) {
       onEdit({
         contact_uid: contact_id,
@@ -105,6 +110,7 @@ const ContactCard = ({
         contact_favorite: isFavorite,
       });
     }
+    setEditing(false);
   };
 
   // profileImage already contains the full Cloudinary secure_url from the upload
@@ -141,39 +147,47 @@ const ContactCard = ({
             <div className="flex gap-2">
               <button
                 onClick={handleEdit}
-                className="p-2 rounded-full bg-white/20 text-white hover:bg-blue-400 transition-all duration-200 cursor-pointer"
+                disabled={editing}
+                className="p-2 rounded-full bg-white/20 text-white hover:bg-blue-400 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 title="Edit contact"
               >
-                <Pencil size={16} />
+                {editing ? <Spinner size={16} className="text-white" /> : <Pencil size={16} />}
               </button>
               <button
                 onClick={onToggleFavorite}
-                className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
+                disabled={favoriteUpdating}
+                className={`p-2 rounded-full transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center ${
                   fav
                     ? "bg-pink-500 text-white shadow-lg"
                     : "bg-white/20 text-white hover:bg-white/40"
                 }`}
                 title={fav ? "Remove from favorites" : "Add to favorites"}
               >
-                <Heart size={16} fill={fav ? "white" : "none"} />
+                {favoriteUpdating ? (
+                  <Spinner size={16} className="text-white" />
+                ) : (
+                  <Heart size={16} fill={fav ? "white" : "none"} />
+                )}
               </button>
               <button
                 onClick={onToggleStash}
-                className={`p-2 rounded-full transition-all duration-200 cursor-pointer ${
+                disabled={stashUpdating}
+                className={`p-2 rounded-full transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center ${
                   stashed
                     ? "bg-green-500 text-white shadow-lg"
                     : "bg-white/20 text-white hover:bg-white/40"
                 }`}
                 title={stashed ? "Un-stash contact" : "Stash contact"}
               >
-                <Archive size={16} />
+                {stashUpdating ? <Spinner size={16} className="text-white" /> : <Archive size={16} />}
               </button>
               <button
                 onClick={onDelete}
-                className="p-2 rounded-full bg-white/20 text-white hover:bg-red-500 transition-all duration-200 cursor-pointer"
+                disabled={deleting}
+                className="p-2 rounded-full bg-white/20 text-white hover:bg-red-500 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 title="Delete contact"
               >
-                <Trash2 size={16} />
+                {deleting ? <Spinner size={16} className="text-white" /> : <Trash2 size={16} />}
               </button>
             </div>
           </div>
@@ -197,15 +211,26 @@ const ContactCard = ({
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            navi(`/contact-profile/${contact_id}`);
-          }}
-          className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-all duration-200 cursor-pointer group-hover:shadow-lg group-hover:shadow-blue-200"
-        >
-          View Profile
-          <ChevronRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
-        </button>
+          <button
+            onClick={() => {
+              setViewing(true);
+              navi(`/contact-profile/${contact_id}`);
+            }}
+            disabled={viewing}
+            className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-all duration-200 cursor-pointer group-hover:shadow-lg group-hover:shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {viewing ? (
+              <>
+                <Spinner size={16} className="text-white" />
+                Opening...
+              </>
+            ) : (
+              <>
+                View Profile
+                <ChevronRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+              </>
+            )}
+          </button>
       </div>
     </div>
   );

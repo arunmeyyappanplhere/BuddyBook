@@ -139,7 +139,7 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
               className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
             >
               <button
-                className="w-full flex justify-between items-center p-5 text-left hover:bg-blue-50 dark:hover:bg-gray-700 transition duration-100"
+                className="w-full flex justify-between items-center p-5 text-left hover:bg-blue-50 dark:hover:bg-gray-700 transition duration-100 cursor-pointer"
                 onClick={() =>
                   setOpenFaq(openFaq === faq.id ? null : faq.id)
                 }
@@ -191,7 +191,7 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
                     activeCategory === cat ? null : cat
                   )
                 }
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-100 ${
+                className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition duration-100 ${
                   activeCategory === cat
                     ? "bg-blue-500 text-white"
                     : "bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-gray-600"

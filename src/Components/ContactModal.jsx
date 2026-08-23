@@ -8,12 +8,12 @@ import {
   UserRound,
   BriefcaseBusiness,
   Handshake,
-  Loader2,
 } from "lucide-react";
 import default_profile from "/default_avatar.png";
 import axiosInstance from "../api/axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/useAuth";
+import Spinner from "./Spinner";
 
 const ContactModal = ({
   openAddContactModal,
@@ -189,7 +189,7 @@ const ContactModal = ({
             <button
               onClick={handleClose}
               disabled={submitting}
-              className="shrink-0 p-2 rounded-full hover:bg-gray-100 transition cursor-pointer disabled:opacity-50"
+              className="shrink-0 p-2 rounded-full hover:bg-gray-100 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Close"
             >
               <X size={20} className="text-gray-600" />
@@ -383,7 +383,7 @@ const ContactModal = ({
                 >
                   {submitting ? (
                     <>
-                      <Loader2 size={18} className="animate-spin" />
+                      <Spinner size={18} className="text-white" />
                       <span>Saving...</span>
                     </>
                   ) : isEditing ? (

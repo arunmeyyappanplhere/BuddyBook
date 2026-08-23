@@ -87,7 +87,7 @@ const Footer = () => {
                 placeholder="Your email"
                 className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-0 focus:border-blue-500"
               />
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition duration-100">
+              <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition duration-100 cursor-pointer">
                 Join
               </button>
             </div>

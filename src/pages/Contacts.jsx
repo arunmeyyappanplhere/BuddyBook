@@ -10,6 +10,7 @@ import UnstashModal from "../Components/UnstashModal";
 import { useNavigate } from "react-router";
 import NotificationBell from "../Components/NotificationBell";
 import defaultImage from "/default_avatar.png";
+import Spinner from "../Components/Spinner";
 
 const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
@@ -19,6 +20,10 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsError, setContactsError] = useState(null);
   const [openUnstashModal, setOpenUnstashModal] = useState(false);
+  const [addingContact, setAddingContact] = useState(false);
+  const [unstashing, setUnstashing] = useState(false);
+  const [clearingFilters, setClearingFilters] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   useEffect(() => {
     const fetchContacts = async () => {
       if (!isAuthenticated) {
@@ -120,10 +125,21 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
               Failed to load your contacts.
             </p>
             <button
-              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
-              onClick={() => window.location.reload()}
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                setRetrying(true);
+                window.location.reload();
+              }}
+              disabled={retrying}
             >
-              Retry
+              {retrying ? (
+                <>
+                  <Spinner size={18} className="text-white" />
+                  Retrying...
+                </>
+              ) : (
+                "Retry"
+              )}
             </button>
           </div>
         )}
@@ -157,11 +173,24 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
                   </h2>
                 </div>
                 <button
-                  onClick={() => setOpenUnstashModal(true)}
-                  className="hidden sm:flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition w-full max-w-sm sm:w-auto sm:max-w-none mx-auto sm:mx-0"
+                  onClick={() => {
+                    setUnstashing(true);
+                    setOpenUnstashModal(true);
+                  }}
+                  disabled={unstashing}
+                  className="hidden sm:flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition w-full max-w-sm sm:w-auto sm:max-w-none mx-auto sm:mx-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Inbox size={18} />
-                  Unstash
+                  {unstashing ? (
+                    <>
+                      <Spinner size={18} className="text-white" />
+                      Unstashing...
+                    </>
+                  ) : (
+                    <>
+                      <Inbox size={18} />
+                      Unstash
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -193,10 +222,21 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
                     Try adjusting your search text or filters.
                   </p>
                   <button
-                    className="mt-6 px-6 py-2.5 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition"
-                    onClick={resetFilters}
+                    className="mt-6 px-6 py-2.5 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => {
+                      setClearingFilters(true);
+                      resetFilters();
+                    }}
+                    disabled={clearingFilters}
                   >
-                    Clear all filters
+                    {clearingFilters ? (
+                      <>
+                        <Spinner size={18} className="text-white" />
+                        Clearing...
+                      </>
+                    ) : (
+                      "Clear all filters"
+                    )}
                   </button>
                 </div>
               ) : (
@@ -208,10 +248,21 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
                     contact.
                   </p>
                   <button
-                    className="mt-6 px-6 py-2.5 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition"
-                    onClick={() => setOpenAddContactModal(true)}
+                    className="mt-6 px-6 py-2.5 rounded-xl bg-blue-500 text-white font-semibold cursor-pointer hover:bg-blue-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => {
+                      setAddingContact(true);
+                      setOpenAddContactModal(true);
+                    }}
+                    disabled={addingContact}
                   >
-                    Add Contact
+                    {addingContact ? (
+                      <>
+                        <Spinner size={18} className="text-white" />
+                        Adding...
+                      </>
+                    ) : (
+                      "Add Contact"
+                    )}
                   </button>
                 </div>
               )}
@@ -240,12 +291,15 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
         onUnstashSuccess={handleUnstashSuccess}
       />
       <button
-        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer transition duration-200 hover:scale-[1.01]"
+        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer transition duration-200 hover:scale-[1.01] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => {
+          setAddingContact(true);
           setOpenAddContactModal(true);
         }}
+        disabled={addingContact}
+        aria-label="Add contact"
       >
-        <Plus className="text-white" size={32} />
+        {addingContact ? <Spinner size={28} className="text-white" /> : <Plus className="text-white" size={32} />}
       </button>
     </div>
   );

@@ -12,12 +12,14 @@ import { Link, useNavigate, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/useAuth";
+import Spinner from "../components/Spinner";
 
 const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [registerError, setRegisterError] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -39,20 +41,25 @@ const Login = () => {
     }
 
     setRegisterError("");
+    setLoggingIn(true);
 
-    const result = await login(email, password);
+    try {
+      const result = await login(email, password);
 
-    if (result.success) {
-      toast.success("Logged in successfully!");
-      navigate(from, { replace: true });
-    } else {
-      if (result.status === 404) {
-        toast.error("User doesn't exists.");
-      } else if (result.status === 400) {
-        toast.error("Password doesn't match.");
+      if (result.success) {
+        toast.success("Logged in successfully!");
+        navigate(from, { replace: true });
       } else {
-        toast.error("Trouble in log in.");
+        if (result.status === 404) {
+          toast.error("User doesn't exists.");
+        } else if (result.status === 400) {
+          toast.error("Password doesn't match.");
+        } else {
+          toast.error("Trouble in log in.");
+        }
       }
+    } finally {
+      setLoggingIn(false);
     }
   };
 
@@ -127,8 +134,21 @@ const Login = () => {
               />
             )}{" "}
           </div>
-          <button className="w-full flex gap-2 items-center justify-center text-white text-sm cursor-pointer bg-blue-500 rounded-md min-h-9 p-2 hover:bg-blue-400 transition ease-in-out duration-100">
-            Sign in <ArrowRight size={18} />
+          <button
+            type="submit"
+            disabled={loggingIn}
+            className="w-full flex gap-2 items-center justify-center text-white text-sm cursor-pointer bg-blue-500 rounded-md min-h-9 p-2 hover:bg-blue-400 transition ease-in-out duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loggingIn ? (
+              <>
+                <Spinner size={18} className="text-white" />
+                Signing in...
+              </>
+            ) : (
+              <>
+                Sign in <ArrowRight size={18} />
+              </>
+            )}
           </button>
           {registerError && (
             <h3 className="mt-3 text-md text-red-600 text-center">

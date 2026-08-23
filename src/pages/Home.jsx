@@ -11,6 +11,7 @@ import { useNavigate } from "react-router";
 import useContactSearch from "../hooks/useContactSearch";
 import NotificationBell from "../Components/NotificationBell";
 import defaultImage from "/default_avatar.png";
+import Spinner from "../Components/Spinner";
 
 
 const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
@@ -23,6 +24,10 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
   
   const navigate = useNavigate();
   const handleNav = useNavigate();
+  const [addingContact, setAddingContact] = useState(false);
+  const [viewingAll, setViewingAll] = useState(false);
+  const [viewingFavorites, setViewingFavorites] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -166,10 +171,21 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
           <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
             <p className="text-red-600 text-lg">Failed to load dashboard data.</p>
             <button
-              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
-              onClick={() => window.location.reload()}
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                setRetrying(true);
+                window.location.reload();
+              }}
+              disabled={retrying}
             >
-              Retry
+              {retrying ? (
+                <>
+                  <Spinner size={18} className="text-white" />
+                  Retrying...
+                </>
+              ) : (
+                "Retry"
+              )}
             </button>
           </div>
         )}
@@ -178,10 +194,21 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
           <div className="mt-14 flex flex-col items-center gap-4 rounded-4xl border border-red-200 bg-red-50 p-8 text-center">
             <p className="text-red-600 text-lg">Failed to load your contacts.</p>
             <button
-              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition"
-              onClick={() => window.location.reload()}
+              className="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer hover:bg-red-600 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                setRetrying(true);
+                window.location.reload();
+              }}
+              disabled={retrying}
             >
-              Retry
+              {retrying ? (
+                <>
+                  <Spinner size={18} className="text-white" />
+                  Retrying...
+                </>
+              ) : (
+                "Retry"
+              )}
             </button>
           </div>
         )}
@@ -201,16 +228,38 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
               </h2>
               <div className="flex gap-5 font-semibold flex-wrap">
                 <button
-                  className="w-40 p-2.5 text-blue-500 bg-white rounded-xl cursor-pointer"
-                  onClick={() => navigate("/contacts")}
+                  className="w-40 p-2.5 text-blue-500 bg-white rounded-xl cursor-pointer flex items-center justify-center gap-2 hover:bg-blue-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    setViewingAll(true);
+                    navigate("/contacts");
+                  }}
+                  disabled={viewingAll}
                 >
-                  View All
+                  {viewingAll ? (
+                    <>
+                      <Spinner size={18} className="text-blue-500" />
+                      Loading...
+                    </>
+                  ) : (
+                    "View All"
+                  )}
                 </button>
                 <button
-                  className="w-40 p-2.5 text-white bg-[#a9d1ff4d] rounded-xl cursor-pointer hover:bg-[#a9d1ff88] transition duration-300"
-                  onClick={() => navigate("/favorites")}
+                  className="w-40 p-2.5 text-white bg-[#a9d1ff4d] rounded-xl cursor-pointer hover:bg-[#a9d1ff88] transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    setViewingFavorites(true);
+                    navigate("/favorites");
+                  }}
+                  disabled={viewingFavorites}
                 >
-                  View Favorites
+                  {viewingFavorites ? (
+                    <>
+                      <Spinner size={18} className="text-white" />
+                      Loading...
+                    </>
+                  ) : (
+                    "View Favorites"
+                  )}
                 </button>
               </div>
             </div>
@@ -333,12 +382,15 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
         )}
       </div>
       <button
-        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] "
+        className="p-2 aspect-square bg-blue-500 h-min rounded-xl z-50 fixed right-6 md:right-10 bottom-6 md:bottom-10 cursor-pointer trasition duration-200 hover:scale-[1.01] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => {
+          setAddingContact(true);
           setOpenAddContactModal(true);
         }}
+        disabled={addingContact}
+        aria-label="Add contact"
       >
-        <Plus className="text-white" size={32} />
+        {addingContact ? <Spinner size={28} className="text-white" /> : <Plus className="text-white" size={32} />}
       </button>
     </div>
   );

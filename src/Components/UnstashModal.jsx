@@ -3,6 +3,7 @@ import { X, CheckSquare, Square } from "lucide-react";
 import { getStashedContacts, unstashContacts } from "../api/contacts";
 import { useAuth } from "../context/useAuth";
 import { toast } from "react-toastify";
+import Spinner from "./Spinner";
 
 const UnstashModal = ({ open, onClose, onUnstashSuccess }) => {
   const { isAuthenticated } = useAuth();
@@ -86,13 +87,13 @@ const UnstashModal = ({ open, onClose, onUnstashSuccess }) => {
               Select contacts to move back to your active list.
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-600 hover:text-black transition duration-300"
-            disabled={unstashing}
-          >
-            <X size={24} />
-          </button>
+            <button
+              onClick={onClose}
+              className="text-gray-600 hover:text-black transition duration-300 cursor-pointer disabled:cursor-not-allowed"
+              disabled={unstashing}
+            >
+              <X size={24} />
+            </button>
         </div>
 
         <div className="flex-1 overflow-auto p-6">
@@ -171,17 +172,31 @@ const UnstashModal = ({ open, onClose, onUnstashSuccess }) => {
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={unstashing}
             >
-              Cancel
+              {unstashing ? (
+                <>
+                  <Spinner size={18} className="text-gray-700" />
+                  Please wait...
+                </>
+              ) : (
+                "Cancel"
+              )}
             </button>
             <button
               onClick={handleUnstash}
               disabled={unstashing || selectedIds.length === 0}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {unstashing ? "Unstashing..." : `Unstash (${selectedIds.length})`}
+              {unstashing ? (
+                <>
+                  <Spinner size={18} className="text-white" />
+                  Unstashing...
+                </>
+              ) : (
+                `Unstash (${selectedIds.length})`
+              )}
             </button>
           </div>
         </div>

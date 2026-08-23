@@ -106,7 +106,7 @@ const Privacy = () => {
                 <li><strong>Object:</strong> Object to processing of your data for certain purposes.</li>
               </ul>
               <p className="mt-2">
-                To exercise any of these rights, please contact us at support@buddybook.app.
+                To exercise any of these rights, please contact us at evocodes.co@gmail.com.
               </p>
             </section>
 
@@ -133,7 +133,7 @@ const Privacy = () => {
               <h2 className="text-xl font-semibold mb-3">11. Contact Us</h2>
               <p>
                 If you have any questions about this Privacy Policy or your personal data,
-                please contact us at support@buddybook.app.
+                please contact us at evocodes.co@gmail.com.
               </p>
             </section>
           </div>

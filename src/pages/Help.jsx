@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import Dashboard from "../Components/Dashboard";
 import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 import { useAuth } from "../context/useAuth";
 
 const faqs = [
@@ -71,7 +72,7 @@ const faqs = [
     category: "Account",
     question: "What happens if I forget my password?",
     answer:
-      "Currently, password reset is not available. If you forget your password, please contact support at support@buddybook.app and we will assist you.",
+      "Currently, password reset is not available. If you forget your password, please contact support at evocodes.co@gmail.com and we will assist you.",
   },
   {
     id: 10,
@@ -104,25 +105,25 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
   // When authenticated, show the Dashboard layout (tab view).
   // When anonymous, show the public landing layout with Navbar.
   const faqContent = (
-    <div className="w-full rounded-2xl bg-white shadow-xl p-6 md:p-10">
-      <p className="text-gray-600 mb-6">
+    <div className="w-full rounded-2xl bg-white dark:bg-gray-800 shadow-xl p-6 md:p-10">
+      <p className="text-gray-600 dark:text-gray-300 mb-6">
         Find answers to common questions about using Buddy Book.
       </p>
 
       {/* Search */}
       <div className="relative mb-8">
-        <div className="flex items-center gap-3 bg-blue-50 border border-gray-300 rounded-xl px-4 py-3">
-          <Search className="text-gray-400" size={20} />
+        <div className="flex items-center gap-3 bg-blue-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3">
+          <Search className="text-gray-400 dark:text-gray-500" size={20} />
           <input
             type="text"
             placeholder="Search for help articles..."
-            className="w-full focus:outline-0 bg-transparent text-gray-700"
+            className="w-full focus:outline-0 bg-transparent text-gray-700 dark:text-gray-200"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         {searchQuery && (
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             {filteredFaqs.length} result
             {filteredFaqs.length !== 1 ? "s" : ""} found
           </p>
@@ -135,38 +136,38 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
           filteredFaqs.map((faq) => (
             <div
               key={faq.id}
-              className="border border-gray-200 rounded-xl overflow-hidden"
+              className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
             >
               <button
-                className="w-full flex justify-between items-center p-5 text-left hover:bg-blue-50 transition duration-100"
+                className="w-full flex justify-between items-center p-5 text-left hover:bg-blue-50 dark:hover:bg-gray-700 transition duration-100"
                 onClick={() =>
                   setOpenFaq(openFaq === faq.id ? null : faq.id)
                 }
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-semibold text-blue-500 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2.5 py-1 rounded-full">
                     {faq.category}
                   </span>
-                  <h3 className="font-semibold text-gray-800">
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200">
                     {faq.question}
                   </h3>
                 </div>
                 {openFaq === faq.id ? (
-                  <ChevronUp className="text-gray-500" size={20} />
+                  <ChevronUp className="text-gray-500 dark:text-gray-400" size={20} />
                 ) : (
-                  <ChevronDown className="text-gray-500" size={20} />
+                  <ChevronDown className="text-gray-500 dark:text-gray-400" size={20} />
                 )}
               </button>
               {openFaq === faq.id && (
-                <div className="px-5 pb-5 text-gray-600 leading-relaxed">
+                <div className="px-5 pb-5 text-gray-600 dark:text-gray-300 leading-relaxed">
                   {faq.answer}
                 </div>
               )}
             </div>
           ))
         ) : (
-          <div className="text-center py-12 text-gray-500">
-            <Search className="mx-auto mb-4 text-gray-300" size={48} />
+          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+            <Search className="mx-auto mb-4 text-gray-300 dark:text-gray-600" size={48} />
             <p className="text-lg">No results found for "{searchQuery}"</p>
             <p className="text-sm mt-2">
               Try searching for keywords like "account", "contact", "search", or "password"
@@ -177,8 +178,8 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
 
       {/* Categories */}
       {!searchQuery && (
-        <div className="mt-10 pt-8 border-t border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
             Browse by Category
           </h2>
           <div className="flex flex-wrap gap-3">
@@ -193,7 +194,7 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-100 ${
                   activeCategory === cat
                     ? "bg-blue-500 text-white"
-                    : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                    : "bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-gray-600"
                 }`}
               >
                 {cat}
@@ -204,15 +205,15 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
       )}
 
       {/* Contact Support */}
-      <div className="mt-10 pt-8 border-t border-gray-200 text-center">
-        <h2 className="text-xl font-semibold text-gray-800 mb-3">
+      <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700 text-center">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3">
           Still need help?
         </h2>
-        <p className="text-gray-600 mb-4">
+        <p className="text-gray-600 dark:text-gray-300 mb-4">
           Contact our support team and we'll get back to you within 24 hours.
         </p>
         <a
-          href="mailto:support@buddybook.app"
+          href="mailto:evocodes.co@gmail.com"
           className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-400 transition duration-100"
         >
           <Mail size={18} /> Contact Support
@@ -240,14 +241,15 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
     );
   }
 
-  // Public view: Navbar + Help content
+  // Public view: Navbar + Help content + Footer
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
+    <div className="min-h-screen bg-blue-50 dark:bg-gray-900 flex flex-col">
       <Navbar />
-      <div className="w-full max-w-4xl mx-auto px-4 md:px-6 py-12">
-        <h1 className="text-4xl font-semibold mb-2 ml-2">Help Center</h1>
+      <div className="w-full max-w-4xl mx-auto px-4 md:px-6 pt-24 pb-12">
+        <h1 className="text-4xl font-semibold mb-2 ml-2 text-gray-900 dark:text-gray-100">Help Center</h1>
         {faqContent}
       </div>
+      <Footer />
     </div>
   );
 };

@@ -108,7 +108,7 @@ const Terms = () => {
               <h2 className="text-xl font-semibold mb-3">10. Contact Information</h2>
               <p>
                 If you have any questions about these Terms, please contact us at
-                support@buddybook.app.
+                evocodes.co@gmail.com.
               </p>
             </section>
           </div>

@@ -83,44 +83,44 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
+    <div className="min-h-screen bg-blue-50 dark:bg-gray-900 flex flex-col">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 md:px-6 py-12">
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10">
-          <h1 className="text-4xl font-semibold mb-2">Contact Us</h1>
-          <p className="text-gray-600 mb-8">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 pt-24 pb-12">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
+          <h1 className="text-4xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Contact Us</h1>
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
             Have a question or feedback? We'd love to hear from you. Fill out
             the form below and we'll get back to you within 24 hours.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <div className="bg-blue-50 rounded-xl p-6 mb-4">
+              <div className="bg-blue-50 dark:bg-gray-700 rounded-xl p-6 mb-4">
                 <div className="flex items-center gap-3 mb-2">
-                  <Mail className="text-blue-500" size={20} />
-                  <h3 className="font-semibold">Email Support</h3>
+                  <Mail className="text-blue-500 dark:text-blue-400" size={20} />
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200">Email Support</h3>
                 </div>
-                <p className="text-gray-600">support@buddybook.app</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-gray-600 dark:text-gray-300">evocodes.co@gmail.com</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   We typically respond within 24 hours.
                 </p>
               </div>
-              <div className="bg-blue-50 rounded-xl p-6 mb-4">
+              <div className="bg-blue-50 dark:bg-gray-700 rounded-xl p-6 mb-4">
                 <div className="flex items-center gap-3 mb-2">
-                  <Phone className="text-blue-500" size={20} />
-                  <h3 className="font-semibold">Phone</h3>
+                  <Phone className="text-blue-500 dark:text-blue-400" size={20} />
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200">Phone</h3>
                 </div>
-                <p className="text-gray-600">+91 (80) 1234-5678</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-gray-600 dark:text-gray-300">+91 90426 49000</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Mon-Fri, 9:00 AM - 6:00 PM IST
                 </p>
               </div>
-              <div className="bg-blue-50 rounded-xl p-6">
+              <div className="bg-blue-50 dark:bg-gray-700 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <MessageSquare className="text-blue-500" size={20} />
-                  <h3 className="font-semibold">Response Time</h3>
+                  <MessageSquare className="text-blue-500 dark:text-blue-400" size={20} />
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200">Response Time</h3>
                 </div>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   We typically respond within 24 hours on business days.
                 </p>
               </div>
@@ -128,16 +128,16 @@ const Contact = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-gray-600 text-sm block mb-1">
+                <label className="text-gray-600 dark:text-gray-300 text-sm block mb-1">
                   Full Name *
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                   <input
                     type="text"
                     name="name"
-                    className={`w-full border rounded-lg px-4 py-2.5 pl-10 focus:outline-0 focus:border-blue-500 ${
-                      errors.name ? "border-red-400" : "border-gray-300"
+                    className={`w-full border rounded-lg px-4 py-2.5 pl-10 focus:outline-0 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                      errors.name ? "border-red-400" : "border-gray-300 dark:border-gray-600"
                     }`}
                     placeholder="Your full name"
                     value={formData.name}
@@ -151,16 +151,16 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="text-gray-600 text-sm block mb-1">
+                <label className="text-gray-600 dark:text-gray-300 text-sm block mb-1">
                   Email Address *
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                   <input
                     type="email"
                     name="email"
-                    className={`w-full border rounded-lg px-4 py-2.5 pl-10 focus:outline-0 focus:border-blue-500 ${
-                      errors.email ? "border-red-400" : "border-gray-300"
+                    className={`w-full border rounded-lg px-4 py-2.5 pl-10 focus:outline-0 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                      errors.email ? "border-red-400" : "border-gray-300 dark:border-gray-600"
                     }`}
                     placeholder="name@company.com"
                     value={formData.email}
@@ -174,16 +174,16 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="text-gray-600 text-sm block mb-1">
+                <label className="text-gray-600 dark:text-gray-300 text-sm block mb-1">
                   Phone Number
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                   <input
                     type="tel"
                     name="phone"
-                    className={`w-full border rounded-lg px-4 py-2.5 pl-10 focus:outline-0 focus:border-blue-500 ${
-                      errors.phone ? "border-red-400" : "border-gray-300"
+                    className={`w-full border rounded-lg px-4 py-2.5 pl-10 focus:outline-0 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                      errors.phone ? "border-red-400" : "border-gray-300 dark:border-gray-600"
                     }`}
                     placeholder="12345 12345"
                     value={formData.phone}
@@ -196,14 +196,14 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="text-gray-600 text-sm block mb-1">
+                <label className="text-gray-600 dark:text-gray-300 text-sm block mb-1">
                   Subject *
                 </label>
                 <input
                   type="text"
                   name="subject"
-                  className={`w-full border rounded-lg px-4 py-2.5 focus:outline-0 focus:border-blue-500 ${
-                    errors.subject ? "border-red-400" : "border-gray-300"
+                  className={`w-full border rounded-lg px-4 py-2.5 focus:outline-0 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                    errors.subject ? "border-red-400" : "border-gray-300 dark:border-gray-600"
                   }`}
                   placeholder="What is this about?"
                   value={formData.subject}
@@ -216,13 +216,13 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="text-gray-600 text-sm block mb-1">
+                <label className="text-gray-600 dark:text-gray-300 text-sm block mb-1">
                   Message *
                 </label>
                 <textarea
                   name="message"
-                  className={`w-full border rounded-lg px-4 py-2.5 focus:outline-0 focus:border-blue-500 resize-none ${
-                    errors.message ? "border-red-400" : "border-gray-300"
+                  className={`w-full border rounded-lg px-4 py-2.5 focus:outline-0 focus:border-blue-500 dark:focus:border-blue-400 resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                    errors.message ? "border-red-400" : "border-gray-300 dark:border-gray-600"
                   }`}
                   rows={5}
                   placeholder="How can we help you?"

@@ -30,9 +30,6 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401) {
       document.cookie =
         "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-      if (!window.location.pathname.startsWith("/login")) {
-        window.location.href = "/login";
-      }
     }
     return Promise.reject(error);
   },

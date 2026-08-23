@@ -57,7 +57,7 @@ const Landing = () => {
 
   const stats = [
     { icon: <Users className="text-blue-500" size={24} />, value: "1.2K+", label: "Contacts Synced" },
-    { icon: <Network className="text-blue-500" size={24} />, value: "500+", label: "Active Users" },
+    { icon: <Star className="text-blue-500" size={24} />, value: "98%", label: "Satisfaction Rate" },
     { icon: <ShieldCheck className="text-blue-500" size={24} />, value: "100%", label: "Data Protected" },
     { icon: <Globe className="text-blue-500" size={24} />, value: "24/7", label: "Smart Access" },
   ];

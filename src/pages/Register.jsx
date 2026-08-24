@@ -51,7 +51,7 @@ const Register = () => {
     const imageFormData = new FormData();
     imageFormData.append("profileImage", profileImage);
 
-    const response = await axiosInstance.post("/upload", imageFormData);
+    const response = await axiosInstance.post("/upload/public", imageFormData);
 
     return response.data.filename;
   };

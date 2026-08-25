@@ -78,8 +78,24 @@ const Register = () => {
       return;
     }
 
+    // Must match the backend rule: uppercase, lowercase, number, special char (@$!%*?&)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setRegisterError(
+        "Password must contain an uppercase letter, a lowercase letter, a number, and a special character (@$!%*?&)."
+      );
+      setRegistering(false);
+      return;
+    }
+
     if (phone.length != 10) {
       setRegisterError("Phone Number must be 10 digits.");
+      setRegistering(false);
+      return;
+    }
+
+    if (address.trim().length < 5 || address.trim().length > 200) {
+      setRegisterError("Address must be between 5 and 200 characters.");
       setRegistering(false);
       return;
     }
@@ -100,9 +116,9 @@ const Register = () => {
         name: username,
         email,
         password,
-        phoneNumber: parseInt(phone, 10),
+        phoneNumber: phone,
         DOB: dob,
-        address,
+        address: address.trim(),
       };
 
       const result = await register(userData);
@@ -111,10 +127,12 @@ const Register = () => {
         toast.success("Successfully signed up!");
         navigate(from, { replace: true });
       } else {
-        if (result.status === 400) {
+        if (result.status === 409) {
           toast.error("Account already exists.");
         } else {
-          toast.error("Error is signing up.");
+          // Show the actual reason returned by the server (e.g. validation errors)
+          toast.error(result.message || "Error while signing up.");
+          setRegisterError(result.message || "Registration failed. Please try again.");
         }
       }
     } catch (error) {

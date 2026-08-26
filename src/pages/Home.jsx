@@ -305,11 +305,11 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
                 <div className="flex justify-between items-center">
                   <h1 className="text-2xl md:text-3xl font-semibold mb-4">Recent Contacts</h1>
                   <a
-                    href="/contacts"
+                    href="/recent"
                     className="text-blue-500 cursor-pointer"
                     onClick={(e) => {
                       e.preventDefault();
-                      navigate("/contacts");
+                      navigate("/recent");
                     }}
                   >
                     View All

@@ -38,6 +38,22 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
   const [unstashing, setUnstashing] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const handleCloseUnstashModal = () => {
+    setOpenUnstashModal(false);
+    setUnstashing(false);
+  };
+
+  // Called by UnstashModal after contacts were unstashed successfully:
+  // refresh stats, close the modal and release the trigger button state.
+  const handleUnstashSuccess = async () => {
+    try {
+      await refreshUser();
+    } finally {
+      setOpenUnstashModal(false);
+      setUnstashing(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -302,7 +318,7 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
                         setUnstashing(true);
                         setOpenUnstashModal(true);
                       }}
-                      disabled={unstashing}
+                      disabled={unstashing || openUnstashModal}
                       className="flex-1 flex gap-2 items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {unstashing ? (
@@ -370,8 +386,8 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
         </div>
         <UnstashModal
           open={openUnstashModal}
-          onClose={() => setOpenUnstashModal(false)}
-          onUnstashSuccess={refreshUser}
+          onClose={handleCloseUnstashModal}
+          onUnstashSuccess={handleUnstashSuccess}
         />
       </div>
     </>

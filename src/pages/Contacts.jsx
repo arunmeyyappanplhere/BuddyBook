@@ -85,6 +85,13 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
 
   const handleUnstashSuccess = () => {
     fetchContacts();
+    setOpenUnstashModal(false);
+    setUnstashing(false);
+  };
+
+  const handleCloseUnstashModal = () => {
+    setOpenUnstashModal(false);
+    setUnstashing(false);
   };
 
  return (
@@ -293,7 +300,7 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
       </div>
       <UnstashModal
         open={openUnstashModal}
-        onClose={() => setOpenUnstashModal(false)}
+        onClose={handleCloseUnstashModal}
         onUnstashSuccess={handleUnstashSuccess}
       />
       <button

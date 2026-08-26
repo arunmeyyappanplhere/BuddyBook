@@ -317,7 +317,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
                 </div>
                 <div className="shadow-md w-full rounded-2xl h-full p-0.5">
                   {recentContacts.length > 0 ? (
-                    recentContacts.map((contact, index) => (
+                    recentContacts.slice(0, 8).map((contact, index) => (
                       <div key={contact._id || index} className="w-full p-1.5">
                         <RecentContactCard
                           contact_id={contact.contact_uid || contact._id}

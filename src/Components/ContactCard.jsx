@@ -19,6 +19,7 @@ const ContactCard = ({
   onEdit,
   onFavoriteChange,
   onStashChange,
+  onDeleted,
 }) => {
   const [fav, setFav] = useState(isFavorite || false);
   const [favoriteUpdating, setFavoriteUpdating] = useState(false);
@@ -86,6 +87,8 @@ const ContactCard = ({
     try {
       await deleteContact(contact_id);
       await refreshUser();
+      // Remove the card from the parent list immediately
+      if (onDeleted) onDeleted(contact_id);
       toast.success(`${contactName} deleted successfully`);
     } catch (err) {
       console.warn("Delete API not yet available.", err);

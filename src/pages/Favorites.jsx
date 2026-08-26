@@ -193,6 +193,13 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
                       onEdit={onEditContact}
                       onFavoriteChange={handleFavoriteChange}
                       onStashChange={handleStashChange}
+                      onDeleted={(deletedId) =>
+                        setContacts((prev) =>
+                          prev.filter(
+                            (c) => (c.contact_uid || c._id) !== deletedId,
+                          ),
+                        )
+                      }
                     />
                   );
                 })

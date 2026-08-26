@@ -201,6 +201,13 @@ const RecentContacts = ({
                     isFavorite={contact?.contact_favorite}
                     onEdit={onEditContact}
                     onFavoriteChange={handleFavoriteChange}
+                    onDeleted={(deletedId) =>
+                      setContacts((prev) =>
+                        prev.filter(
+                          (c) => (c.contact_uid || c._id) !== deletedId,
+                        ),
+                      )
+                    }
                   />
                 ))
               ) : hasActiveFilters ? (

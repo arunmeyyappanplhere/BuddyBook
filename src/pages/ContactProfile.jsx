@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft, Contact, Edit, X, Check } from "lucide-react";
 import defaultImage from "/default_avatar.png";
+import { handleImageError } from "../utils/imageFallback";
 import Dashboard from "../Components/Dashboard";
 import { useParams, useNavigate } from "react-router";
 import { useAuth } from "../context/useAuth";
@@ -199,6 +200,7 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
                 <label htmlFor="contactProfileImage" className="w-45 cursor-pointer mb-8 relative inline-block">
                   <img
                     src={profileImage ? URL.createObjectURL(profileImage) : contactImage}
+                    onError={handleImageError}
                     alt=""
                     className="w-45 rounded-full border border-white shadow-md object-cover"
                   />
@@ -216,6 +218,7 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
               ) : (
                 <img
                   src={contactImage}
+                  onError={handleImageError}
                   alt=""
                   className="w-45 cursor-pointer mb-8 rounded-full border border-white shadow-md"
                 />

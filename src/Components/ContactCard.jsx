@@ -4,6 +4,7 @@ import { Phone, Mail, Trash2, Heart, ChevronRight, Pencil, Archive } from "lucid
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { toggleFavorite, deleteContact, toggleStash } from "../api/contacts";
+import { handleImageError } from "../utils/imageFallback";
 import { useAuth } from "../context/useAuth";
 import Spinner from "./Spinner";
 
@@ -129,6 +130,7 @@ const ContactCard = ({
               <img
                 src={contactImageUrl}
                 alt={contactName}
+                onError={handleImageError}
                 className="w-16 h-16 rounded-full object-cover border-4 border-white/30 shadow-lg"
               />
               {fav && (

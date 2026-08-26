@@ -50,6 +50,7 @@ const RecentContactCard = ({
       <div className="relative shrink-0">
         <img
           src={contactImage || defaultImage}
+          onError={handleImageError}
           alt=""
           className="size-11 md:size-13 rounded-full object-cover border-2 border-gray-100 group-hover:border-blue-200 transition-all duration-300"
         />

@@ -6,6 +6,7 @@ import {
   getContactById,
 } from "../api/contacts";
 import { useAuth } from "../context/useAuth";
+import { handleImageError } from "../utils/imageFallback";
 import { toast } from "react-toastify";
 import Spinner from "./Spinner";
 
@@ -177,9 +178,7 @@ const UnstashModal = ({ open, onClose, onUnstashSuccess }) => {
                       // contact_profileImage already contains the full
                       // image URL from upload (same as ContactCard etc.)
                       src={contact.contact_profileImage || "/default_avatar.png"}
-                      onError={(e) => {
-                        e.currentTarget.src = "/default_avatar.png";
-                      }}
+                      onError={handleImageError}
                       alt=""
                       className="size-10 rounded-full object-cover shrink-0"
                     />

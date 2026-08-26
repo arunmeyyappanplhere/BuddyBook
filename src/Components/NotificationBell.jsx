@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Bell, Cake, X, ChevronRight } from "lucide-react";
 import axiosInstance from "../api/axios";
 import defaultImage from "/default_avatar.png";
+import { handleImageError } from "../utils/imageFallback";
 import { useAuth } from "../context/useAuth";
 import { useNavigate } from "react-router";
 
@@ -123,6 +124,7 @@ const NotificationBell = () => {
                 <div className="relative shrink-0">
                   <img
                     src={contact.contact_profileImage || defaultImage}
+                    onError={handleImageError}
                     alt=""
                     className="size-10 rounded-full object-cover border-2 border-pink-100"
                   />

@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axiosInstance.post("/auth/login", { email, password });
+      const response = await axiosInstance.post("/login", { email, password });
       const token = extractToken(response.data);
       if (token) {
         setTokenCookie(token);
@@ -108,7 +108,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await axiosInstance.post("/auth/register", userData);
+      const response = await axiosInstance.post("/register", userData);
       const token = extractToken(response.data);
       if (token) {
         setTokenCookie(token);

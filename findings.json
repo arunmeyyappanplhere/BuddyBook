@@ -1,0 +1,50 @@
+[
+  {
+    "file": "src/pages/Login.jsx",
+    "line": 31,
+    "summary": "shouldNavigateRef useEffect only navigates when isAuthenticated becomes true from false AND the ref is set to true; if the user is already authenticated on mount (e.g., valid session cookie) and logs in again, isAuthenticated stays true and never 'changes', so the useEffect doesn't re-run and navigation never happens",
+    "failure_scenario": "User with a valid session visits /login to switch accounts. After submitting credentials and successful login, shouldNavigateRef.current is set to true, but isAuthenticated was already true. The useEffect condition `isAuthenticated && shouldNavigateRef.current` evaluated to true on mount with ref=false, then after mount, isAuthenticated doesn't change again, so navigation never fires. The user remains stuck on the login page."
+  },
+  {
+    "file": "src/pages/Register.jsx",
+    "line": 48,
+    "summary": "Same shouldNavigateRef pattern as Login.jsx — if the user is already authenticated when they visit /register, successful registration doesn't trigger navigation because the useEffect only fires when isAuthenticated changes, which doesn't happen after an initial authenticated mount with ref=false",
+    "failure_scenario": "User with a valid session visits /register. After submitting registration and successful signup, shouldNavigateRef.current is set to true, but isAuthenticated was already true. The useEffect condition `isAuthenticated && shouldNavigateRef.current` doesn't re-fire because isAuthenticated stays true (no change), so navigation never happens. The user remains stuck on the register page."
+  },
+  {
+    "file": "src/context/AuthContext.jsx",
+    "line": 52,
+    "summary": "setUser(response.data?.user ?? response.data) can set user to null while setIsAuthenticated(true) is called, creating an inconsistent state where the app thinks the user is authenticated but has no user data",
+    "failure_scenario": "If /auth/me returns null or an empty body (e.g., during session refresh after a partial logout), setUser(null) executes while setIsAuthenticated(true) sets auth to true. Components that render user data (e.g., \"Welcome, {user.name}\") will either crash with 'Cannot read property name of null' or silently show incorrect UI."
+  },
+  {
+    "file": "src/context/AuthContext.jsx",
+    "line": 20,
+    "summary": "setTokenCookie sets a cookie without the Secure flag; on production HTTPS environments, browsers may not persist or send the cookie reliably, causing the axios interceptor to lose the Authorization header and resulting in 401 errors",
+    "failure_scenario": "In production (HTTPS), the cookie without Secure may not be sent/retained by the browser. The axios interceptor then can't read the token, so the Authorization header isn't set. API calls return 401, the interceptor clears the cookie, and the user is unexpectedly logged out on subsequent requests."
+  },
+  {
+    "file": "src/context/AuthContext.jsx",
+    "line": 27,
+    "summary": "extractToken only checks data, data.data, and data.data.data nesting levels; if the API wraps the response in deeper nesting, the token is silently missed and a warning is logged, but the token extraction returns null",
+    "failure_scenario": "If the backend's response shape includes additional nesting (e.g., { data: { data: { data: { token } } } }), the token extraction fails. The login/register code logs a warning about missing token but continues, and the user appears unauthenticated even though the API returned a valid token."
+  },
+  {
+    "file": "src/pages/Login.jsx",
+    "line": 40,
+    "summary": "Login only validates password length (>= 8 characters) but does not enforce the complexity requirements (uppercase, lowercase, number, special char) that Register validates against; this inconsistency can allow weak passwords through login even after complex registration",
+    "failure_scenario": "A user registers with a complex password (meeting the regex requirements). If the backend allows password changes to simpler passwords, or if the login validation is less strict than registration, a user could log in with a password that wouldn't pass the Register validation."
+  },
+  {
+    "file": "src/pages/Register.jsx",
+    "line": 111,
+    "summary": "DOB validation `new Date(dob) > new Date()` is timezone-dependent; users in timezones east of UTC may be incorrectly prevented from selecting today's date as their date of birth",
+    "failure_scenario": "For a user in JST (UTC+9), new Date('2026-08-26') parses as 2026-08-26T00:00:00Z (UTC midnight). If the current UTC time is still on 2026-08-25 (e.g., 23:00 UTC = 08:00 JST on 2026-08-26), the comparison evaluates to true and the DOB field rejects today's date. The user cannot select their actual birth date."
+  },
+  {
+    "file": "src/context/AuthContext.jsx",
+    "line": 94,
+    "summary": "The warning about missing token assumes the API returns the token in JSON; if the backend uses an httpOnly Set-Cookie (recommended approach), the JSON response won't contain the token and this misleading warning is logged, even though the axios interceptor correctly picks up the token via withCredentials: true",
+    "failure_scenario": "If the backend sets the token via httpOnly cookie and relies on withCredentials: true (as the axios instance does), response.data won't have a token. The code logs 'Login response did not contain a token' warning, the token cookie isn't set via the client-side mechanism, but the request should still succeed because http cookies are sent automatically. The warning creates unnecessary confusion about auth state."
+  }
+]

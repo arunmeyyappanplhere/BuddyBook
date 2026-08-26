@@ -12,6 +12,25 @@ const getCookie = (str) => {
     ?.split("=")[1];
 };
 
+// Persist the JWT in a JS-readable "token" cookie so the axios
+// interceptor can attach it as an Authorization: Bearer header.
+const setTokenCookie = (token) => {
+  if (!token) return;
+  // 7 days; adjust to match the backend's token expiry if needed
+  document.cookie = `token=${token}; path=/; max-age=${
+    7 * 24 * 60 * 60
+  }; SameSite=Lax`;
+};
+
+// Extract the token from common API response shapes:
+// { token }, { accessToken }, { data: { token } }, { data: { accessToken } }
+const extractToken = (data) =>
+  data?.token ??
+  data?.accessToken ??
+  data?.data?.token ??
+  data?.data?.accessToken ??
+  null;
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -28,8 +47,9 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = useCallback(async () => {
     try {
-      const response = await axiosInstance.get("/home");
-      setUser(response.data);
+      const response = await axiosInstance.get("/auth/me");
+      // Support both { user: {...} } and raw user object responses
+      setUser(response.data?.user ?? response.data);
       setIsAuthenticated(true);
       setError(null);
     } catch (err) {
@@ -51,10 +71,12 @@ export const AuthProvider = ({ children }) => {
 
   const refreshUser = useCallback(async () => {
     try {
-      const response = await axiosInstance.get("/home");
-      setUser(response.data);
+      const response = await axiosInstance.get("/auth/me");
+      // Support both { user: {...} } and raw user object responses
+      const data = response.data?.user ?? response.data;
+      setUser(data);
       setError(null);
-      return response.data;
+      return data;
     } catch (err) {
       console.error("Refresh user failed:", err);
       setError(err.response?.data?.message || "Failed to refresh user data");
@@ -64,7 +86,15 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axiosInstance.post("/login", { email, password });
+      const response = await axiosInstance.post("/auth/login", { email, password });
+      const token = extractToken(response.data);
+      if (token) {
+        setTokenCookie(token);
+      } else {
+        console.warn(
+          "Login response did not contain a token. Ensure the API returns { token } or { data: { token } }, or that it sets a non-httpOnly 'token' cookie."
+        );
+      }
       await checkAuth();
       return { success: true, data: response.data };
     } catch (error) {
@@ -78,7 +108,15 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await axiosInstance.post("/register", userData);
+      const response = await axiosInstance.post("/auth/register", userData);
+      const token = extractToken(response.data);
+      if (token) {
+        setTokenCookie(token);
+      } else {
+        console.warn(
+          "Register response did not contain a token. Ensure the API returns { token } or { data: { token } }, or that it sets a non-httpOnly 'token' cookie."
+        );
+      }
       await checkAuth();
       return { success: true, data: response.data };
     } catch (error) {

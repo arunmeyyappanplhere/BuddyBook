@@ -9,7 +9,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/useAuth";
 import Spinner from "../components/Spinner";
@@ -20,6 +20,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [registerError, setRegisterError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
+  const shouldNavigateRef = useRef(false);
 
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -27,7 +28,8 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/home";
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && shouldNavigateRef.current) {
+      shouldNavigateRef.current = false;
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, from]);
@@ -48,7 +50,7 @@ const Login = () => {
 
       if (result.success) {
         toast.success("Logged in successfully!");
-        navigate(from, { replace: true });
+        shouldNavigateRef.current = true;
       } else {
         if (result.status === 404) {
           toast.error("User doesn't exists.");

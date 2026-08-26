@@ -12,7 +12,7 @@ import {
   MapPin,
   UserRound,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import default_profile from "/default_avatar.png";
 import { Link, useNavigate, useLocation } from "react-router";
 
@@ -37,11 +37,19 @@ const Register = () => {
 
   const [registerError, setRegisterError] = useState("");
   const [registering, setRegistering] = useState(false);
+  const shouldNavigateRef = useRef(false);
 
-  const { register } = useAuth();
+  const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/home";
+
+  useEffect(() => {
+    if (isAuthenticated && shouldNavigateRef.current) {
+      shouldNavigateRef.current = false;
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
 
   const uploadImage = async () => {
     if (!profileImage) {
@@ -125,7 +133,7 @@ const Register = () => {
 
       if (result.success) {
         toast.success("Successfully signed up!");
-        navigate(from, { replace: true });
+        shouldNavigateRef.current = true;
       } else {
         if (result.status === 409) {
           toast.error("Account already exists.");

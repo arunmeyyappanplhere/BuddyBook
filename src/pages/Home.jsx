@@ -140,7 +140,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
         setOpenAddContactModal={setOpenAddContactModal}
       />
         <div className="p-4 md:p-7 lg:ml-80 flex flex-col gap-5 min-w-0">
-        <div className="sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 pl-16 lg:pl-3 lg:pr-3 -mx-3 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <div className="sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 pl-16 lg:pl-3 -mx-3 shadow-sm">
           <ContactSearchBar
             searchText={searchText}
             onSearchTextChange={setSearchText}
@@ -156,15 +156,6 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
             placeholder="Search contacts..."
             onContactFavoriteChange={handleFavoriteChange}
           />
-          <div className="hidden lg:flex items-center gap-3">
-            <NotificationBell />
-            <img
-              src={userProfile?.profileImage || defaultImage}
-              className="size-11 rounded-full object-cover border-2 border-blue-100 cursor-pointer"
-              onClick={() => navigate("/settings")}
-              alt=""
-            />
-          </div>
         </div>
 
         {authError && (

@@ -95,7 +95,7 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
             </div>
 
             {/* Profile section */}
-            <div className="mx-5 mb-2 flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-blue-100/50 shadow-sm lg:hidden">
+            <div className="mx-5 mb-2 flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-blue-100/50 shadow-sm">
               <NotificationBell />
               <img
                 src={userProfile?.profileImage || defaultImage}

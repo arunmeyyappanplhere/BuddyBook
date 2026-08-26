@@ -10,6 +10,10 @@ import { useNavigate } from "react-router";
 import NotificationBell from "../Components/NotificationBell";
 import defaultImage from "/default_avatar.png";
 import Spinner from "../Components/Spinner";
+import {
+  filterRecentContacts,
+  RECENT_CONTACTS_DAYS,
+} from "../utils/recentContacts";
 
 
 const RecentContacts = ({
@@ -38,8 +42,12 @@ const RecentContacts = ({
         return;
       }
       try {
-        const response = await axiosInstance.get("/contacts/recent");
-        setContacts(response.data);
+        // Fetch all contacts and filter client-side using the shared
+        // 14-day rule (src/utils/recentContacts.js) so this page matches
+        // the Home page's Recent Contacts section exactly, regardless of
+        // what window the server's /contacts/recent endpoint uses.
+        const response = await axiosInstance.get("/contacts");
+        setContacts(filterRecentContacts(response.data));
         setContactsError(null);
       } catch (err) {
         console.error("Failed to fetch recent contacts:", err);
@@ -173,9 +181,9 @@ const RecentContacts = ({
               </h1>
               <h2 className="max-w-3/5">
                 {contacts.length >= 2
-                  ? `You have ${contacts.length} recent contacts`
+                  ? `You have ${contacts.length} contacts saved in the last ${RECENT_CONTACTS_DAYS} days`
                   : contacts.length === 1
-                    ? "You have 1 recent contact"
+                    ? `You have 1 contact saved in the last ${RECENT_CONTACTS_DAYS} days`
                     : "No recent contacts yet. Add contacts to see them here."}
               </h2>
             </div>

@@ -12,6 +12,10 @@ import useContactSearch from "../hooks/useContactSearch";
 import NotificationBell from "../Components/NotificationBell";
 import defaultImage from "/default_avatar.png";
 import Spinner from "../Components/Spinner";
+import {
+  RECENT_CONTACTS_DAYS,
+  filterRecentContacts,
+} from "../utils/recentContacts";
 
 
 const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
@@ -71,14 +75,9 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
       return;
     }
 
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const recent = contacts.filter((contact) => {
-      return new Date(contact.createdAt) >= sevenDaysAgo;
-    });
-
-    setRecentContacts(recent);
+    // Contacts saved within the last RECENT_CONTACTS_DAYS days (shared
+    // with the /recent page via src/utils/recentContacts.js)
+    setRecentContacts(filterRecentContacts(contacts));
   }, []);
 
   const favorites = useCallback((contacts) => {
@@ -333,7 +332,8 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
                     ))
                   ) : totalContacts > 0 ? (
                     <div className="flex justify-center items-center h-full text-gray-500">
-                      No contacts added in the last 7 days.
+                      No contacts added in the last {RECENT_CONTACTS_DAYS}{" "}
+                      days.
                     </div>
                   ) : (
                     <div className="flex flex-col justify-center items-center h-full text-gray-500 gap-2 py-10">

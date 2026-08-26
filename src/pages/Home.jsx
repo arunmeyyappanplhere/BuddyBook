@@ -215,20 +215,20 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
 
         {!authLoading && !contactsLoading && !authError && !contactsError ? (
           <>
-            <div className="flex flex-col gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-6 md:p-10 mt-14">
-              <h1 className="text-2xl md:text-4xl font-semibold">
+            <div className="flex flex-col gap-4 md:gap-5 bg-linear-to-r from-blue-500 from-10% via-blue-500 to-blue-400 to-90% rounded-4xl text-white p-6 md:p-10 mt-14">
+              <h1 className="text-2xl md:text-4xl font-semibold break-words">
                 Welcome back, {userProfile?.name}
               </h1>
-              <h2 className="max-w-3/5">
+              <h2 className="max-w-full lg:max-w-3/5 text-blue-100">
                 {totalContacts === 0
                   ? "Your network is empty. Start adding contacts to grow your circle."
                   : `Your network is growing. You have ${totalContacts} ${
                       totalContacts >= 2 ? "contacts" : "contact"
                     } synced since your sign up. Start your day with smile.`}
               </h2>
-              <div className="flex gap-5 font-semibold flex-wrap">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 font-semibold flex-wrap">
                 <button
-                  className="w-40 p-2.5 text-blue-500 bg-white rounded-xl cursor-pointer flex items-center justify-center gap-2 hover:bg-blue-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-40 p-2.5 text-blue-500 bg-white rounded-xl cursor-pointer flex items-center justify-center gap-2 hover:bg-blue-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => {
                     setViewingAll(true);
                     navigate("/contacts");
@@ -245,7 +245,7 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
                   )}
                 </button>
                 <button
-                  className="w-40 p-2.5 text-white bg-[#a9d1ff4d] rounded-xl cursor-pointer hover:bg-[#a9d1ff88] transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-40 p-2.5 text-white bg-[#a9d1ff4d] rounded-xl cursor-pointer hover:bg-[#a9d1ff88] transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => {
                     setViewingFavorites(true);
                     navigate("/favorites");

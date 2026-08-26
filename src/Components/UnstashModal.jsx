@@ -1,9 +1,39 @@
 import { useState, useEffect } from "react";
-import { X, CheckSquare, Square } from "lucide-react";
-import { getStashedContacts, unstashContacts } from "../api/contacts";
+import { X, CheckSquare, Square, Phone } from "lucide-react";
+import {
+  getStashedContacts,
+  unstashContacts,
+  getContactById,
+} from "../api/contacts";
 import { useAuth } from "../context/useAuth";
 import { toast } from "react-toastify";
 import Spinner from "./Spinner";
+
+/**
+ * Some stashed-contact responses only include a subset of fields.
+ * For any contact missing its phone number or profile image, fetch
+ * the full contact details and merge them in.
+ */
+const enrichStashedContacts = (contacts) =>
+  Promise.all(
+    contacts.map(async (contact) => {
+      const needsDetails =
+        !contact.contact_phone || !contact.contact_profileImage;
+      if (!needsDetails) return contact;
+
+      const id = contact.contact_uid || contact._id;
+      try {
+        const full = await getContactById(id);
+        return { ...contact, ...full };
+      } catch (err) {
+        console.warn(
+          `Could not load details for stashed contact ${id}:`,
+          err,
+        );
+        return contact;
+      }
+    }),
+  );
 
 const UnstashModal = ({ open, onClose, onUnstashSuccess }) => {
   const { isAuthenticated } = useAuth();
@@ -21,6 +51,11 @@ const UnstashModal = ({ open, onClose, onUnstashSuccess }) => {
         const data = await getStashedContacts();
         setStashedContacts(data);
         setSelectedIds(data.map((c) => c.contact_uid || c._id));
+
+        // Fetch any missing phone numbers / profile pictures
+        const enriched = await enrichStashedContacts(data);
+        if (!open || !isAuthenticated) return; // modal closed meanwhile
+        setStashedContacts(enriched);
       } catch (err) {
         console.error("Failed to fetch stashed contacts:", err);
         toast.error("Failed to load stashed contacts.");
@@ -139,19 +174,24 @@ const UnstashModal = ({ open, onClose, onUnstashSuccess }) => {
                       <Square className="text-gray-400 shrink-0" size={20} />
                     )}
                     <img
-                      src={
-                        contact.contact_profileImage
-                          ? `${import.meta.env.VITE_API_BASE_URL}/public/profileImages/${contact.contact_profileImage}`
-                          : "/default_avatar.png"
-                      }
+                      // contact_profileImage already contains the full
+                      // image URL from upload (same as ContactCard etc.)
+                      src={contact.contact_profileImage || "/default_avatar.png"}
+                      onError={(e) => {
+                        e.currentTarget.src = "/default_avatar.png";
+                      }}
                       alt=""
-                      className="size-10 rounded-full"
+                      className="size-10 rounded-full object-cover shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-sm truncate">
                         {contact.contact_name}
                       </h3>
-                      <p className="text-gray-500 text-xs truncate">
+                      <p className="text-gray-500 text-xs truncate flex items-center gap-1">
+                        <Phone size={12} className="shrink-0" />
+                        {contact.contact_phone || "No phone number"}
+                      </p>
+                      <p className="text-gray-400 text-xs truncate">
                         {contact.contact_email}
                       </p>
                     </div>

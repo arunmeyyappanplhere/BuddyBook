@@ -19,6 +19,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
   const [addingContact, setAddingContact] = useState(false);
   const [clearingFilters, setClearingFilters] = useState(false);
   const [retrying, setRetrying] = useState(false);
+  const navigate = useNavigate();
   const fetchFavorites = async () => {
     if (!isAuthenticated) {
       setContactsLoading(false);
@@ -81,7 +82,7 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
          contactsCount={contacts.length}
        />
         <div className="p-4 md:p-7 lg:ml-80 flex flex-col gap-5 min-w-0">
-        <div className="sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 pl-16 lg:pl-3 -mx-3 shadow-sm">
+        <div className="sticky top-0 z-40 bg-white/60 backdrop-blur-xl rounded-3xl p-3 pl-16 lg:pl-3 -mx-3 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <ContactSearchBar
             searchText={searchText}
             onSearchTextChange={setSearchText}
@@ -99,6 +100,16 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
             showResultsDropdown={false}
             onContactFavoriteChange={handleFavoriteChange}
           />
+          {/* Notifications & Profile — right side in laptop/tablet view */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
+            <NotificationBell />
+            <img
+              src={userProfile?.profileImage || defaultImage}
+              alt=""
+              className="size-11 rounded-full object-cover border-2 border-blue-100 cursor-pointer"
+              onClick={() => navigate("/settings")}
+            />
+          </div>
         </div>
 
         {authError && (

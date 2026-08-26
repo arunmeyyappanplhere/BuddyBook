@@ -231,7 +231,7 @@ const Help = ({ openAddContactModal, setOpenAddContactModal }) => {
            openAddContactModal={openAddContactModal}
            setOpenAddContactModal={setOpenAddContactModal}
          />
-           <div className="p-4 md:p-7 lg:ml-80 pt-16 lg:pt-0 flex flex-col gap-5 min-w-0">
+           <div className="p-4 md:p-7 lg:ml-80 pt-16 lg:pt-8 flex flex-col gap-5 min-w-0">
           <div className="w-full lg:w-auto">
             <h1 className="text-2xl md:text-3xl font-semibold">Help Center</h1>
           </div>

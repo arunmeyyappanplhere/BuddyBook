@@ -193,8 +193,8 @@ const NotificationBell = () => {
             </div>
           </div>
 
-          {/* Desktop: dropdown tray */}
-          <div className="hidden md:block absolute left-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+          {/* Desktop: dropdown tray (anchored to the right so it never overflows the viewport when the bell sits at the top-right corner) */}
+          <div className="hidden md:block absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
             {trayContent}
           </div>
         </>

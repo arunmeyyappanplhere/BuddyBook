@@ -20,6 +20,7 @@ const RecentContacts = ({
   openAddContactModal,
   setOpenAddContactModal,
   onEditContact,
+  refreshKey,
 }) => {
   const {
     user: userProfile,
@@ -59,7 +60,9 @@ const RecentContacts = ({
       }
     };
     fetchRecents();
-  }, [isAuthenticated]);
+    // refreshKey changes when a contact is added/edited via the global
+    // ContactModal so the recent list re-fetches and re-renders live.
+  }, [isAuthenticated, refreshKey]);
 
   const handleFavoriteChange = (contactId, isFav) => {
     setContacts((prev) =>

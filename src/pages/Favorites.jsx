@@ -11,7 +11,7 @@ import NotificationBell from "../Components/NotificationBell";
 import defaultImage from "/default_avatar.png";
 import Spinner from "../Components/Spinner";
 
-const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
+const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact, refreshKey }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(true);
@@ -41,7 +41,9 @@ const Favorites = ({ openAddContactModal, setOpenAddContactModal, onEditContact 
   useEffect(() => {
     setContactsLoading(true);
     fetchFavorites();
-  }, [isAuthenticated]);
+    // refreshKey changes when a contact is added/edited via the global
+    // ContactModal so the favorites list re-fetches and re-renders live.
+  }, [isAuthenticated, refreshKey]);
 
   const handleFavoriteChange = (contactId, isFav) => {
     if (!isFav) {

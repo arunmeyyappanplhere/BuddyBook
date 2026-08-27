@@ -17,16 +17,25 @@ import RecentContacts from "./pages/RecentContacts";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import ScrollToTop from "./Components/ScrollToTop";
+import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
 const App = () => {
   const [openAddContactModal, setOpenAddContactModal] = useState(false);
   const [editingContact, setEditingContact] = useState(null);
+  // Bumped whenever a contact is created/updated so pages holding contact
+  // data (Home dashboard, Contacts, Favorites, Recent) re-fetch and
+  // re-render without a full page reload.
+  const [contactRefreshKey, setContactRefreshKey] = useState(0);
 
   const handleEditContact = (contact) => {
     setEditingContact(contact);
     setOpenAddContactModal(true);
+  };
+
+  const handleContactSaved = () => {
+    setContactRefreshKey((key) => key + 1);
   };
 
   return (
@@ -51,6 +60,7 @@ const App = () => {
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
                       onEditContact={handleEditContact}
+                      refreshKey={contactRefreshKey}
                     />
                   </ProtectedRoute>
                 }
@@ -63,6 +73,7 @@ const App = () => {
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
                       onEditContact={handleEditContact}
+                      refreshKey={contactRefreshKey}
                     />
                   </ProtectedRoute>
                 }
@@ -75,6 +86,7 @@ const App = () => {
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
                       onEditContact={handleEditContact}
+                      refreshKey={contactRefreshKey}
                     />
                   </ProtectedRoute>
                 }
@@ -87,6 +99,7 @@ const App = () => {
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
                       onEditContact={handleEditContact}
+                      refreshKey={contactRefreshKey}
                     />
                   </ProtectedRoute>
                 }
@@ -119,6 +132,7 @@ const App = () => {
                       openAddContactModal={openAddContactModal}
                       setOpenAddContactModal={setOpenAddContactModal}
                       onEditContact={handleEditContact}
+                      refreshKey={contactRefreshKey}
                     />
                   </ProtectedRoute>
                 }
@@ -134,6 +148,8 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              {/* Catch-all: any unknown URL shows the themed 404 page */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
             <ToastContainer
               position="bottom-right"
@@ -152,6 +168,7 @@ const App = () => {
               setOpenAddContactModal={setOpenAddContactModal}
               editingContact={editingContact}
               setEditingContact={setEditingContact}
+              onContactSaved={handleContactSaved}
             />
           </div>
         </BrowserRouter>

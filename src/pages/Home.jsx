@@ -18,7 +18,7 @@ import {
 } from "../utils/recentContacts";
 
 
-const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
+const Home = ({ openAddContactModal, setOpenAddContactModal, refreshKey }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [recentContacts, setRecentContacts] = useState([]);
   const [favoriteContacts, setFavoriteContacts] = useState([]);
@@ -52,7 +52,9 @@ const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
     };
 
     fetchContacts();
-  }, [isAuthenticated]);
+    // refreshKey changes when a contact is added/edited via the global
+    // ContactModal so the dashboard re-fetches and re-renders live.
+  }, [isAuthenticated, refreshKey]);
 
   const {
     searchText,

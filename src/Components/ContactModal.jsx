@@ -24,6 +24,7 @@ const ContactModal = ({
   setOpenAddContactModal,
   editingContact,
   setEditingContact,
+  onContactSaved,
 }) => {
   const { refreshUser } = useAuth();
   const [profileImage, setProfileImage] = useState("");
@@ -157,6 +158,11 @@ const ContactModal = ({
       }
 
       await refreshUser();
+      // Notify the app that contact data changed so mounted pages
+      // (dashboard, contacts, favorites, recent) re-fetch and re-render.
+      if (typeof onContactSaved === "function") {
+        onContactSaved();
+      }
       setOpenAddContactModal(false);
       setEditingContact(null);
       resetForm();

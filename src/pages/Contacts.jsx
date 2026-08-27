@@ -12,7 +12,7 @@ import NotificationBell from "../Components/NotificationBell";
 import defaultImage from "/default_avatar.png";
 import Spinner from "../Components/Spinner";
 
-const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
+const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact, refreshKey }) => {
   const {
     user: userProfile,
     loading: authLoading,
@@ -54,7 +54,9 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
 
   useEffect(() => {
     fetchContacts();
-  }, [fetchContacts]);
+    // refreshKey changes when a contact is added/edited via the global
+    // ContactModal so the list re-fetches and re-renders live.
+  }, [fetchContacts, refreshKey]);
 
   const {
     searchText,

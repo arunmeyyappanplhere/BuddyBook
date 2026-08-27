@@ -4,6 +4,7 @@ import { Heart, Phone, ChevronRight, UserRound } from "lucide-react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { toggleFavorite } from "../api/contacts";
+import { handleImageError } from "../utils/imageFallback";
 import { useAuth } from "../context/useAuth";
 
 const RecentContactCard = ({

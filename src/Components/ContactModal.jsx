@@ -11,9 +11,13 @@ import {
 } from "lucide-react";
 import default_profile from "/default_avatar.png";
 import axiosInstance from "../api/axios";
+import { validateImageFile } from "../utils/fileValidation";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/useAuth";
 import Spinner from "./Spinner";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^\d{10}$/;
 
 const ContactModal = ({
   openAddContactModal,
@@ -34,6 +38,18 @@ const ContactModal = ({
   const [submitting, setSubmitting] = useState(false);
 
   const isEditing = Boolean(editingContact);
+
+  const resetForm = () => {
+    setProfileImage("");
+    setUserName("");
+    setEmail("");
+    setPhone("");
+    setAdress("");
+    setDob("");
+    setRole("");
+    setRelation("");
+    setRegisterError("");
+  };
 
   useEffect(() => {
     if (editingContact) {
@@ -67,18 +83,6 @@ const ContactModal = ({
     return response.data.filename;
   };
 
-  const resetForm = () => {
-    setProfileImage("");
-    setUserName("");
-    setEmail("");
-    setPhone("");
-    setAdress("");
-    setDob("");
-    setRole("");
-    setRelation("");
-    setRegisterError("");
-  };
-
   const handleAddContact = async (e) => {
     e.preventDefault();
     setRegisterError("");
@@ -93,13 +97,26 @@ const ContactModal = ({
       return;
     }
 
-    if (phone.length !== 10) {
+    if (!phoneRegex.test(phone)) {
       setRegisterError("Phone Number must be 10 digits.");
       return;
     }
 
-    if (new Date(dob) > new Date()) {
+    if (email && !emailRegex.test(email.trim())) {
+      setRegisterError("Please enter a valid email address.");
+      return;
+    }
+
+    // Compare against the end of the selected day so users east of UTC
+    // are not wrongly blocked from picking today's date as their DOB.
+    if (new Date(`${dob}T23:59:59`) > new Date()) {
       setRegisterError("Date of Birth cannot be in future.");
+      return;
+    }
+
+    const imageError = validateImageFile(profileImage);
+    if (imageError) {
+      setRegisterError(imageError);
       return;
     }
 
@@ -242,7 +259,16 @@ const ContactModal = ({
                 type="file"
                 id="profileImage"
                 className="hidden"
-                onChange={(e) => setProfileImage(e.target.files[0])}
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  const imgError = validateImageFile(file);
+                  if (imgError) {
+                    setRegisterError(imgError);
+                    e.target.value = "";
+                    return;
+                  }
+                  setProfileImage(file);
+                }}
                 accept="image/*"
                 disabled={submitting}
               />

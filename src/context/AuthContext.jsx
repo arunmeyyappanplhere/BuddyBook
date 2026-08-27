@@ -4,32 +4,33 @@ import axiosInstance from "../api/axios";
 
 export const AuthContext = createContext(null);
 
-const getCookie = (str) => {
-  const cookies = document.cookie;
-  return cookies
-    .split("; ")
-    .find((row) => row.startsWith(`${str}=`))
-    ?.split("=")[1];
-};
-
-// Persist the JWT in a JS-readable "token" cookie so the axios
-// interceptor can attach it as an Authorization: Bearer header.
-const setTokenCookie = (token) => {
-  if (!token) return;
-  // 7 days; adjust to match the backend's token expiry if needed
-  document.cookie = `token=${token}; path=/; max-age=${
-    7 * 24 * 60 * 60
-  }; SameSite=Lax`;
-};
-
 // Extract the token from common API response shapes:
-// { token }, { accessToken }, { data: { token } }, { data: { accessToken } }
+// { token }, { accessToken }, { data: { token } }, { data: { data: { token } } }, etc.
 const extractToken = (data) =>
   data?.token ??
   data?.accessToken ??
   data?.data?.token ??
   data?.data?.accessToken ??
+  data?.data?.data?.token ??
+  data?.data?.data?.accessToken ??
   null;
+
+// Persist the JWT in a JS-readable "token" cookie so the axios
+// interceptor can attach it as an Authorization: Bearer header.
+const setTokenCookie = (token) => {
+  if (!token) return;
+  // 7 days; adjust to match the backend's token expiry if needed.
+  // Secure flag keeps the token off plain-HTTP connections in production.
+  const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `token=${token}; path=/; max-age=${
+    7 * 24 * 60 * 60
+  }; SameSite=Lax${secureFlag}`;
+};
+
+const clearTokenCookie = () => {
+  document.cookie =
+    "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -48,8 +49,14 @@ export const AuthProvider = ({ children }) => {
   const checkAuth = useCallback(async () => {
     try {
       const response = await axiosInstance.get("/auth/me");
-      // Support both { user: {...} } and raw user object responses
-      setUser(response.data?.user ?? response.data);
+      // Support both { user: {...} } and raw user object responses.
+      // A malformed/empty body must NOT flip the app into an
+      // authenticated state with a null user.
+      const data = response.data?.user ?? response.data;
+      if (!data || typeof data !== "object") {
+        throw new Error("Malformed authentication response");
+      }
+      setUser(data);
       setIsAuthenticated(true);
       setError(null);
     } catch (err) {
@@ -74,6 +81,9 @@ export const AuthProvider = ({ children }) => {
       const response = await axiosInstance.get("/auth/me");
       // Support both { user: {...} } and raw user object responses
       const data = response.data?.user ?? response.data;
+      if (!data || typeof data !== "object") {
+        throw new Error("Malformed user response");
+      }
       setUser(data);
       setError(null);
       return data;
@@ -134,6 +144,9 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
+      // Always purge the local token so no stale JWT is attached
+      // to requests after logging out.
+      clearTokenCookie();
       setIsAuthenticated(false);
       setUser(null);
     }

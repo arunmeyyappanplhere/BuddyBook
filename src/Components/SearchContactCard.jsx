@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Heart, Phone, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
 import { toggleFavorite } from "../api/contacts";
+import { handleImageError } from "../utils/imageFallback";
 import { useAuth } from "../context/useAuth";
 
 const SearchContactCard = ({

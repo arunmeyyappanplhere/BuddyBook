@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft, Contact, Edit, X, Check } from "lucide-react";
 import defaultImage from "/default_avatar.png";
 import { handleImageError } from "../utils/imageFallback";
+import { validateImageFile } from "../utils/fileValidation";
 import Dashboard from "../Components/Dashboard";
 import { useParams, useNavigate } from "react-router";
 import { useAuth } from "../context/useAuth";
@@ -9,7 +10,7 @@ import { toast } from "react-toastify";
 import axiosInstance from "../api/axios";
 import Spinner from "../Components/Spinner";
 
-const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal }) => {
+const ContactProfile = ({ openAddContactModal, setOpenAddContactModal }) => {
   const { id } = useParams();
   const {
     user: userProfile,
@@ -212,7 +213,16 @@ const ContactProfile = ({ contactId, openAddContactModal, setOpenAddContactModal
                     id="contactProfileImage"
                     className="hidden"
                     accept="image/*"
-                    onChange={(e) => setProfileImage(e.target.files[0])}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const imgError = validateImageFile(file);
+                      if (imgError) {
+                        toast.error(imgError);
+                        e.target.value = "";
+                        return;
+                      }
+                      setProfileImage(file);
+                    }}
                   />
                 </label>
               ) : (

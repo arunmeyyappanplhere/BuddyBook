@@ -12,16 +12,20 @@ import {
   MapPin,
   UserRound,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import default_profile from "/default_avatar.png";
 import { Link, useNavigate, useLocation } from "react-router";
 
 import axiosInstance from "../api/axios";
+import { validateImageFile } from "../utils/fileValidation";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/useAuth";
 import Spinner from "../components/Spinner";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^\d{10}$/;
 
 const Register = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -37,19 +41,11 @@ const Register = () => {
 
   const [registerError, setRegisterError] = useState("");
   const [registering, setRegistering] = useState(false);
-  const shouldNavigateRef = useRef(false);
 
-  const { register, isAuthenticated } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/home";
-
-  useEffect(() => {
-    if (isAuthenticated && shouldNavigateRef.current) {
-      shouldNavigateRef.current = false;
-      navigate(from, { replace: true });
-    }
-  }, [isAuthenticated, navigate, from]);
 
   const uploadImage = async () => {
     if (!profileImage) {
@@ -74,8 +70,21 @@ const Register = () => {
       return;
     }
 
+    const imageError = validateImageFile(profileImage);
+    if (imageError) {
+      setRegisterError(imageError);
+      setRegistering(false);
+      return;
+    }
+
     if (username.length < 2) {
       setRegisterError("Username must be atleast 2 characters.");
+      setRegistering(false);
+      return;
+    }
+
+    if (!emailRegex.test(email.trim())) {
+      setRegisterError("Please enter a valid email address.");
       setRegistering(false);
       return;
     }
@@ -96,7 +105,7 @@ const Register = () => {
       return;
     }
 
-    if (phone.length != 10) {
+    if (!phoneRegex.test(phone)) {
       setRegisterError("Phone Number must be 10 digits.");
       setRegistering(false);
       return;
@@ -108,7 +117,9 @@ const Register = () => {
       return;
     }
 
-    if (new Date(dob) > new Date()) {
+    // Compare against the end of the selected day so users east of UTC
+    // are not wrongly blocked from picking today's date as their DOB.
+    if (new Date(`${dob}T23:59:59`) > new Date()) {
       setRegisterError("Date of Birth cannot be in future.");
       setRegistering(false);
       return;
@@ -133,7 +144,9 @@ const Register = () => {
 
       if (result.success) {
         toast.success("Successfully signed up!");
-        shouldNavigateRef.current = true;
+        // Navigate directly so an already-authenticated session
+        // cannot get stuck on this page.
+        navigate(from, { replace: true });
       } else {
         if (result.status === 409) {
           toast.error("Account already exists.");
@@ -189,7 +202,14 @@ const Register = () => {
                 id="profileImage"
                 className="hidden"
                 onChange={(e) => {
-                  setProfileImage(e.target.files[0]);
+                  const file = e.target.files[0];
+                  const imgError = validateImageFile(file);
+                  if (imgError) {
+                    setRegisterError(imgError);
+                    e.target.value = "";
+                    return;
+                  }
+                  setProfileImage(file);
                 }}
                 accept="image/*"
                 required

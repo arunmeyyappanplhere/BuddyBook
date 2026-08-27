@@ -6,7 +6,6 @@ import {
   Calendar,
   MapPin,
   Save,
-  Trash2,
   LogOut,
   Archive,
   Upload,
@@ -18,11 +17,12 @@ import { updateProfile, deleteAccount, stashAllContacts } from "../api/contacts"
 import { toast } from "react-toastify";
 import defaultImage from "/default_avatar.png";
 import axiosInstance from "../api/axios";
+import { validateImageFile } from "../utils/fileValidation";
 import UnstashModal from "../Components/UnstashModal";
 import Spinner from "../Components/Spinner";
 
 const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
-  const { user: userProfile, loading: authLoading, error: authError, isAuthenticated, refreshUser, logout } = useAuth();
+  const { user: userProfile, loading: authLoading, error: authError, refreshUser, logout } = useAuth();
   const [formData, setFormData] = useState({
     name: userProfile?.name || "",
     email: userProfile?.email || "",
@@ -60,7 +60,14 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
   };
 
   const handleImageChange = (e) => {
-    setProfileImage(e.target.files[0]);
+    const file = e.target.files[0];
+    const imgError = validateImageFile(file);
+    if (imgError) {
+      toast.error(imgError);
+      e.target.value = "";
+      return;
+    }
+    setProfileImage(file);
   };
 
   const uploadImage = async () => {
@@ -102,11 +109,14 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
       await deleteAccount();
       await logout();
       toast.success("Your account has been deleted.");
-      window.location.href = "/login";
+      // Redirect after a short delay so the toast is visible before
+      // the full page reload wipes it.
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1200);
     } catch (err) {
       console.error(err);
       toast.error("Failed to delete account.");
-    } finally {
       setDeleting(false);
     }
   };
@@ -130,9 +140,18 @@ const Settings = ({ openAddContactModal, setOpenAddContactModal }) => {
 
   const handleLogout = async () => {
     setLoggingOut(true);
-    await logout();
-    window.location.href = "/login";
-    toast.success("Logged out successfully!");
+    try {
+      await logout();
+      toast.success("Logged out successfully!");
+      // Brief delay so the toast is visible before the reload.
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 800);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to log out.");
+      setLoggingOut(false);
+    }
   };
 
    return (

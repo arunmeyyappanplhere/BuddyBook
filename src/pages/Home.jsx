@@ -18,7 +18,7 @@ import {
 } from "../utils/recentContacts";
 
 
-const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) => {
+const Home = ({ openAddContactModal, setOpenAddContactModal }) => {
   const { user: userProfile, loading: authLoading, error: authError, isAuthenticated } = useAuth();
   const [recentContacts, setRecentContacts] = useState([]);
   const [favoriteContacts, setFavoriteContacts] = useState([]);
@@ -27,7 +27,6 @@ const Home = ({ openAddContactModal, setOpenAddContactModal, onEditContact }) =>
   const [contactsError, setContactsError] = useState(null);
   
   const navigate = useNavigate();
-  const handleNav = useNavigate();
   const [addingContact, setAddingContact] = useState(false);
   const [viewingAll, setViewingAll] = useState(false);
   const [viewingFavorites, setViewingFavorites] = useState(false);

@@ -30,7 +30,7 @@ export const ThemeProvider = ({ children }) => {
     }
     try {
       localStorage.setItem("buddybook-theme", theme);
-    } catch (e) {
+    } catch {
       // localStorage unavailable — ignore
     }
   }, [theme]);

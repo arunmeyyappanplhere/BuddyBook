@@ -9,10 +9,12 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/useAuth";
 import Spinner from "../components/Spinner";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -20,22 +22,19 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [registerError, setRegisterError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
-  const shouldNavigateRef = useRef(false);
 
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/home";
 
-  useEffect(() => {
-    if (isAuthenticated && shouldNavigateRef.current) {
-      shouldNavigateRef.current = false;
-      navigate(from, { replace: true });
-    }
-  }, [isAuthenticated, navigate, from]);
-
   const loginHandler = async (e) => {
     e.preventDefault();
+
+    if (!emailRegex.test(email.trim())) {
+      setRegisterError("Please enter a valid email address.");
+      return;
+    }
 
     if (password.length < 8) {
       setRegisterError("Password must be atleast 8 characters.");
@@ -50,7 +49,10 @@ const Login = () => {
 
       if (result.success) {
         toast.success("Logged in successfully!");
-        shouldNavigateRef.current = true;
+        // Navigate directly — auth state may already have been
+        // authenticated, so an effect keyed on isAuthenticated
+        // would never re-fire and leave the user stuck here.
+        navigate(from, { replace: true });
       } else {
         if (result.status === 404) {
           toast.error("User doesn't exists.");

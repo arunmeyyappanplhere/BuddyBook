@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "../api/axios";
 import Dashboard from "../Components/Dashboard";
 import { Plus, BookUser, SlidersHorizontal, Inbox } from "lucide-react";
@@ -29,13 +29,15 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
   const [clearingFilters, setClearingFilters] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchContacts = async () => {
+
+  const fetchContacts = useCallback(
+    async (isRetry = false) => {
       if (!isAuthenticated) {
         setContactsLoading(false);
         return;
       }
 
+      if (!isRetry) setContactsLoading(true);
       try {
         const response = await axiosInstance.get("/contacts");
         setContacts(response.data);
@@ -46,10 +48,13 @@ const Contacts = ({ openAddContactModal, setOpenAddContactModal, onEditContact }
       } finally {
         setContactsLoading(false);
       }
-    };
+    },
+    [isAuthenticated],
+  );
 
+  useEffect(() => {
     fetchContacts();
-  }, [isAuthenticated]);
+  }, [fetchContacts]);
 
   const {
     searchText,

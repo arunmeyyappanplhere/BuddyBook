@@ -19,7 +19,7 @@ import NotificationBell from "./NotificationBell";
 import defaultImage from "/default_avatar.png";
 import Spinner from "./Spinner";
 
-const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
+const Dashboard = ({ setOpenAddContactModal }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user: userProfile, logout } = useAuth();
   const location = useLocation();
@@ -40,7 +40,7 @@ const Dashboard = ({ tabOnView, setOpenAddContactModal, contactsCount }) => {
             ? "Help"
             : "Dashboard";
 
-  const changeTab = (tab) => {
+  const changeTab = () => {
     setSidebarOpen(false);
   };
 

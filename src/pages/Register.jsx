@@ -59,79 +59,87 @@ const Register = () => {
 
     return response.data.filename;
   };
+  // Every Register error is surfaced to the user through a toast,
+  // while the inline message stays for extra context next to the form.
+  const showRegisterError = (message) => {
+    setRegistering(false);
+    setRegisterError(message);
+    toast.error(message);
+  };
+
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setRegistering(true);
 
-    // Form validation
-    if (!profileImage) {
-      setRegisterError("Please upload profile image.");
-      setRegistering(false);
-      return;
-    }
-
-    const imageError = validateImageFile(profileImage);
+    // Form validation — profile image is optional; when no image is
+    // selected the default avatar from the public folder is used.
+    const imageError = profileImage ? validateImageFile(profileImage) : "";
     if (imageError) {
-      setRegisterError(imageError);
-      setRegistering(false);
+      showRegisterError(imageError);
       return;
     }
 
     if (username.length < 2) {
-      setRegisterError("Username must be atleast 2 characters.");
-      setRegistering(false);
+      showRegisterError("Username must be atleast 2 characters.");
       return;
     }
 
     if (!emailRegex.test(email.trim())) {
-      setRegisterError("Please enter a valid email address.");
-      setRegistering(false);
+      showRegisterError("Please enter a valid email address.");
       return;
     }
 
     if (password.length < 8) {
-      setRegisterError("Password must be atleast 8 characters.");
-      setRegistering(false);
+      showRegisterError("Password must be atleast 8 characters.");
       return;
     }
 
     // Must match the backend rule: uppercase, lowercase, number, special char (@$!%*?&)
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
-      setRegisterError(
+      showRegisterError(
         "Password must contain an uppercase letter, a lowercase letter, a number, and a special character (@$!%*?&)."
       );
-      setRegistering(false);
       return;
     }
 
     if (!phoneRegex.test(phone)) {
-      setRegisterError("Phone Number must be 10 digits.");
-      setRegistering(false);
+      showRegisterError("Phone Number must be 10 digits.");
       return;
     }
 
     if (address.trim().length < 5 || address.trim().length > 200) {
-      setRegisterError("Address must be between 5 and 200 characters.");
-      setRegistering(false);
+      showRegisterError("Address must be between 5 and 200 characters.");
       return;
     }
 
     // Compare against the end of the selected day so users east of UTC
     // are not wrongly blocked from picking today's date as their DOB.
     if (new Date(`${dob}T23:59:59`) > new Date()) {
-      setRegisterError("Date of Birth cannot be in future.");
-      setRegistering(false);
+      showRegisterError("Date of Birth cannot be in future.");
       return;
     }
 
     try {
-      const uploadedFileName = await uploadImage();
+      let uploadedFileName = "";
+      if (profileImage) {
+        try {
+          uploadedFileName = await uploadImage();
+        } catch (uploadError) {
+          console.error("Profile image upload failed:", uploadError);
+          showRegisterError(
+            "Couldn't upload your profile image. Please try again, or sign up without one."
+          );
+          return;
+        }
+      }
       setRegisterError("");
 
       const userData = {
         uuid: crypto.randomUUID(),
-        profileImage: uploadedFileName,
+        // Fall back to the bundled default avatar (public/default_avatar.png)
+        // when no profile image was uploaded.
+        profileImage: uploadedFileName || default_profile,
         name: username,
         email,
         password,
@@ -147,18 +155,17 @@ const Register = () => {
         // Navigate directly so an already-authenticated session
         // cannot get stuck on this page.
         navigate(from, { replace: true });
+      } else if (result.status === 409) {
+        showRegisterError("Account already exists.");
       } else {
-        if (result.status === 409) {
-          toast.error("Account already exists.");
-        } else {
-          // Show the actual reason returned by the server (e.g. validation errors)
-          toast.error(result.message || "Error while signing up.");
-          setRegisterError(result.message || "Registration failed. Please try again.");
-        }
+        // Show the actual reason returned by the server (e.g. validation errors)
+        showRegisterError(result.message || "Error while signing up.");
       }
     } catch (error) {
       console.error("Registration error:", error);
-      setRegisterError("Registration failed. Please try again.");
+      showRegisterError(
+        error.response?.data?.message || "Registration failed. Please try again."
+      );
     } finally {
       setRegistering(false);
     }
@@ -184,7 +191,7 @@ const Register = () => {
               className="text-gray-600 text-sm cursor-pointer flex justify-center w-full sm:w-max"
             >
               <div>
-                <h2 className="text-center">Profile</h2>
+                <h2 className="text-center">Profile (Optional)</h2>
                 <img
                   src={
                     profileImage
@@ -206,13 +213,13 @@ const Register = () => {
                   const imgError = validateImageFile(file);
                   if (imgError) {
                     setRegisterError(imgError);
+                    toast.error(imgError);
                     e.target.value = "";
                     return;
                   }
                   setProfileImage(file);
                 }}
                 accept="image/*"
-                required
               />
             </div>
             <div className="flex-1 w-full">

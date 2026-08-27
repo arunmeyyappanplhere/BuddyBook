@@ -88,11 +88,6 @@ const ContactModal = ({
     e.preventDefault();
     setRegisterError("");
 
-    if (!profileImage && !isEditing) {
-      setRegisterError("Please upload profile image.");
-      return;
-    }
-
     if (username.length < 2) {
       setRegisterError("Username must be atleast 2 characters.");
       return;
@@ -145,7 +140,9 @@ const ContactModal = ({
       } else {
         await axiosInstance.post("/add-contact", {
           contact_uid: generateContactUid(),
-          profileImage: uploadedFileName,
+          // Fall back to the bundled default avatar
+          // (public/default_avatar.png) when no image was uploaded.
+          profileImage: uploadedFileName || default_profile,
           contact_name: username,
           contact_email: email,
           contact_phone: parseInt(phone, 10),
@@ -238,7 +235,7 @@ const ContactModal = ({
                     className="size-16 sm:size-20 rounded-full object-cover border-2 border-dashed border-gray-300"
                   />
                   <span className="text-[10px] sm:text-xs text-blue-500 font-medium">
-                    {isEditing ? "Change" : "Upload"}
+                    {isEditing ? "Change" : "Upload (Optional)"}
                   </span>
                 </label>
                 <div className="flex-1 w-full">

@@ -23,7 +23,7 @@ const faqs = [
     category: "Getting Started",
     question: "Do I need to provide a profile image?",
     answer:
-      "Yes, a profile image is required to create an account. This helps you and your contacts easily identify you in the system. You can upload any image file (JPG, PNG, etc.).",
+      "No, a profile image is optional. If you don't upload one, a default avatar is used instead. You can upload any image file (JPG, PNG, etc.) during registration or later from Settings.",
   },
   {
     id: 3,
